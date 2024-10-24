@@ -17,7 +17,7 @@ const TradingViewTimelineWidget = () => {
       displayMode: "regular",
       colorTheme: "dark",
       width: "100%",
-      height: "100%", // Leave this as 100% to fill the parent container
+      height: "400", // Leave this as 100% to fill the parent container
       locale: "en",
     });
 
@@ -30,7 +30,7 @@ const TradingViewTimelineWidget = () => {
       {/* TradingView Widget Container */}
       <div
         id="tradingview-widget-container"
-        className="tradingview-widget-container h-full  min-h-[400px]"
+        className="tradingview-widget-container h-full"
       >
         <div className="tradingview-widget-container__widget h-full"></div>
         <div className="tradingview-widget-copyright">
