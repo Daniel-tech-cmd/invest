@@ -127,7 +127,7 @@ const Navbar = () => {
             <Link
               href="/about"
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                router.pathname === "/about"
+                router.pathname === "/about-us"
                   ? "text-green-600"
                   : "text-gray-700"
               } hover:text-green-600`}
