@@ -27,7 +27,7 @@ const Navbar = () => {
                 Home
               </Link>
               <Link
-                href="/about"
+                href="/about-us"
                 className={`px-3 py-2 text-sm font-medium ${
                   router.pathname === "/about"
                     ? "text-green-600"
