@@ -7,9 +7,10 @@ const Dashboard = () => {
     script.src =
       "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
     script.async = true;
-    script.innerHTML = JSON.stringify({
+
+    const widgetConfig = {
       interval: "5m",
-      width: 425,
+      width: window.innerWidth <= 768 ? "100%" : 425, // Adjust width based on screen size
       isTransparent: true,
       height: 450,
       symbol: "NASDAQ:AAPL",
@@ -17,16 +18,32 @@ const Dashboard = () => {
       displayMode: "single",
       locale: "en",
       colorTheme: "dark",
-    });
+    };
+
+    script.innerHTML = JSON.stringify(widgetConfig);
     document.getElementById("tradingview-widget-container").appendChild(script);
+
+    const handleResize = () => {
+      const updatedWidth = window.innerWidth <= 768 ? "100%" : 425;
+      widgetConfig.width = updatedWidth;
+      script.innerHTML = JSON.stringify(widgetConfig);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   return (
     <div
-      className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full lg:max-w-[calc(100vw-240px)] lg:w-[calc(100vw-240px)]"
-      // On large screens (lg), the dashboard width is reduced, but on smaller screens, it's full width (w-full)
+      className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full"
       style={{
-        padding: "70px 50px",
+        maxWidth: "100%",
+        padding: "70px 20px",
+        boxSizing: "border-box",
+        overflowX: "hidden",
       }}
     >
       {/* Header Section */}
@@ -40,14 +57,20 @@ const Dashboard = () => {
           </h1>
           <p className="text-gray-400">/ Dashboard</p>
         </div>
-        <div className="flex gap-6 md:gap-4 text-right text-white">
-          <div>
-            <p>Total Balance</p>
-            <h2 className="text-lg font-bold">$0</h2>
+
+        {/* Total Balance and Total Withdraw Section */}
+        <div className="flex gap-6 md:gap-4 sm:justify-between sm:flex-row sm:items-center sm:text-left text-white cont-bal">
+          <div className="text-center md:text-right">
+            <p className="text-gray-400 text-sm md:text-base">Total Balance</p>
+            <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
+              $0
+            </h2>
           </div>
-          <div>
-            <p>Total Withdraw</p>
-            <h2 className="text-lg font-bold">$0.00</h2>
+          <div className="text-center md:text-right">
+            <p className="text-gray-400 text-sm md:text-base">Total Withdraw</p>
+            <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
+              $0.00
+            </h2>
           </div>
         </div>
       </div>
@@ -55,7 +78,7 @@ const Dashboard = () => {
       {/* Overview and Account Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Overview Section */}
-        <div className="bg-[#232a35] p-6 rounded-lg">
+        <div className="bg-[#232a35] p-6 md:p-6 p-4 rounded-lg">
           <h2 className="text-lg text-white font-semibold mb-4">Overview</h2>
           <div className="space-y-4">
             <div>
@@ -74,7 +97,7 @@ const Dashboard = () => {
         </div>
 
         {/* Account Section */}
-        <div className="bg-[#232a35] p-6 rounded-lg md:col-span-2">
+        <div className="bg-[#232a35] p-6 md:p-6 p-4 rounded-lg md:col-span-2">
           <h2 className="text-lg text-white font-semibold mb-4">
             Your Account
           </h2>
@@ -89,7 +112,7 @@ const Dashboard = () => {
                 <td className="text-white">
                   <a
                     href="http://horizoncapitaltrade.com?ref=isabella2"
-                    className="text-blue-400"
+                    className="text-blue-400 text-sm md:text-base"
                   >
                     http://horizoncapitaltrade.com?ref=isabella2
                   </a>
@@ -128,7 +151,7 @@ const Dashboard = () => {
         <div
           id="tradingview-widget-container"
           className="tradingview-widget-container"
-          style={{ margin: "auto" }}
+          style={{ margin: "auto", width: "100%" }}
         >
           <div className="tradingview-widget-container__widget"></div>
           <div
