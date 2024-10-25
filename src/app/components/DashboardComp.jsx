@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
+import Hamburg from "./Hamburger";
 
 const Dashboard = () => {
   useEffect(() => {
@@ -38,15 +39,14 @@ const Dashboard = () => {
 
   return (
     <div
-      className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full"
+      className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full dash"
       style={{
-        maxWidth: "100%",
+        maxWidth: "calc(100vw - 260px)",
         padding: "70px 20px",
         boxSizing: "border-box",
         overflowX: "hidden",
       }}
     >
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div className="mb-4 md:mb-0">
           <h1
@@ -74,7 +74,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
       {/* Overview and Account Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Overview Section */}
@@ -142,7 +141,6 @@ const Dashboard = () => {
           </table>
         </div>
       </div>
-
       {/* TradingView Widget Section */}
       <div className="mt-10">
         <h2 className="text-lg text-white font-semibold mb-4">

@@ -92,7 +92,7 @@ const logoutIcon = (
 export default function Sidebar() {
   return (
     <div
-      className="min-h-screen bg-[#1c222c] text-gray-300 w-64 p-4 flex flex-col justify-between fixed left-0 lg:block hidden"
+      className="min-h-screen bg-[#1c222c] text-gray-300 w-64 p-4 flex flex-col justify-between fixed left-0 lg:block hidden nav"
       // Sidebar hidden by default on small screens, visible on screens wider than 1000px (lg)
     >
       <div>

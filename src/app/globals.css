@@ -22,15 +22,32 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+.haamburg {
+  display: none !important;
+}
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
 }
+@media (max-width: 1000px) {
+  .dash {
+    max-width: 100% !important;
+  }
+  .haamburg {
+    display: block !important;
+  }
+  .show .nav {
+    display: block !important;
+  }
+}
 @media (max-width: 650px) {
   .cont-bal {
     width: 100%;
     justify-content: space-between;
+  }
+  .tradingview-widget-container {
+    width: 100% !important;
   }
 }

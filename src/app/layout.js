@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { Rubik } from "next/font/google";
+import { NavProvider } from "./contexts/navcon";
 
 const rubik = Rubik({ subsets: ["latin"], weight: ["400", "500", "700"] });
 

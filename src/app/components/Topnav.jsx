@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Hamburg from "./Hamburger";
 
 export default function TopNav() {
   return (
@@ -8,6 +9,7 @@ export default function TopNav() {
     >
       {/* Left: Logo */}
       <div className="flex items-center">
+        <Hamburg />
         <Image src="/logo.png" alt="Logo" width={120} height={40} />
       </div>
 
