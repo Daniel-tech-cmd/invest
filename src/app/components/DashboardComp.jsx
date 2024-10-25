@@ -22,11 +22,22 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#1c222c] p-4 md:p-6">
+    <div
+      className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full lg:max-w-[calc(100vw-240px)] lg:w-[calc(100vw-240px)]"
+      // On large screens (lg), the dashboard width is reduced, but on smaller screens, it's full width (w-full)
+      style={{
+        padding: "70px 50px",
+      }}
+    >
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div className="mb-4 md:mb-0">
-          <h1 className="text-2xl text-white font-bold">Dashboard</h1>
+          <h1
+            className="text-2xl text-white font-bold"
+            style={{ fontSize: "19px" }}
+          >
+            Dashboard
+          </h1>
           <p className="text-gray-400">/ Dashboard</p>
         </div>
         <div className="flex gap-6 md:gap-4 text-right text-white">
@@ -117,9 +128,13 @@ const Dashboard = () => {
         <div
           id="tradingview-widget-container"
           className="tradingview-widget-container"
+          style={{ margin: "auto" }}
         >
           <div className="tradingview-widget-container__widget"></div>
-          <div className="tradingview-widget-copyright">
+          <div
+            className="tradingview-widget-copyright"
+            style={{ width: "100%", display: "flex", justifyContent: "center" }}
+          >
             <a
               href="https://www.tradingview.com/"
               rel="noopener nofollow"

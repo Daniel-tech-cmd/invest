@@ -92,8 +92,8 @@ const logoutIcon = (
 export default function Sidebar() {
   return (
     <div
-      className="min-h-screen bg-[#1c222c] text-gray-300 w-64 p-4 flex flex-col justify-between"
-      style={{ position: "fixed" }}
+      className="min-h-screen bg-[#1c222c] text-gray-300 w-64 p-4 flex flex-col justify-between fixed left-0 lg:block hidden"
+      // Sidebar hidden by default on small screens, visible on screens wider than 1000px (lg)
     >
       <div>
         {/* Logo */}
@@ -168,6 +168,7 @@ export default function Sidebar() {
             {referralsIcon}
             <span>Referrals</span>
           </Link>
+
           <Link
             href="/logout"
             className="flex items-center gap-4 hover:text-orange-400 transition-colors"

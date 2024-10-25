@@ -4,7 +4,7 @@ export default function TopNav() {
   return (
     <header
       className="w-full bg-[#1c222c] h-16 flex justify-between items-center px-6 border-b-2 border-orange-400"
-      style={{ position: "fixed", top: 0 }}
+      style={{ position: "fixed", top: 0, zIndex: 10 }}
     >
       {/* Left: Logo */}
       <div className="flex items-center">

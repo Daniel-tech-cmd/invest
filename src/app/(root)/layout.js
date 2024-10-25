@@ -5,9 +5,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={` antialiased`}>
-        <Dashboardnav />
         <TopNav />
-        {children}
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <Dashboardnav />
+
+          {children}
+        </div>
       </body>
     </html>
   );
