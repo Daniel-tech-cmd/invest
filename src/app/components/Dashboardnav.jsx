@@ -1,10 +1,13 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
-// Example SVG icons with adjusted size and color (orange-like)
-const iconColor = "#FF914D"; // Replace with the orange-like color from the image
+// Icon color and size
+const iconColor = "#FF914D"; // Orange-like color
 const iconSize = "18px";
 
+// SVG icons
 const homeIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -14,6 +17,29 @@ const homeIcon = (
     fill={iconColor}
   >
     <path d="M575.8 255.5c0 18-15 32.1-32 32.1l-32 0 .7 160.2c0 2.7-.2 5.4-.5 8.1l0 16.2c0 22.1-17.9 40-40 40l-16 0c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1L416 512l-24 0c-22.1 0-40-17.9-40-40l0-24 0-64c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32 14.3-32 32l0 64 0 24c0 22.1-17.9 40-40 40l-24 0-31.9 0c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2l-16 0c-22.1 0-40-17.9-40-40l0-112c0-.9 0-1.9 .1-2.8l0-69.7-32 0c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z" />
+  </svg>
+);
+const expandmore = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    height="24px"
+    viewBox="0 -960 960 960"
+    width="24px"
+    fill={iconColor}
+  >
+    <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z" />
+  </svg>
+);
+
+const expandless = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    height="24px"
+    viewBox="0 -960 960 960"
+    width="24px"
+    fill={iconColor}
+  >
+    <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z" />
   </svg>
 );
 
@@ -90,11 +116,13 @@ const logoutIcon = (
 );
 
 export default function Sidebar() {
+  const [isDepositOpen, setIsDepositOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isReferralsOpen, setIsReferralsOpen] = useState(false);
+
   return (
-    <div
-      className="min-h-screen bg-[#1c222c] text-gray-300 w-64 p-4 flex flex-col justify-between fixed left-0 lg:block hidden nav"
-      // Sidebar hidden by default on small screens, visible on screens wider than 1000px (lg)
-    >
+    <div className="min-h-screen bg-[#1c222c] text-gray-300 w-64 p-4 flex flex-col justify-between fixed left-0 lg:block hidden nav">
       <div>
         {/* Logo */}
         <div className="flex items-center gap-4 mb-6 mt-14">
@@ -124,14 +152,66 @@ export default function Sidebar() {
             <span>Home</span>
           </Link>
 
-          <Link
-            href="/deposit"
-            className="flex items-center gap-4 hover:text-orange-400 transition-colors"
-            style={{ fontSize: "14px", padding: "0 15px" }}
-          >
-            {depositIcon}
-            <span>Deposit</span>
-          </Link>
+          {/* Deposit Dropdown */}
+          <div>
+            <button
+              onClick={() => setIsDepositOpen(!isDepositOpen)}
+              className="flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+              style={{ fontSize: "14px", padding: "0 15px" }}
+            >
+              {depositIcon}
+              <span>Deposits</span>
+              <span className="ml-auto material-symbols-outlined">
+                {isDepositOpen ? expandless : expandmore}
+              </span>
+            </button>
+            {isDepositOpen && (
+              <div className=" space-y-2" style={{ padding: "5px 15px" }}>
+                <Link
+                  href="/deposit/deposits"
+                  style={{
+                    borderLeft: "2px solid #f68c1f",
+                    background: "#232a35 ",
+                    padding: "6px",
+                    marginTop: "5px",
+                  }}
+                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="17px"
+                    fill={iconColor}
+                  >
+                    <path d="M200-440v-80h560v80H200Z" />
+                  </svg>
+                  <span>Deposits</span>
+                </Link>
+                <Link
+                  href="/deposit/deposit-list"
+                  style={{
+                    borderLeft: "2px solid #f68c1f",
+                    background: "#232a35",
+                    padding: "6px",
+                    marginTop: "5px",
+                  }}
+                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="17px"
+                    fill={iconColor}
+                  >
+                    <path d="M200-440v-80h560v80H200Z" />
+                  </svg>
+                  <span> Deposit List </span>
+                </Link>
+              </div>
+            )}
+          </div>
 
           <Link
             href="/withdraw"
@@ -142,32 +222,188 @@ export default function Sidebar() {
             <span>Withdraw</span>
           </Link>
 
-          <Link
-            href="/history"
-            className="flex items-center gap-4 hover:text-orange-400 transition-colors"
-            style={{ fontSize: "14px", padding: "0 15px" }}
-          >
-            {historyIcon}
-            <span>History</span>
-          </Link>
+          {/* History Dropdown */}
+          <div>
+            <button
+              onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+              className="flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+              style={{ fontSize: "14px", padding: "0 15px" }}
+            >
+              {historyIcon}
+              <span>History</span>
+              <span className="ml-auto material-symbols-outlined">
+                {isHistoryOpen ? expandless : expandmore}
+              </span>
+            </button>
+            {isHistoryOpen && (
+              <div className="pl-10 space-y-2" style={{ padding: "5px 15px" }}>
+                <Link
+                  href="/history/view-history"
+                  style={{
+                    borderLeft: "2px solid #f68c1f",
+                    background: "#232a35 ",
+                    padding: "6px",
+                    marginTop: "5px",
+                  }}
+                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="17px"
+                    fill={iconColor}
+                  >
+                    <path d="M200-440v-80h560v80H200Z" />
+                  </svg>
+                  <span> View History</span>
+                </Link>
+                <Link
+                  href="/history/transaction-history"
+                  style={{
+                    borderLeft: "2px solid #f68c1f",
+                    background: "#232a35 ",
+                    padding: "6px",
+                    marginTop: "5px",
+                  }}
+                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="17px"
+                    fill={iconColor}
+                  >
+                    <path d="M200-440v-80h560v80H200Z" />
+                  </svg>
+                  <span>Transaction History</span>
+                </Link>
+              </div>
+            )}
+          </div>
 
-          <Link
-            href="/profile"
-            className="flex items-center gap-4 hover:text-orange-400 transition-colors"
-            style={{ fontSize: "14px", padding: "0 15px" }}
-          >
-            {profileIcon}
-            <span>Profile</span>
-          </Link>
+          {/* Profile Dropdown */}
+          <div>
+            <button
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              className="flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+              style={{ fontSize: "14px", padding: "0 15px" }}
+            >
+              {profileIcon}
+              <span>Profile</span>
+              <span className="ml-auto material-symbols-outlined">
+                {isProfileOpen ? expandless : expandmore}
+              </span>
+            </button>
+            {isProfileOpen && (
+              <div className="pl-10 space-y-2" style={{ padding: "5px 15px" }}>
+                <Link
+                  href="/profile/view-profile"
+                  style={{
+                    borderLeft: "2px solid #f68c1f",
+                    background: "#232a35 ",
+                    padding: "6px",
+                    marginTop: "5px",
+                  }}
+                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="17px"
+                    fill={iconColor}
+                  >
+                    <path d="M200-440v-80h560v80H200Z" />
+                  </svg>
+                  <span>View Profile </span>
+                </Link>
+                <Link
+                  href="/profile/edit-profile"
+                  style={{
+                    borderLeft: "2px solid #f68c1f",
+                    background: "#232a35 ",
+                    padding: "6px",
+                    marginTop: "5px",
+                  }}
+                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="17px"
+                    fill={iconColor}
+                  >
+                    <path d="M200-440v-80h560v80H200Z" />
+                  </svg>
+                  <span>Edit Profile</span>
+                </Link>
+              </div>
+            )}
+          </div>
 
-          <Link
-            href="/referrals"
-            className="flex items-center gap-4 hover:text-orange-400 transition-colors"
-            style={{ fontSize: "14px", padding: "0 15px" }}
-          >
-            {referralsIcon}
-            <span>Referrals</span>
-          </Link>
+          {/* Referrals Dropdown */}
+          <div>
+            <button
+              onClick={() => setIsReferralsOpen(!isReferralsOpen)}
+              className="flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+              style={{ fontSize: "14px", padding: "0 15px" }}
+            >
+              {referralsIcon}
+              <span>Referrals</span>
+              <span className="ml-auto material-symbols-outlined">
+                {isReferralsOpen ? expandless : expandmore}
+              </span>
+            </button>
+            {isReferralsOpen && (
+              <div className="pl-10 space-y-2" style={{ padding: "5px 15px" }}>
+                <Link
+                  href="/referrals/my-referrals"
+                  style={{
+                    borderLeft: "2px solid #f68c1f",
+                    background: "#232a35 ",
+                    padding: "6px",
+                    marginTop: "5px",
+                  }}
+                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="17px"
+                    fill={iconColor}
+                  >
+                    <path d="M200-440v-80h560v80H200Z" />
+                  </svg>
+                  <span>My Referrals</span>
+                </Link>
+                <Link
+                  href="/referrals/referral-stats"
+                  style={{
+                    borderLeft: "2px solid #f68c1f",
+                    background: "#232a35 ",
+                    padding: "6px",
+                    marginTop: "5px",
+                  }}
+                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="17px"
+                    fill={iconColor}
+                  >
+                    <path d="M200-440v-80h560v80H200Z" />
+                  </svg>
+                  <span>Referral Stats</span>
+                </Link>
+              </div>
+            )}
+          </div>
 
           <Link
             href="/logout"
