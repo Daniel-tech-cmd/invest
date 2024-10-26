@@ -144,7 +144,7 @@ export default function Sidebar() {
         {/* Navigation */}
         <nav className="space-y-6">
           <Link
-            href="/home"
+            href="/dashboard"
             className="flex items-center gap-4 hover:text-orange-400 transition-colors"
             style={{ fontSize: "14px", padding: "0 15px" }}
           >

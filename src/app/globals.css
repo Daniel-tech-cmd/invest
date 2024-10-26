@@ -31,6 +31,29 @@ body {
     text-wrap: balance;
   }
 }
+/* Adjust vertical scrollbar width */
+.dash::-webkit-scrollbar {
+  width: 8px; /* Thinner vertical scrollbar */
+  height: 8px; /* Thinner horizontal scrollbar */
+}
+
+/* Track styling */
+.dash::-webkit-scrollbar-track {
+  background: #1c222c;
+}
+
+/* Thumb styling */
+.dash::-webkit-scrollbar-thumb {
+  background-color: #f57c00; /* Orange color */
+  border-radius: 10px;
+  height: 10px;
+  border: 2px solid #1c222c;
+}
+
+.dash::-webkit-scrollbar-thumb:hover {
+  background-color: #ffa726;
+}
+
 @media (max-width: 1000px) {
   .dash {
     max-width: 100% !important;
@@ -49,5 +72,14 @@ body {
   }
   .tradingview-widget-container {
     width: 100% !important;
+  }
+  .amount span {
+    font-size: 10px;
+  }
+  .profit span {
+    font-size: 13px;
+    text-align: left !important;
+    flex: 0;
+    margin-right: 5px;
   }
 }
