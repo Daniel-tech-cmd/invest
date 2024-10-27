@@ -1,0 +1,253 @@
+.sec {
+  color: hsl(var(--border) / 0.7);
+  padding: 30px;
+}
+.sec > div > h2 {
+  font-weight: 400;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+.bgCard {
+  background-color: var(--black);
+  padding: 10px;
+  border-radius: 8px;
+}
+.bgCard > div h3 {
+  font-weight: 400;
+}
+.bgCard p {
+  font-size: 15px;
+}
+.bgCard > div {
+  margin: 15px 0;
+}
+.bgCard .fes {
+  margin-top: 0;
+}
+.bgCard .second {
+  text-align: center;
+}
+.second h3 {
+  color: hsl(var(--base));
+  font-size: 20px;
+}
+.btnsec {
+  display: flex;
+  gap: 20px;
+  padding: 10px 30px;
+}
+.btnsec a {
+  text-decoration: none;
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+.parent {
+  display: flex;
+  flex-wrap: wrap;
+  /* padding: ; */
+  gap: 10px;
+}
+.tablecont {
+  background-color: hsl(0 0% 100%/0.03);
+  border-radius: 6px;
+  padding: 15px;
+  /* margin-top: 20px; */
+}
+.transaccont {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.money {
+  padding: 18px;
+  background-color: hsl(0 0% 100%/0.03);
+  /* position: relative; */
+  /* display: flex; */
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-clip: border-box;
+  margin: 0;
+  border-radius: 6px;
+  width: 30%;
+}
+.money button {
+  color: hsl(var(--base));
+  border: 1px solid hsl(var(--base));
+  background-color: transparent;
+  width: 100%;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 29px;
+}
+.money button:hover {
+  color: #fff;
+  background-color: hsl(var(--base));
+}
+.money > div {
+  margin: 0;
+}
+.monlog {
+  display: flex;
+  margin-top: 20px !important;
+  padding: 10px;
+  background-color: var(--bg);
+  justify-content: space-between;
+  align-items: center;
+  color: hsl(217 6% 60%);
+}
+.sideinvest {
+  position: fixed;
+  bottom: 0;
+  z-index: 1045;
+  /* display: flex;
+  flex-direction: column; */
+  max-width: 100%;
+  /* visibility: hidden; */
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 60%;
+  padding: 3rem;
+  background-color: #09171a;
+  background-clip: padding-box;
+  outline: 0;
+  transition: transform 0.3s ease-in-out;
+  border-left: 1px solid rgba(0, 0, 0, 0.2);
+  font-size: 1.125rem;
+}
+.sideinvest * {
+  margin: 0;
+  color: hsl(217 6% 60%);
+}
+.sideinvest h2 {
+  font-weight: 400;
+  font-size: 1.125rem;
+}
+.ih1sec {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem;
+}
+.ih1sec h2 {
+  font-weight: 400;
+  font-size: 1.125rem;
+}
+.ih1sec span {
+  font-size: 1.125rem;
+}
+.sideinvest form {
+  padding: 1rem 1rem;
+}
+.sideinvest form label {
+  padding: 0.5rem 0;
+}
+.sideinvest form input {
+  border-radius: 6px;
+  font-weight: 400;
+  outline: none;
+  width: 100%;
+  padding: 15px;
+  background-color: transparent;
+  border: 1px solid hsl(0 0% 100%/0.14);
+  color: hsl(217 6% 60%);
+  line-height: 1;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.inputseci {
+  display: flex;
+}
+.inputseci span {
+  color: #fff;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid hsl(0 0% 100%/0.14);
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+.ratesec {
+  padding: 2rem 0;
+}
+.ratesec > div {
+  /* border-width: 0 0 1px; */
+  border: 0;
+  border-bottom: 1px solid hsl(0 0% 100%/0.14);
+  border-color: hsl(0 0% 100%/0.14);
+  display: flex;
+  padding: 1rem;
+  justify-content: space-between;
+}
+@media (max-width: 900px) {
+  .transaccont {
+    flex-direction: column;
+  }
+  .money {
+    width: 100%;
+  }
+  .money * {
+    margin: 0;
+  }
+  .tablecont {
+    width: 100% !important;
+  }
+}
+@media (max-width: 770px) {
+  .sec {
+    padding: 30px 15px;
+  }
+  .btnsec {
+    flex-direction: column;
+    padding: 10px;
+  }
+  .bgCard p {
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  .sideinvest {
+    min-width: 400px;
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+  .ratesec p {
+    font-size: 16px;
+  }
+  .sideinvest form button {
+    font-size: 15px !important;
+  }
+  .inputseci span {
+    font-size: 16px;
+  }
+}
+@media (max-width: 500px) {
+  .parent {
+    flex-direction: column;
+    margin-top: 15px;
+  }
+  .parent > div {
+    margin: 0;
+    width: 100%;
+    gap: 15px;
+  }
+}
+@media (max-width: 400px) {
+  .sideinvest {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  .ratesec p {
+    font-size: 13px;
+  }
+  .sideinvest form button {
+    font-size: 13px !important;
+  }
+}
