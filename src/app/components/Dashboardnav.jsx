@@ -115,7 +115,7 @@ const logoutIcon = (
   </svg>
 );
 
-export default function Sidebar() {
+export default function Sidebar({ data }) {
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -135,9 +135,13 @@ export default function Sidebar() {
           />
           <div
             className="text-xl text-orange-400 font-semibold"
-            style={{ fontSize: "19px", fontWeight: 500 }}
+            style={{
+              fontSize: "16px",
+              fontWeight: 500,
+              textTransform: "capitalize",
+            }}
           >
-            Welcome, User!
+            Welcome,{data?.username}!
           </div>
         </div>
 
