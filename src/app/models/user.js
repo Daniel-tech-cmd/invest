@@ -177,6 +177,14 @@ const UserSchema = new Schema(
         },
       },
     ],
+    totalWithdraw: {
+      type: Number,
+      default: 0,
+    },
+    totalDeposit: {
+      type: Number,
+      default: 0,
+    },
     totalbalance: {
       type: Number,
     },

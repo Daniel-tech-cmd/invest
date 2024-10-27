@@ -82,16 +82,16 @@ const Dashboard = ({ data }) => {
           <h2 className="text-lg text-white font-semibold mb-4">Overview</h2>
           <div className="space-y-4">
             <div>
-              <p className="text-gray-400">Active Deposit</p>
-              <p className="text-2xl font-bold text-blue-400">$0.00</p>
-            </div>
-            <div>
               <p className="text-gray-400">Total Deposit</p>
-              <p className="text-2xl font-bold text-green-400">$0.00</p>
+              <p className="text-2xl font-bold text-green-400">
+                ${data?.totalDeposit.toFixed(2)}
+              </p>
             </div>
             <div>
               <p className="text-gray-400">Total Withdraw</p>
-              <p className="text-2xl font-bold text-red-400">$0.00</p>
+              <p className="text-2xl font-bold text-red-400">
+                ${data?.totalWithdraw.toFixed(2)}
+              </p>
             </div>
           </div>
         </div>
