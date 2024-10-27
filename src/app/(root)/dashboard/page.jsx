@@ -2,28 +2,28 @@ import Dashboard from "@/app/components/DashboardComp";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
-// async function getdatabyId(id) {
-//   const res = await fetch(`${process.env.URL}/api/user/${id}`, {
-//     cache: "no-store",
-//   });
-//   if (!res.ok) {
-//     return notFound();
-//   }
+async function getdatabyId(id) {
+  const res = await fetch(`${process.env.URL}/api/user/${id}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    return notFound();
+  }
 
-//   const data = await res.json();
+  const data = await res.json();
 
-//   return data;
-// }
+  return data;
+}
 
 const page = async () => {
-  // const cookiestore = cookies();
-  // const userjson = cookiestore.get("user");
+  const cookiestore = cookies();
+  const userjson = cookiestore.get("user");
 
-  // const user = JSON?.parse(userjson?.value);
+  const user = JSON?.parse(userjson?.value);
 
-  // const data = getdatabyId(user._id);
-  // const [dat] = await Promise.all([data]);
-  // console.log(dat);
+  const data = getdatabyId(user._id);
+  const [dat] = await Promise.all([data]);
+  console.log(dat);
   return (
     <>
       <Dashboard />
