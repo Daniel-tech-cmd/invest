@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { formatDate } from "../utils/formdate";
 
 const EditProfile = ({ data }) => {
   const [formData, setFormData] = useState({
@@ -77,11 +78,11 @@ const EditProfile = ({ data }) => {
         {/* Account Info */}
         <div className="flex justify-between mb-4">
           <p>Account Name:</p>
-          <p>{formData.accountName}</p>
+          <p>{formData.username}</p>
         </div>
         <div className="flex justify-between mb-4">
           <p>Registration date:</p>
-          <p>{formData.registrationDate}</p>
+          <p>{formatDate(data.createdAt)}</p>
         </div>
 
         {/* Edit Form Fields */}
