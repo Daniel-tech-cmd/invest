@@ -78,70 +78,83 @@ const WithdrawalHistory = () => {
           </div>
         </div>
       </div>
-      <h2 className="text-2xl font-bold text-white mb-6 text-center">
-        Withdrawal History
-      </h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-[#232a35] rounded-lg overflow-hidden shadow-lg">
-          <thead className="bg-[#323a47] text-gray-400">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold">#</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Amount
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Wallet
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Method
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Transaction ID
-              </th>
-            </tr>
-          </thead>
-          <tbody className="text-white">
-            {withdrawals.map((withdrawal, index) => (
-              <tr
-                key={withdrawal.index}
-                className="border-b border-gray-600 hover:bg-[#2b3240]"
-              >
-                <td className="px-6 py-4 text-sm">{index + 1}</td>
-                <td className="px-6 py-4 text-sm">
-                  ${withdrawal.amount.toFixed(2)}
-                </td>
-                <td className="px-6 py-4 text-sm">
-                  <span
-                    className={`px-2 py-1 rounded-md font-semibold ${
-                      withdrawal.status === "approved"
-                        ? "bg-green-600 text-green-100"
-                        : withdrawal.status === "pending"
-                        ? "bg-yellow-500 text-yellow-100"
-                        : "bg-red-600 text-red-100"
-                    }`}
+      <div className="min-h-screen bg-[#1c222c] p-4 w-full flex flex-col items-center">
+        <h2 className="text-2xl font-bold text-white mb-6 text-center">
+          Withdrawal History
+        </h2>
+
+        {withdrawals.length === 0 ? (
+          <div className="flex items-center justify-center w-full h-full text-gray-400 text-lg font-semibold">
+            No transactions found.
+          </div>
+        ) : (
+          <div className="overflow-x-auto w-full max-w-5xl">
+            <table className="min-w-full bg-[#232a35] rounded-lg overflow-hidden shadow-lg">
+              <thead className="bg-[#323a47] text-gray-400">
+                <tr>
+                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                    #
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                    Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                    Wallet
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                    Method
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                    Transaction ID
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="text-white">
+                {withdrawals.map((withdrawal, index) => (
+                  <tr
+                    key={withdrawal.index}
+                    className="border-b border-gray-600 hover:bg-[#2b3240]"
                   >
-                    {withdrawal.status.charAt(0).toUpperCase() +
-                      withdrawal.status.slice(1)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm break-all">
-                  {withdrawal.wallet}
-                </td>
-                <td className="px-6 py-4 text-sm">{withdrawal.method}</td>
-                <td className="px-6 py-4 text-sm">
-                  {formatDate(withdrawal.date)}
-                </td>
-                <td className="px-6 py-4 text-sm">{withdrawal.transactid}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    <td className="px-6 py-4 text-sm">{index + 1}</td>
+                    <td className="px-6 py-4 text-sm">
+                      ${withdrawal.amount.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <span
+                        className={`px-2 py-1 rounded-md font-semibold ${
+                          withdrawal.status === "approved"
+                            ? "bg-green-600 text-green-100"
+                            : withdrawal.status === "pending"
+                            ? "bg-yellow-500 text-yellow-100"
+                            : "bg-red-600 text-red-100"
+                        }`}
+                      >
+                        {withdrawal.status.charAt(0).toUpperCase() +
+                          withdrawal.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm break-all">
+                      {withdrawal.wallet}
+                    </td>
+                    <td className="px-6 py-4 text-sm">{withdrawal.method}</td>
+                    <td className="px-6 py-4 text-sm">
+                      {formatDate(withdrawal.date)}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      {withdrawal.transactid}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

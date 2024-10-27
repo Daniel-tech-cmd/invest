@@ -87,79 +87,68 @@ const DepositHistory = () => {
       <h2 className="text-2xl font-bold text-white mb-6 text-center">
         Deposit History
       </h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-[#232a35] rounded-lg overflow-hidden shadow-lg">
-          <thead className="bg-[#323a47] text-gray-400">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold">#</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Amount
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Method
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Transaction ID
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Receipt
-              </th>
-            </tr>
-          </thead>
-          <tbody className="text-white">
-            {deposits.map((deposit, index) => (
-              <tr
-                key={deposit.index}
-                className="border-b border-gray-600 hover:bg-[#2b3240]"
-              >
-                <td className="px-6 py-4 text-sm">{index + 1}</td>
-                <td className="px-6 py-4 text-sm">
-                  ${deposit.amount.toFixed(2)}
-                </td>
-                <td className="px-6 py-4 text-sm">
-                  <span
-                    className={`px-2 py-1 rounded-md font-semibold ${
-                      deposit.status === "approved"
-                        ? "bg-green-600 text-green-100"
-                        : deposit.status === "pending"
-                        ? "bg-yellow-500 text-yellow-100"
-                        : "bg-red-600 text-red-100"
-                    }`}
-                  >
-                    {deposit.status.charAt(0).toUpperCase() +
-                      deposit.status.slice(1)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm">{deposit.method}</td>
-                <td className="px-6 py-4 text-sm">
-                  {formatDate(deposit.date)}
-                </td>
-                <td className="px-6 py-4 text-sm">{deposit.transactid}</td>
-                <td className="px-6 py-4 text-sm">
-                  {deposit.receipt ? (
-                    <a
-                      href={deposit.receipt.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 underline hover:text-blue-300"
-                    >
-                      View
-                    </a>
-                  ) : (
-                    <span className="text-gray-400">N/A</span>
-                  )}
-                </td>
+      {deposits.length === 0 ? (
+        <div className="flex items-center justify-center w-full h-full text-gray-400 text-lg font-semibold">
+          No transactions found.
+        </div>
+      ) : (
+        <div className="overflow-x-auto w-full max-w-5xl">
+          <table className="min-w-full bg-[#232a35] rounded-lg overflow-hidden shadow-lg">
+            <thead className="bg-[#323a47] text-gray-400">
+              <tr>
+                <th className="px-6 py-3 text-left text-sm font-semibold">#</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold">
+                  Amount
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold">
+                  Method
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold">
+                  Transaction ID
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="text-white">
+              {deposits.map((deposit, index) => (
+                <tr
+                  key={deposit.index}
+                  className="border-b border-gray-600 hover:bg-[#2b3240]"
+                >
+                  <td className="px-6 py-4 text-sm">{index + 1}</td>
+                  <td className="px-6 py-4 text-sm">
+                    ${deposit.amount.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 text-sm">
+                    <span
+                      className={`px-2 py-1 rounded-md font-semibold ${
+                        deposit.status === "approved"
+                          ? "bg-green-600 text-green-100"
+                          : deposit.status === "pending"
+                          ? "bg-yellow-500 text-yellow-100"
+                          : "bg-red-600 text-red-100"
+                      }`}
+                    >
+                      {deposit.status.charAt(0).toUpperCase() +
+                        deposit.status.slice(1)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm">{deposit.method}</td>
+                  <td className="px-6 py-4 text-sm">
+                    {formatDate(deposit.date)}
+                  </td>
+                  <td className="px-6 py-4 text-sm">{deposit.transactid}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

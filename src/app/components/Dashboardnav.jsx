@@ -299,28 +299,7 @@ export default function Sidebar() {
             {isProfileOpen && (
               <div className="pl-10 space-y-2" style={{ padding: "5px 15px" }}>
                 <Link
-                  href="/profile/view-profile"
-                  style={{
-                    borderLeft: "2px solid #f68c1f",
-                    background: "#232a35 ",
-                    padding: "6px",
-                    marginTop: "5px",
-                  }}
-                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="24px"
-                    viewBox="0 -960 960 960"
-                    width="17px"
-                    fill={iconColor}
-                  >
-                    <path d="M200-440v-80h560v80H200Z" />
-                  </svg>
-                  <span>View Profile </span>
-                </Link>
-                <Link
-                  href="/profile/edit-profile"
+                  href="/profile/edit"
                   style={{
                     borderLeft: "2px solid #f68c1f",
                     background: "#232a35 ",
