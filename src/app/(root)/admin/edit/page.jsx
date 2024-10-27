@@ -35,7 +35,7 @@ const Edit = () => {
     try {
       const encodedQuery = encodeURIComponent(searchKeyword.trim());
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/user/oneuser/${encodedQuery}`
+        `${process.env.NEXT_PUBLIC_URL}/api/user/${encodedQuery}`
       );
       const data = await response.json();
       setRes(data);
