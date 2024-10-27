@@ -1,7 +1,35 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
-const EditProfile = () => {
+const EditProfile = ({ data }) => {
+  const [formData, setFormData] = useState({
+    fullName: data.fullName || "",
+    username: data.username || "",
+
+    bitcoinAccountId: data.bitcoinAccountId || "",
+    ethereumAccountId: data.ethereumAccountId || "",
+    litecoinAccountId: data.litecoinAccountId || "",
+    usdtAccountId: data.usdtAccountId || "",
+    dogeAccountId: data.dogeAccountId || "",
+    email: data.email || "",
+    accountName: data.accountName || "",
+    registrationDate: data.registrationDate || "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission, e.g., API call to update the profile
+    console.log("Form submitted:", formData);
+  };
+
   return (
     <div
       className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full dash"
@@ -49,21 +77,33 @@ const EditProfile = () => {
         {/* Account Info */}
         <div className="flex justify-between mb-4">
           <p>Account Name:</p>
-          <p>isabella2</p>
+          <p>{formData.accountName}</p>
         </div>
         <div className="flex justify-between mb-4">
           <p>Registration date:</p>
-          <p>Oct-19-2024 01:06:14 PM</p>
+          <p>{formData.registrationDate}</p>
         </div>
 
         {/* Edit Form Fields */}
-        <form className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm mb-2">Your Full Name:</label>
             <input
               type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
               className="w-full p-2 bg-[#1c222c] text-gray-200 border border-gray-700 rounded"
-              defaultValue="melissa2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-2">Your User Name:</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full p-2 bg-[#1c222c] text-gray-200 border border-gray-700 rounded"
             />
           </div>
 
@@ -73,8 +113,10 @@ const EditProfile = () => {
             </label>
             <input
               type="text"
+              name="bitcoinAccountId"
+              value={formData.bitcoinAccountId}
+              onChange={handleChange}
               className="w-full p-2 bg-[#1c222c] text-gray-200 border border-gray-700 rounded"
-              defaultValue="hgchchfgt"
             />
           </div>
 
@@ -84,8 +126,10 @@ const EditProfile = () => {
             </label>
             <input
               type="text"
+              name="ethereumAccountId"
+              value={formData.ethereumAccountId}
+              onChange={handleChange}
               className="w-full p-2 bg-[#1c222c] text-gray-200 border border-gray-700 rounded"
-              placeholder="Enter your Ethereum account ID"
             />
           </div>
 
@@ -95,8 +139,10 @@ const EditProfile = () => {
             </label>
             <input
               type="text"
+              name="litecoinAccountId"
+              value={formData.litecoinAccountId}
+              onChange={handleChange}
               className="w-full p-2 bg-[#1c222c] text-gray-200 border border-gray-700 rounded"
-              placeholder="Enter your Litecoin account ID"
             />
           </div>
 
@@ -104,8 +150,10 @@ const EditProfile = () => {
             <label className="block text-sm mb-2">Your USDT Account ID:</label>
             <input
               type="text"
+              name="usdtAccountId"
+              value={formData.usdtAccountId}
+              onChange={handleChange}
               className="w-full p-2 bg-[#1c222c] text-gray-200 border border-gray-700 rounded"
-              placeholder="Enter your USDT account ID"
             />
           </div>
 
@@ -113,8 +161,10 @@ const EditProfile = () => {
             <label className="block text-sm mb-2">Your DOGE Account ID:</label>
             <input
               type="text"
+              name="dogeAccountId"
+              value={formData.dogeAccountId}
+              onChange={handleChange}
               className="w-full p-2 bg-[#1c222c] text-gray-200 border border-gray-700 rounded"
-              placeholder="Enter your Dogecoin account ID"
             />
           </div>
 
@@ -122,8 +172,10 @@ const EditProfile = () => {
             <label className="block text-sm mb-2">Your E-mail address:</label>
             <input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               className="w-full p-2 bg-[#1c222c] text-gray-200 border border-gray-700 rounded"
-              defaultValue="playdey549@gmail.com"
             />
           </div>
 

@@ -102,7 +102,24 @@ const UserSchema = new Schema(
         },
       },
     ],
-
+    fullName: {
+      type: String,
+    },
+    bitcoinAccountId: {
+      type: String,
+    },
+    ethereumAccountId: {
+      type: String,
+    },
+    dogeAccountId: {
+      type: String,
+    },
+    litecoinAccountId: {
+      type: String,
+    },
+    usdtAccountId: {
+      type: String,
+    },
     balance: {
       type: Number,
       default: 0.0,
