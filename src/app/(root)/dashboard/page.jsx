@@ -23,7 +23,6 @@ const page = async () => {
 
   const data = getdatabyId(user._id);
   const [dat] = await Promise.all([data]);
-  console.log(dat);
   return (
     <>
       <Dashboard />
