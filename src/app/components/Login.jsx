@@ -1,8 +1,10 @@
 "use client"; // Ensures it's used in client-side rendering
 
 import React, { useState } from "react";
+import useSignup from "../hooks/useSignup";
 
 const LoginForm = () => {
+  const { login, error, isLoading } = useSignup();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -19,10 +21,10 @@ const LoginForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle login logic here
-    console.log(formData);
+    await login(formData);
   };
 
   return (
@@ -93,13 +95,13 @@ const LoginForm = () => {
                   Terms of Use
                 </a>
               </p>
-
+              {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
               <div>
                 <button
                   type="submit"
                   className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200"
                 >
-                  Login
+                  {isLoading ? "Submitting..." : "Login"}
                 </button>
               </div>
             </form>

@@ -1,11 +1,13 @@
 "use client"; // Ensures it's used in client-side rendering
 
 import React, { useState } from "react";
+import useSignup from "../hooks/useSignup";
 
 const SignUpForm = () => {
+  const { signup, isLoading, error } = useSignup();
   const [formData, setFormData] = useState({
     email: "",
-    fullName: "",
+    username: "",
     password: "",
     confirmPassword: "",
     referralCode: "",
@@ -27,10 +29,11 @@ const SignUpForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
+
+    // console.log(formData);
+    await signup(formData);
   };
 
   return (
@@ -73,15 +76,15 @@ const SignUpForm = () => {
                 />
               </div>
               <div>
-                <label htmlFor="fullName" className="sr-only">
+                <label htmlFor="username" className="sr-only">
                   Full Name
                 </label>
                 <input
-                  id="fullName"
-                  name="fullName"
+                  id="username"
+                  name="username"
                   type="text"
                   required
-                  value={formData.fullName}
+                  value={formData.username}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter username"
@@ -153,13 +156,13 @@ const SignUpForm = () => {
                   Terms of Use
                 </a>
               </p>
-
+              {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
               <div>
                 <button
                   type="submit"
                   className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200"
                 >
-                  Sign Up
+                  {isLoading ? "Submitting..." : "Sign Up"}
                 </button>
               </div>
             </form>

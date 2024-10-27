@@ -2,6 +2,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Rubik } from "next/font/google";
 import { NavProvider } from "./contexts/navcon";
+import { AuthContextProvider } from "./contexts/AuthContext";
 
 const rubik = Rubik({ subsets: ["latin"], weight: ["400", "500", "700"] });
 
@@ -27,7 +28,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${rubik.className} antialiased`}
       >
-        {children}
+        <AuthContextProvider>{children}</AuthContextProvider>
       </body>
     </html>
   );
