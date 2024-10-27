@@ -168,7 +168,7 @@ export default function Sidebar() {
             {isDepositOpen && (
               <div className=" space-y-2" style={{ padding: "5px 15px" }}>
                 <Link
-                  href="/deposit/deposits"
+                  href="/deposit"
                   style={{
                     borderLeft: "2px solid #f68c1f",
                     background: "#232a35 ",
@@ -238,7 +238,7 @@ export default function Sidebar() {
             {isHistoryOpen && (
               <div className="pl-10 space-y-2" style={{ padding: "5px 15px" }}>
                 <Link
-                  href="/history/view-history"
+                  href="/history/withdraw-history"
                   style={{
                     borderLeft: "2px solid #f68c1f",
                     background: "#232a35 ",
@@ -256,10 +256,10 @@ export default function Sidebar() {
                   >
                     <path d="M200-440v-80h560v80H200Z" />
                   </svg>
-                  <span> View History</span>
+                  <span> Withdrawal History</span>
                 </Link>
                 <Link
-                  href="/history/transaction-history"
+                  href="/history/deposit-history"
                   style={{
                     borderLeft: "2px solid #f68c1f",
                     background: "#232a35 ",
@@ -277,7 +277,7 @@ export default function Sidebar() {
                   >
                     <path d="M200-440v-80h560v80H200Z" />
                   </svg>
-                  <span>Transaction History</span>
+                  <span>Deposit History</span>
                 </Link>
               </div>
             )}

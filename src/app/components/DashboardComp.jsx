@@ -84,13 +84,13 @@ const Dashboard = ({ data }) => {
             <div>
               <p className="text-gray-400">Total Deposit</p>
               <p className="text-2xl font-bold text-green-400">
-                ${data?.totalDeposit.toFixed(2)}
+                ${data?.totalDeposit?.toFixed(2)}
               </p>
             </div>
             <div>
               <p className="text-gray-400">Total Withdraw</p>
               <p className="text-2xl font-bold text-red-400">
-                ${data?.totalWithdraw.toFixed(2)}
+                ${data?.totalWithdraw?.toFixed(2)}
               </p>
             </div>
           </div>
@@ -130,6 +130,10 @@ const Dashboard = ({ data }) => {
               <tr>
                 <td>Earned Total:</td>
                 <td className="text-white">${data?.profit.toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td>Pending Deposit:</td>
+                <td className="text-white">$0.00</td>
               </tr>
               <tr>
                 <td>Pending Withdrawal:</td>
