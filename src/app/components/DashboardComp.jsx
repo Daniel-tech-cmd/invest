@@ -1,8 +1,9 @@
 "use client";
 import React, { useEffect } from "react";
 import Hamburg from "./Hamburger";
+import { formatDate } from "../utils/formdate";
 
-const Dashboard = () => {
+const Dashboard = ({ data }) => {
   useEffect(() => {
     const script = document.createElement("script");
     script.src =
@@ -104,34 +105,31 @@ const Dashboard = () => {
             <tbody>
               <tr>
                 <td>User:</td>
-                <td className="text-white">isabella2</td>
+                <td className="text-white">{data?.username}</td>
               </tr>
               <tr>
                 <td>Referral Link:</td>
                 <td className="text-white">
                   <a
-                    href="http://horizoncapitaltrade.com?ref=isabella2"
+                    href={`https://horizoncapitaltrade.com?ref=${data?.username}`}
                     className="text-blue-400 text-sm md:text-base"
                   >
-                    http://horizoncapitaltrade.com?ref=isabella2
+                    http://horizoncapitaltrade.com?ref={data?.username}
                   </a>
                 </td>
               </tr>
               <tr>
                 <td>Registration Date:</td>
-                <td className="text-white">Oct-19-2024</td>
+                <td className="text-white">{formatDate(data?.createdAt)}</td>
               </tr>
-              <tr>
-                <td>Last Access:</td>
-                <td className="text-white">Oct-24-2024 08:54:32 PM</td>
-              </tr>
+
               <tr>
                 <td>Account Balance:</td>
-                <td className="text-white">$0</td>
+                <td className="text-white">${data?.balance.toFixed(2)}</td>
               </tr>
               <tr>
                 <td>Earned Total:</td>
-                <td className="text-white">$0.00</td>
+                <td className="text-white">${data?.profit.toFixed(2)}</td>
               </tr>
               <tr>
                 <td>Pending Withdrawal:</td>

@@ -25,7 +25,7 @@ const page = async () => {
   const [dat] = await Promise.all([data]);
   return (
     <>
-      <Dashboard />
+      <Dashboard data={dat} />
     </>
   );
 };
