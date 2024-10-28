@@ -28,9 +28,9 @@ export const POST = async (request) => {
     await request.json();
 
   try {
-    if (username.length < 8) {
+    if (username.length < 4) {
       return new Response(
-        JSON.stringify({ error: "Username should be more than 8 letters!" }),
+        JSON.stringify({ error: "Username should be more than 4 letters!" }),
         {
           status: 400,
         }
@@ -136,9 +136,10 @@ export const POST = async (request) => {
               { status: 201 }
             );
           } catch (error) {
+            console.log(error);
             return new Response(
               JSON.stringify({
-                error: "error during verification",
+                error: error.message,
               }),
               { status: 500 }
             );
@@ -152,9 +153,10 @@ export const POST = async (request) => {
           status: 500,
         });
       }
+
       try {
-        if (req.body.refer) {
-          const referal = await User.findOne({ username: req.body.refer });
+        if (referralCode) {
+          const referal = await User.findOne({ username: referralCode });
           referal.referals[referal.referals.length] = {
             name: username,
             id: generateRandomString(),

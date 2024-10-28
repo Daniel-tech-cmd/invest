@@ -1,0 +1,126 @@
+.model {
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1050;
+  background: radial-gradient(black, transparent);
+  /* display: none; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: 200px;
+
+  height: 100%;
+  overflow: hidden;
+  outline: 0;
+  transition: opacity 0.15s linear;
+  padding: 20px;
+}
+.innermodel {
+  transition: transform 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  transform: none;
+  position: relative;
+  flex-direction: column;
+  width: 100%;
+  min-width: 200px;
+
+  width: 100%;
+  /* margin: 0.5rem; */
+  /* pointer-events: none; */
+}
+.innermodel {
+  background: #25164f;
+  border-radius: 0.625rem;
+}
+.innermodel > div {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem;
+  border-bottom: 1px solid #3a2d60;
+  color: #fff;
+}
+.innermodel > div button {
+  background: none;
+  border: none;
+}
+.innermodel > div label {
+  display: flex;
+  padding: 10px 0;
+}
+.innermodel > div input {
+  width: 100%;
+  background: #15073a;
+  padding: 5px;
+  border: 1px solid #3a2d60;
+  outline: none;
+  border-radius: 0.625rem;
+  color: #fff;
+  border-top-right-radius: 0;
+  height: 3rem;
+  border-bottom-right-radius: 0;
+}
+.innermodel > div h5 {
+  margin: 5px 0;
+}
+.innermodel > div span {
+  background: #15073a;
+  padding: 5px 10px;
+  border: 1px solid #3a2d60;
+  border-radius: 0.625rem;
+  border-top-left-radius: 0;
+  display: flex;
+
+  align-items: center;
+  border-bottom-left-radius: 0;
+}
+.btnclose {
+  padding: 0.5rem 0.5rem;
+  margin: -0.5rem -0.5rem -0.5rem auto;
+  border-radius: 0.425rem;
+  font-weight: 500;
+
+  background-color: #eb575726 !important;
+  padding: 0.625rem 1rem;
+  font-weight: 500;
+  font-size: 0.813rem;
+  text-transform: capitalize;
+  font-family: "Jost", Arial, Helvetica, sans-serif;
+  border-color: transparent;
+  color: #eb5757;
+}
+.column {
+  flex-direction: column;
+}
+.inputdepo {
+  gap: 20px;
+}
+.inputdepo input {
+  /* width: 50% !important; */
+  /* border-top-right-radius: 0.625rem !important; */
+  /* border-bottom-right-radius: 0.625rem !important; */
+}
+.inputdepo select {
+  width: 50%;
+  background: #15073a;
+  padding: 5px;
+  border: 1px solid #3a2d60;
+  outline: none;
+  border-radius: 0.625rem;
+  color: #fff;
+  /* border-top-right-radius: 0; */
+  height: 3rem;
+  /* border-bottom-right-radius: 0; */
+}
+@media (min-width: 576px) {
+  .innermodel {
+    max-width: 500px;
+    min-height: 200px;
+    margin: 1.75rem auto;
+  }
+}

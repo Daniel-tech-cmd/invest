@@ -1,0 +1,125 @@
+.cont {
+  background: #fff;
+  padding: 50px;
+  height: fit-content !important;
+}
+.cont h2 {
+  font-size: 1.125rem;
+  text-align: center;
+}
+.cont form {
+  min-width: 410px;
+}
+.cont form > div {
+  margin-bottom: 1rem !important;
+}
+.cont form label {
+  margin-bottom: 0 !important;
+  margin-bottom: 0;
+  color: #6e6e6e;
+  font-weight: bold;
+}
+.cont form > div {
+  display: flex;
+  flex-direction: column;
+}
+.cont form > div input {
+  background: #fff;
+  color: #6e6e6e;
+  line-height: 2.4;
+  font-size: 1rem;
+  font-family: "Jost", Arial, Helvetica, sans-serif;
+  height: 3rem;
+  border-radius: 0.625rem;
+  border-color: #eeee;
+  display: block;
+  outline: #9568ff;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  border: 1px solid #eeee;
+}
+.cont form > div button {
+  height: 50px;
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: #ffffff;
+  border: none;
+  font-family: "jost", Arial, Helvetica, sans-serif;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  font-weight: 700;
+}
+.link {
+  height: 50px;
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: #ffffff;
+  border: none;
+  font-family: "jost", Arial, Helvetica, sans-serif;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  font-weight: 700;
+}
+.good::before {
+  content: "✓";
+  background-color: #eff;
+  box-shadow: 0px 0px 12px 7px rgba(200, 255, 150, 0.8) inset;
+  border: 5px solid green;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  border-radius: 100%;
+  /* inset: 20px 0px 0px 160px; */
+  font-size: 60px;
+  line-height: 100px;
+  animation-name: reveal;
+  animation-duration: 1.5s;
+  animation-timing-function: ease-in-out;
+}
+@keyframes reveal {
+  0% {
+    border: 5px solid transparent;
+    color: transparent;
+    box-shadow: 0px 0px 12px 7px rgba(255, 250, 250, 0.8) inset;
+    transform: rotate(1000deg);
+  }
+
+  25% {
+    border-top: 5px solid gray;
+    color: transparent;
+    box-shadow: 0px 0px 17px 10px rgba(255, 250, 250, 0.8) inset;
+  }
+  50% {
+    border-right: 5px solid gray;
+    border-left: 5px solid gray;
+    color: transparent;
+    box-shadow: 0px 0px 17px 10px rgba(200, 200, 200, 0.8) inset;
+  }
+  75% {
+    border-bottom: 5px solid gray;
+    color: gray;
+    box-shadow: 0px 0px 12px 7px rgba(200, 200, 200, 0.8) inset;
+  }
+  100% {
+    border: 5px solid gray;
+    box-shadow: 0px 0px 12px 7px rgba(200, 200, 200, 0.8) inset;
+  }
+}
+@media (max-width: 758px) {
+  .cont {
+    padding: 20px;
+    width: 100%;
+  }
+  .cont form {
+    min-width: 100%;
+  }
+}

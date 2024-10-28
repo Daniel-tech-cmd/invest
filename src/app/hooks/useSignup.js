@@ -11,6 +11,7 @@ const useSignup = () => {
   const [error, setError] = useState(null);
   const [responseData, setResponseData] = useState(null);
   const [verify, setverify] = useState(null);
+  const [showsuccess, setshowsuccess] = useState(false);
 
   const { dispatch, user } = useAuthContext();
   const router = useRouter();
@@ -19,6 +20,7 @@ const useSignup = () => {
     setError(null);
     setResponseData(null);
     setverify(null);
+    setshowsuccess(false);
 
     try {
       try {
@@ -33,7 +35,7 @@ const useSignup = () => {
         if (response.status === 201) {
           setIsLoading(false);
           setverify(true);
-          router.push("/verify");
+          setshowsuccess(true);
         }
         if (response.status === 200) {
           try {
@@ -127,7 +129,16 @@ const useSignup = () => {
     router.push("/user/login");
   };
 
-  return { isLoading, error, responseData, signup, login, logout, verify };
+  return {
+    isLoading,
+    error,
+    responseData,
+    signup,
+    login,
+    logout,
+    verify,
+    showsuccess,
+  };
 };
 
 export default useSignup;

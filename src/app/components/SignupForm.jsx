@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import useSignup from "../hooks/useSignup";
+import Success from "./Success";
 
 const SignUpForm = () => {
-  const { signup, isLoading, error } = useSignup();
+  const { signup, isLoading, error, showsuccess } = useSignup();
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -142,7 +143,6 @@ const SignUpForm = () => {
                   id="referralCode"
                   name="referralCode"
                   type="text"
-                  required
                   value={formData.referralCode}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -169,6 +169,13 @@ const SignUpForm = () => {
           </div>
         </div>
       </div>
+      {showsuccess && (
+        <Success
+          message={
+            "A verification link has been sent to your email. Verify and Log in"
+          }
+        />
+      )}
     </div>
   );
 };
