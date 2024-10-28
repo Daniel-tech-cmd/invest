@@ -12,6 +12,7 @@ const useSignup = () => {
   const [responseData, setResponseData] = useState(null);
   const [verify, setverify] = useState(null);
   const [showsuccess, setshowsuccess] = useState(false);
+  const [loginsucess, setloginsucess] = useState(false);
 
   const { dispatch, user } = useAuthContext();
   const router = useRouter();
@@ -94,13 +95,13 @@ const useSignup = () => {
         });
         Cookies.set("user", JSON.stringify(response.data));
         setIsLoading(false);
-        toast.success("Login successful!");
+        setloginsucess(true);
         router.push(`/dashboard`);
       }
       if (response.status === 201) {
         setIsLoading(false);
         setverify(true);
-        router.push("/verify");
+        setshowsuccess(true);
       }
     } catch (error) {
       if (error?.message) {
@@ -134,6 +135,7 @@ const useSignup = () => {
     error,
     responseData,
     signup,
+    loginsucess,
     login,
     logout,
     verify,

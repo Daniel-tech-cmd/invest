@@ -9,7 +9,10 @@ export default function Success({ message }) {
   return (
     <>
       <div className={`${styles2.model} `}>
-        <div className={`${styles2.innermodel} ${styles.cont}`}>
+        <div
+          className={`${styles2.innermodel} ${styles.cont}`}
+          style={{ background: "#fff", color: "gray" }}
+        >
           <h5>{message}</h5>
           <div
             style={{

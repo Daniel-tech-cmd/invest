@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import useSignup from "../hooks/useSignup";
+import Success from "./Success";
 
 const LoginForm = () => {
-  const { login, error, isLoading } = useSignup();
+  const { login, error, isLoading, showsuccess, loginsucess } = useSignup();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -117,6 +118,18 @@ const LoginForm = () => {
           </div>
         </div>
       </div>
+      {loginsucess && (
+        <Success
+          message={"Login Sucessful. You will be redirected to your dashboard"}
+        />
+      )}
+      {showsuccess && (
+        <Success
+          message={
+            "A verification link has been sent to your email. Kindly verify!"
+          }
+        />
+      )}
     </div>
   );
 };
