@@ -3,41 +3,59 @@ import { useState } from "react";
 
 const DepositList = ({ data }) => {
   const [total, setTotal] = useState(0.0);
+
+  const checkPlan = (plansArray, planName) => {
+    // Find the plan with the specified name in the array
+    const plan = plansArray.find((item) => item.planName === planName);
+
+    // Check if plan exists in the array
+    if (plan) {
+      return {
+        found: true,
+        amount: plan.amount,
+      };
+    } else {
+      return {
+        found: false,
+        amount: null,
+      };
+    }
+  };
   const [plans] = useState([
     {
       planName: "Basic Plan",
       planDescription: "Plan 1",
       amountRange: "$100.00 - $499.00",
       dailyProfit: "4.60%",
-      hasDeposit: false,
+      hasDeposit: checkPlan(data?.plans, "Basic Plan").found,
     },
     {
       planName: "Standard Plan",
       planDescription: "Plan 2",
       amountRange: "$500.00 - $4999.00",
       dailyProfit: "6.80",
-      hasDeposit: false,
+      hasDeposit: checkPlan(data?.plans, "Standard Plan").found,
     },
     {
       planName: "Advanced Plan",
       planDescription: "Plan 3",
       amountRange: "$5000.00 - $9999.00",
       dailyProfit: "7.70",
-      hasDeposit: false,
+      hasDeposit: checkPlan(data?.plans, "Advanced Plan").found,
     },
     {
       planName: "Silver Plan",
       planDescription: "Plan 4",
       amountRange: "$10000.00 - $19999.00",
       dailyProfit: "8.40",
-      hasDeposit: false,
+      hasDeposit: checkPlan(data?.plans, "Silver Plan").found,
     },
     {
       planName: "Gold Plan",
       planDescription: "Plan 5",
       amountRange: "$20000.00 - ∞",
       dailyProfit: "9.20",
-      hasDeposit: false,
+      hasDeposit: checkPlan(data?.plans, "Gold Plan").found,
     },
   ]);
 
@@ -165,7 +183,7 @@ const DepositList = ({ data }) => {
           >
             {plan.planDescription}
           </div>
-          {!plan.hasDeposit && (
+          {!plan.hasDeposit ? (
             <div
               style={{
                 textAlign: "center",
@@ -181,6 +199,24 @@ const DepositList = ({ data }) => {
               }}
             >
               NO DEPOSITS FOR THIS PLAN
+            </div>
+          ) : (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "10px",
+                backgroundColor: "transparent",
+                border: "1px solid green",
+                color: "green",
+                width: "fit-content",
+                borderRadius: "4px",
+                textTransform: "capitalize !important",
+                fontSize: "14px",
+                fontWeight: "500",
+              }}
+            >
+              You have deposited $
+              {checkPlan(data?.plans, plan?.planName).amount} for this plan.
             </div>
           )}
         </div>
