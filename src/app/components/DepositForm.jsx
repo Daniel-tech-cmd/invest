@@ -1,13 +1,17 @@
 "use client";
 import React, { useState } from "react";
 import { FaCopy } from "react-icons/fa";
+import { ToastContainer } from "react-toastify";
+import useFetch from "../hooks/useFetch";
 
 const DepositForm = () => {
   const [selectedPlan, setSelectedPlan] = useState("");
   const [selectedCrypto, setSelectedCrypto] = useState("");
   const [amount, setAmount] = useState("");
+  const [receipt, setReceipt] = useState(null);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const { invest, error: error2, isLoading } = useFetch();
 
   const [plans] = useState([
     {
@@ -79,6 +83,20 @@ const DepositForm = () => {
     setError("");
   };
 
+  const handleReceiptUpload = (e) => {
+    const file = e.target.files[0];
+    if (
+      file &&
+      (file.type === "application/pdf" || file.type.startsWith("image/"))
+    ) {
+      setReceipt(file);
+      setError("");
+    } else {
+      setReceipt(null);
+      setError("Only PDF or image files are allowed.");
+    }
+  };
+
   const handleCopyToClipboard = () => {
     const address = cryptoWallets[selectedCrypto];
     navigator.clipboard.writeText(address);
@@ -86,7 +104,7 @@ const DepositForm = () => {
     setTimeout(() => setCopied(false), 2000); // Reset copy state after 2 seconds
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedPlan) {
       setError("Please select a plan.");
@@ -98,6 +116,10 @@ const DepositForm = () => {
     }
     if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
       setError("Please enter a valid amount.");
+      return;
+    }
+    if (!receipt) {
+      setError("Please upload a receipt of payment.");
       return;
     }
 
@@ -119,17 +141,15 @@ const DepositForm = () => {
       );
       return;
     }
-
-    console.log("Deposit submitted:", {
+    const data = {
       plan: selectedPlan,
       crypto: selectedCrypto,
       amount: parseFloat(amount),
       wallet: cryptoWallets[selectedCrypto],
-    });
+      receipt,
+    };
 
-    setSelectedPlan("");
-    setSelectedCrypto("");
-    setAmount("");
+    await invest(data);
   };
 
   return (
@@ -203,6 +223,19 @@ const DepositForm = () => {
             />
           </div>
 
+          {/* Upload Receipt */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">
+              Upload Receipt of Payment
+            </label>
+            <input
+              type="file"
+              onChange={handleReceiptUpload}
+              accept="application/pdf,image/*"
+              className="w-full p-3 bg-[#323a47] text-white rounded-lg border border-gray-600 focus:outline-none focus:border-[#f57c00] text-sm"
+            />
+          </div>
+
           {/* Display Selected Crypto Wallet Address */}
           {selectedCrypto && (
             <div className="p-4 bg-[#f57c00] text-center rounded-lg flex items-center justify-between">
@@ -228,16 +261,17 @@ const DepositForm = () => {
           {error && (
             <div className="text-red-400 text-sm text-center">{error}</div>
           )}
-
+          {error2 && <p className="text-red-500 text-sm mb-4">{error2}</p>}
           {/* Submit Button */}
           <button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold text-sm"
           >
-            Submit Deposit
+            {isLoading ? "Submitting..." : "Submit Deposit"}
           </button>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };

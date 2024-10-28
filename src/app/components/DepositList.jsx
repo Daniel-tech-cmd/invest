@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-const DepositList = () => {
+const DepositList = ({ data }) => {
   const [total, setTotal] = useState(0.0);
   const [plans] = useState([
     {
@@ -69,13 +69,13 @@ const DepositList = () => {
           <div className="text-center md:text-right">
             <p className="text-gray-400 text-sm md:text-base">Total Balance</p>
             <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              $0
+              ${data?.balance.toFixed(2)}
             </h2>
           </div>
           <div className="text-center md:text-right">
             <p className="text-gray-400 text-sm md:text-base">Total Withdraw</p>
             <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              $0.00
+              ${data?.totalWithdraw.toFixed(2)}
             </h2>
           </div>
         </div>
@@ -101,7 +101,7 @@ const DepositList = () => {
         }}
       >
         <p style={{ color: "#4caf50", fontWeight: "bold" }}>
-          TOTAL: ${total.toFixed(2)}
+          TOTAL: ${data?.totalDeposit.toFixed(2)}
         </p>
       </div>
 

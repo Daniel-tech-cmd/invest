@@ -30,16 +30,12 @@ const AdminComp = ({ data, data2 }) => {
         : "declinedwith";
 
     try {
-      const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_URL}/api/transact/${action}/${user._id}`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.patch(`/api/deposit//${user._id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
 
       if (response.status === 200) {
         setResponseData(response.data);

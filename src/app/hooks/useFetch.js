@@ -85,16 +85,12 @@ const useFetch = () => {
     setError(null);
     setIsLoading(true);
     try {
-      const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_URL}/api/transact/invest/${user?._id}`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.post(`/api/deposit/${user?._id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
 
       if (response.status !== 200) {
         setIsLoading(false);
@@ -108,7 +104,7 @@ const useFetch = () => {
       if (response.status === 200) {
         setResponseData(response.data);
         setIsLoading(false);
-        toast.success("Investment Request,succesful!");
+        toast.success("Deposit Request,succesful!");
       }
 
       // Handle successful response here, e.g., show a success message

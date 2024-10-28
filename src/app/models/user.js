@@ -29,6 +29,9 @@ const UserSchema = new Schema(
       default: "user",
       enum: ["user", "admin", "master admin"],
     },
+    plan: {
+      type: String,
+    },
 
     transaction: [
       {
@@ -100,8 +103,35 @@ const UserSchema = new Schema(
           url: String,
           public_id: String,
         },
+        plan: {
+          type: String,
+        },
       },
     ],
+    plans: [
+      {
+        planName: {
+          type: String,
+          required: true,
+        },
+        amount: {
+          type: Number,
+          required: true,
+        },
+        hasDeposit: {
+          type: Boolean,
+          default: false,
+        },
+      },
+    ],
+    totalWithdraw: {
+      type: Number,
+      default: 0,
+    },
+    totalDeposit: {
+      type: Number,
+      default: 0,
+    },
     fullName: {
       type: String,
     },
