@@ -1,6 +1,6 @@
-import User from "../../../models/user";
+import User from "../../../../models/user";
 import { connectToDB } from "@/app/utils/database";
-import { cloudinary } from "../../../utils/cloudinary";
+import { cloudinary } from "../../../../utils/cloudinary";
 import sendEmail from "@/app/utils/sendEmail";
 
 const generateRandomString = () => {
