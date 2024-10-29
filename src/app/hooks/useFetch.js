@@ -263,16 +263,59 @@ const useFetch = () => {
     setError(null);
     setIsLoading(true);
     try {
-      const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_URL}/api/user/updateuser/${postId}`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
-          },
+      const response = await axios.patch(`/api/user/${postId}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+
+      if (response.status !== 200) {
+        setIsLoading(false);
+        setError(response.data.error);
+      }
+
+      if (response.status === 200) {
+        setResponseData(response.data);
+        setIsLoading(false);
+        toast.success("Updated");
+      }
+
+      // Handle successful response here, e.g., show a success message
+    } catch (error) {
+      if (error?.message) {
+        if (error.message.includes("ENOTFOUND")) {
+          setError("Network error");
+          toast.error("Network error");
+        } else {
+          setError(error.message);
+          toast.error(error.message);
+          setIsLoading(false);
         }
-      );
+      }
+      if (error?.response?.data.error) {
+        if (error.response?.data.error.includes("ENOTFOUND")) {
+          setError("Network error");
+          toast.error("Network error");
+        } else {
+          setError(error.response.data.error);
+          setIsLoading(false);
+          toast.error(error.response.data.error);
+        }
+      }
+    }
+  }
+
+  async function updateUser(data) {
+    setError(null);
+    setIsLoading(true);
+    try {
+      const response = await axios.patch(`/api/user/${user?._id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
 
       if (response.status !== 200) {
         setIsLoading(false);
@@ -466,6 +509,7 @@ const useFetch = () => {
     withdraw,
     fetchDataAll,
     deleteData,
+    updateUser,
     change,
     forgot,
     isLoading,

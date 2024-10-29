@@ -108,6 +108,10 @@ const UserSchema = new Schema(
         },
       },
     ],
+    suspended: {
+      type: Boolean,
+      default: false,
+    },
     plans: [
       {
         planName: {

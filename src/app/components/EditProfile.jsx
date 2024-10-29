@@ -1,8 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { formatDate } from "../utils/formdate";
+import useFetch from "../hooks/useFetch";
+import { ToastContainer } from "react-toastify";
 
 const EditProfile = ({ data }) => {
+  const { isLoading, error, updateUser } = useFetch();
   const [formData, setFormData] = useState({
     fullName: data.fullName || "",
     username: data.username || "",
@@ -25,10 +28,10 @@ const EditProfile = ({ data }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission, e.g., API call to update the profile
-    console.log("Form submitted:", formData);
+    await updateUser(formData);
   };
 
   return (
@@ -57,7 +60,7 @@ const EditProfile = ({ data }) => {
           <div className="text-center md:text-right">
             <p className="text-gray-400 text-sm md:text-base">Total Balance</p>
             <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              $0
+              ${data?.balance.toFixed(2)}
             </h2>
           </div>
           <div className="text-center md:text-right">
@@ -187,11 +190,12 @@ const EditProfile = ({ data }) => {
               className="bg-[#f57c00] text-white py-2 px-4 rounded-lg hover:bg-[#e06800] transition"
               style={{ fontSize: "14px" }}
             >
-              Change Account data
+              {isLoading ? "Updating..." : "Change Account data"}
             </button>
           </div>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };

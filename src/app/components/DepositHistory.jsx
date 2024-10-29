@@ -33,7 +33,7 @@ const DepositHistory = ({ data }) => {
           <div className="text-center md:text-right">
             <p className="text-gray-400 text-sm md:text-base">Total Balance</p>
             <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              $0
+              ${data?.balance}
             </h2>
           </div>
           <div className="text-center md:text-right">

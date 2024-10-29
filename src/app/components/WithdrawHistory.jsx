@@ -1,45 +1,11 @@
 import React from "react";
+import { formatDate } from "../utils/formdate";
 
-const WithdrawalHistory = () => {
+const WithdrawalHistory = ({ data }) => {
   // Dummy data for withdrawals
-  const withdrawals = [
-    {
-      amount: 500,
-      status: "approved",
-      wallet: "0xABCD1234EFGH5678",
-      method: "BTC",
-      date: new Date("2023-10-21T10:30:00.835+00:00"),
-      index: 1,
-      transactid: "WX123456",
-    },
-    {
-      amount: 700,
-      status: "pending",
-      wallet: "0xWXYZ9876JKLM5432",
-      method: "ETH",
-      date: new Date("2023-10-22T14:45:00.835+00:00"),
-      index: 2,
-      transactid: "WX654321",
-    },
-    {
-      amount: 1200,
-      status: "declined",
-      wallet: "0xLMNO1234PQRS5678",
-      method: "USDT",
-      date: new Date("2023-10-23T09:20:00.835+00:00"),
-      index: 3,
-      transactid: "WX789456",
-    },
-  ];
+  const withdrawals = [...data?.withdraw];
 
   // Format date
-  const formatDate = (date) => {
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }).format(date);
-  };
 
   return (
     <div
@@ -67,7 +33,7 @@ const WithdrawalHistory = () => {
           <div className="text-center md:text-right">
             <p className="text-gray-400 text-sm md:text-base">Total Balance</p>
             <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              $0
+              ${data?.balance.toFixed(2)}
             </h2>
           </div>
           <div className="text-center md:text-right">

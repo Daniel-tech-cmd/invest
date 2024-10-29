@@ -6,9 +6,10 @@ import Image from "next/image";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 
-const Edit = () => {
+const Edit = ({ data }) => {
   const router = useSearchParams();
   const query = router.get("query");
+  // const {updatePost,isLoading,error} = useFetch()
 
   const [res, setRes] = useState("");
   const [username, setUsername] = useState(res.username || "");
@@ -24,6 +25,7 @@ const Edit = () => {
   const [minimumWithdrawal, setMinWith] = useState(res.minimumWithdrawal || "");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [suspended, setsuspended] = useState(res.suspended || "");
 
   useEffect(() => {
     if (query) {
@@ -34,9 +36,7 @@ const Edit = () => {
   const handleFetch = async (searchKeyword) => {
     try {
       const encodedQuery = encodeURIComponent(searchKeyword.trim());
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/user/${encodedQuery}`
-      );
+      const response = await fetch(`/api/user/${encodedQuery}`);
       const data = await response.json();
       setRes(data);
       setUsername(data.username);
@@ -50,6 +50,7 @@ const Edit = () => {
       setProfit(data.profit);
       setVerified(data.verified);
       setMinWith(data.minimumWithdrawal);
+      setsuspended(data.suspended);
     } catch (err) {
       console.error(err);
     }
@@ -61,34 +62,28 @@ const Edit = () => {
     e.preventDefault();
     setError(null);
 
-    if (
-      !username ||
-      !number ||
-      !country ||
-      !balance ||
-      !profit ||
-      !role ||
-      !email
-    ) {
+    if (!username || !balance || !role || !email) {
       setError("All fields must be filled!");
       toast.error("All fields must be filled!");
       return;
     }
 
     const data = {
-      username: username.trim(),
+      username: username?.trim(),
       number,
-      country: country.trim(),
+      country: country?.trim(),
       balance,
       profit,
-      role: role.trim(),
-      email: email.trim(),
+      role: role?.trim(),
+      email: email?.trim(),
       minimumWithdrawal,
-      verified: verified.trim(),
+      verified,
+      suspended,
     };
 
     try {
       setIsLoading(true);
+      console.log(res._id);
       await updatePost(res._id, data);
       toast.success("User updated successfully!");
     } catch (err) {
@@ -118,7 +113,7 @@ const Edit = () => {
         <div className="flex gap-6 md:gap-4 text-white">
           <div className="text-center">
             <p className="text-gray-400 text-sm">Total Balance</p>
-            <h2 className="text-xl font-semibold">$0</h2>
+            <h2 className="text-xl font-semibold">${data?.balance}</h2>
           </div>
           <div className="text-center">
             <p className="text-gray-400 text-sm">Total Withdraw</p>
@@ -151,6 +146,7 @@ const Edit = () => {
               type="text"
               className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Username"
+              required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -160,6 +156,7 @@ const Edit = () => {
             <label className="block text-gray-300 font-semibold">Email</label>
             <input
               type="email"
+              required
               className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Email"
               value={email}
@@ -171,6 +168,7 @@ const Edit = () => {
             <label className="block text-gray-300 font-semibold">Role</label>
             <input
               type="text"
+              required
               className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Role"
               value={role}
@@ -193,10 +191,37 @@ const Edit = () => {
             <label className="block text-gray-300 font-semibold">Balance</label>
             <input
               type="number"
+              required
               className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Balance"
               value={balance}
               onChange={(e) => setBalance(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-300 font-semibold">
+              verified
+            </label>
+            <input
+              type="text"
+              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="verified"
+              value={verified}
+              onChange={(e) => setVerified(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-300 font-semibold">
+              Suspended
+            </label>
+            <input
+              type="text"
+              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Suspended"
+              value={suspended}
+              onChange={(e) => setsuspended(e.target.value)}
             />
           </div>
 
