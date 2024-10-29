@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
 const slides = [
@@ -58,9 +59,12 @@ const Banner = () => {
               {slide.title}
             </h2>
             <p className="max-w-xl mb-6">{slide.subtitle}</p>
-            <button className="bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-3 rounded-md shadow-md">
+            <Link
+              href={"/signup"}
+              className="bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-3 rounded-md shadow-md"
+            >
               Get started
-            </button>
+            </Link>
           </div>
         </div>
       ))}
