@@ -2,7 +2,7 @@
 import Link from "next/link";
 import React from "react";
 
-const Withdrawal = () => {
+const Withdrawal = ({ data }) => {
   return (
     <div
       className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full dash"
@@ -29,13 +29,13 @@ const Withdrawal = () => {
           <div className="text-center md:text-right">
             <p className="text-gray-400 text-sm md:text-base">Total Balance</p>
             <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              $0
+              ${data?.balance.toFixed(2)}
             </h2>
           </div>
           <div className="text-center md:text-right">
             <p className="text-gray-400 text-sm md:text-base">Total Withdraw</p>
             <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              $0.00
+              ${data?.totalWithdraw.toFixed(2)}
             </h2>
           </div>
         </div>
@@ -49,7 +49,7 @@ const Withdrawal = () => {
       <div className="bg-[#232a35] text-gray-200 p-6 rounded-lg">
         <div className="flex justify-between mb-4">
           <p>Account Balance:</p>
-          <p>$0.00</p>
+          <p> ${data?.balance.toFixed(2)}</p>
         </div>
         <div className="flex justify-between mb-6">
           <p>Pending Withdrawals:</p>
@@ -80,7 +80,7 @@ const Withdrawal = () => {
                   <td className="py-4 px-2 text-green-400">$0.00</td>
                   <td className="py-4 px-2 text-red-400">$0.00</td>
                   <td className="py-4 px-2 text-blue-400 cursor-pointer">
-                    <Link href={"/profile"}>not set</Link>
+                    <Link href={"/profile/edit"}>not set</Link>
                   </td>
                 </tr>
               ))}
@@ -88,18 +88,20 @@ const Withdrawal = () => {
           </table>
         </div>
         <div className="text-center mt-6">
-          <p
-            className="bg-red-500 text-white py-2 px-4  inline-block"
-            style={{
-              background: "transparent",
-              color: "rgb(255, 77, 77)",
-              borderRadius: "5px",
-              fontSize: "14px !important",
-              border: "1px solid rgb(255, 77, 77)",
-            }}
-          >
-            YOU HAVE NO FUNDS TO WITHDRAW.
-          </p>
+          {data?.balance == 0 && (
+            <p
+              className="bg-red-500 text-white py-2 px-4  inline-block"
+              style={{
+                background: "transparent",
+                color: "rgb(255, 77, 77)",
+                borderRadius: "5px",
+                fontSize: "14px !important",
+                border: "1px solid rgb(255, 77, 77)",
+              }}
+            >
+              YOU HAVE NO FUNDS TO WITHDRAW.
+            </p>
+          )}
         </div>
       </div>
     </div>

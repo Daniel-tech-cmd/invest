@@ -1,51 +1,11 @@
 import React from "react";
+import { formatDate } from "../utils/formdate";
 
-const DepositHistory = () => {
+const DepositHistory = ({ data }) => {
   // Dummy data for deposits
-  const deposits = [
-    {
-      amount: 300,
-      status: "approved",
-      method: "BTC",
-      date: new Date("2023-10-19T10:33:22.835+00:00"),
-      index: 1,
-      transactid: "TX123456",
-      receipt: {
-        url: "https://example.com/receipt1.jpg",
-        public_id: "receipt1",
-      },
-    },
-    {
-      amount: 450,
-      status: "pending",
-      method: "ETH",
-      date: new Date("2023-10-20T12:45:00.835+00:00"),
-      index: 2,
-      transactid: "TX654321",
-      receipt: null,
-    },
-    {
-      amount: 1000,
-      status: "declined",
-      method: "USDT",
-      date: new Date("2023-10-21T09:15:00.835+00:00"),
-      index: 3,
-      transactid: "TX789456",
-      receipt: {
-        url: "https://example.com/receipt3.jpg",
-        public_id: "receipt3",
-      },
-    },
-  ];
+  const deposits = [...data?.deposit];
 
   // Format date
-  const formatDate = (date) => {
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }).format(date);
-  };
 
   return (
     <div
@@ -142,7 +102,7 @@ const DepositHistory = () => {
                   <td className="px-6 py-4 text-sm">
                     {formatDate(deposit.date)}
                   </td>
-                  <td className="px-6 py-4 text-sm">{deposit.transactid}</td>
+                  <td className="px-6 py-4 text-sm">{`#${deposit?._id[3]}${deposit?._id[5]}${deposit?._id[6]}${deposit?._id[10]}${deposit?._id[9]}`}</td>
                 </tr>
               ))}
             </tbody>
