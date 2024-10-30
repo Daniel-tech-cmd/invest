@@ -548,6 +548,52 @@ const useFetch = () => {
       }
     }
   }
+  async function updateWallet(id, data) {
+    setError(null);
+    setIsLoading(true);
+    try {
+      const response = await axios.patch(`/api/wallet/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
+
+      if (response.status !== 200) {
+        setIsLoading(false);
+        setError(response.data.error);
+      }
+
+      if (response.status === 200) {
+        setResponseData(response.data);
+        setIsLoading(false);
+        toast.success("Updated");
+      }
+
+      // Handle successful response here, e.g., show a success message
+    } catch (error) {
+      if (error?.message) {
+        if (error.message.includes("ENOTFOUND")) {
+          setError("Network error");
+          toast.error("Network error");
+        } else {
+          setError(error.message);
+          toast.error(error.message);
+          setIsLoading(false);
+        }
+      }
+      if (error?.response?.data.error) {
+        if (error.response?.data.error.includes("ENOTFOUND")) {
+          setError("Network error");
+          toast.error("Network error");
+        } else {
+          setError(error.response.data.error);
+          setIsLoading(false);
+          toast.error(error.response.data.error);
+        }
+      }
+    }
+  }
 
   return {
     responseData,
@@ -560,6 +606,7 @@ const useFetch = () => {
     forgot,
     isLoading,
     updatePost,
+    updateWallet,
     reinvest,
     addwalet,
     depositfun,
