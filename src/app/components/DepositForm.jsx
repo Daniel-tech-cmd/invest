@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import { FaCopy } from "react-icons/fa";
 import { ToastContainer } from "react-toastify";
 import useFetch from "../hooks/useFetch";
 
-const DepositForm = () => {
+const DepositForm = ({ wallet }) => {
   const [selectedPlan, setSelectedPlan] = useState("");
   const [selectedCrypto, setSelectedCrypto] = useState("");
   const [amount, setAmount] = useState("");
@@ -51,22 +52,6 @@ const DepositForm = () => {
     },
   ]);
 
-  const cryptoWallets = {
-    USDT: "0xUSDTwalletAddress1234",
-    BTC: "1BTCwalletAddressabcd1234",
-    ETH: "0xETHwalletAddress5678",
-    LTC: "LTCwalletAddressxyz5678",
-    DOGE: "DOGEwalletAddressdoge9876",
-  };
-
-  const getAmountRange = (plan) => {
-    const [min, max] = plan.amountRange.replace(/[^\d.-]/g, "").split("-");
-    return {
-      min: parseFloat(min),
-      max: max ? parseFloat(max) : Infinity,
-    };
-  };
-
   const handlePlanChange = (e) => {
     setSelectedPlan(e.target.value);
     setError("");
@@ -98,7 +83,7 @@ const DepositForm = () => {
   };
 
   const handleCopyToClipboard = () => {
-    const address = cryptoWallets[selectedCrypto];
+    const address = wallet.find((w) => w.name === selectedCrypto)?.address;
     navigator.clipboard.writeText(address);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000); // Reset copy state after 2 seconds
@@ -123,29 +108,11 @@ const DepositForm = () => {
       return;
     }
 
-    const selectedPlanData = plans.find(
-      (plan) => plan.planName === selectedPlan
-    );
-    const { min, max } = getAmountRange(selectedPlanData);
-
-    if (parseFloat(amount) < min) {
-      setError(
-        `The minimum deposit for the ${selectedPlan} is $${min.toFixed(2)}.`
-      );
-      return;
-    }
-
-    if (parseFloat(amount) > max) {
-      setError(
-        `The maximum deposit for the ${selectedPlan} is $${max.toFixed(2)}.`
-      );
-      return;
-    }
     const data = {
       plan: selectedPlan,
       crypto: selectedCrypto,
       amount: parseFloat(amount),
-      wallet: cryptoWallets[selectedCrypto],
+      wallet: wallet.find((w) => w.name === selectedCrypto)?.address,
       receipt,
     };
 
@@ -172,11 +139,7 @@ const DepositForm = () => {
                 -- Choose a Plan --
               </option>
               {plans.map((plan, index) => (
-                <option
-                  key={index}
-                  value={plan.planName}
-                  className="bg-[#323a47] text-white border-b border-gray-600 hover:bg-[#2b3240] text-sm p-2"
-                >
+                <option key={index} value={plan.planName}>
                   {plan.planName} ({plan.amountRange}, Daily Profit:{" "}
                   {plan.dailyProfit})
                 </option>
@@ -197,17 +160,27 @@ const DepositForm = () => {
               <option value="" disabled>
                 -- Choose Cryptocurrency --
               </option>
-              {Object.keys(cryptoWallets).map((crypto, index) => (
-                <option
-                  key={index}
-                  value={crypto}
-                  className="bg-[#323a47] text-white border-b border-gray-600 hover:bg-[#2b3240] text-sm p-2"
-                >
-                  {crypto}
+              {wallet.map((crypto, index) => (
+                <option key={index} value={crypto.name}>
+                  {crypto.name.toUpperCase()}
                 </option>
               ))}
             </select>
           </div>
+
+          {/* Display Selected Crypto Wallet ICO */}
+          {selectedCrypto && (
+            <div className="flex items-center space-x-4 mt-4">
+              <Image
+                src={wallet.find((w) => w.name === selectedCrypto)?.ico?.url}
+                alt={`${selectedCrypto} icon`}
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+              <p className="text-sm">{selectedCrypto.toUpperCase()}</p>
+            </div>
+          )}
 
           {/* Amount Input */}
           <div>
@@ -240,7 +213,7 @@ const DepositForm = () => {
           {selectedCrypto && (
             <div className="p-4 bg-[#f57c00] text-center rounded-lg flex items-center justify-between">
               <p className="font-semibold break-all text-sm">
-                {cryptoWallets[selectedCrypto]}
+                {wallet.find((w) => w.name === selectedCrypto)?.address}
               </p>
               <button
                 type="button"

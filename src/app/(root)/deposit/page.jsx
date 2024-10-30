@@ -1,9 +1,27 @@
 import DepositForm from "@/app/components/DepositForm";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 
-const page = () => {
+async function getdatabyId(id) {
+  const res = await fetch(`${process.env.URL}/api/wallet/`, {
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    return notFound();
+  }
+
+  const data = await res.json();
+
+  return data;
+}
+
+const page = async () => {
+  const data = getdatabyId();
+  const [dat] = await Promise.all([data]);
+
   return (
     <>
-      <DepositForm />
+      <DepositForm wallet={dat} />
     </>
   );
 };
