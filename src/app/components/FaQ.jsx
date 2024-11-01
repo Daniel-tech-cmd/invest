@@ -14,14 +14,14 @@ const faqData = [
       "Popular investment options include stocks, bonds, mutual funds, ETFs, and real estate. Your choice should depend on your financial goals and risk tolerance.",
   },
   {
-    question: "How much do I need to invest with Payyed Investors?",
+    question: "How much do I need to invest with Goldgroveco Investors?",
     answer:
       "The minimum investment required depends on the type of investment product you choose. Contact us for more details on the best investment for your portfolio.",
   },
   {
-    question: "How to invest with Payyed Investors?",
+    question: "How to invest with Goldgroveco Investors?",
     answer:
-      "To invest with Payyed Investors, you can sign up on our platform, select your preferred investment options, and start growing your portfolio.",
+      "To invest with Goldgroveco Investors, you can sign up on our platform, select your preferred investment options, and start growing your portfolio.",
   },
 ];
 

@@ -8,7 +8,7 @@ const WhyChooseUs = () => {
     <div className="bg-white py-10 px-5">
       <div className="text-center mb-10">
         <h2 className="text-3xl text-black font-bold">
-          Why should you choose Payyed Investors?
+          Why should you choose Goldgroveco Investors?
         </h2>
       </div>
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

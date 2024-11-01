@@ -4,25 +4,25 @@ const products = [
   {
     title: "Stocks",
     description:
-      "“It's a great idea to manage your money with Payyed Investors. Our stock investment options are fair, and you can conduct transactions seamlessly!”",
+      "“It's a great idea to manage your money with Goldgroveco Investors. Our stock investment options are fair, and you can conduct transactions seamlessly!”",
     imageUrl: "/stock.jpg", // Add your image URL
   },
   {
     title: "Options",
     description:
-      "“Be bullish on the stocks you believe in and bearish on those you don't. With Payyed, the choice is yours!”",
+      "“Be bullish on the stocks you believe in and bearish on those you don't. With Goldgroveco, the choice is yours!”",
     imageUrl: "/option.jpg", // Add your image URL
   },
   {
     title: "Livestock Farming",
     description:
-      "“Investing in livestock is a rewarding opportunity. Payyed provides the best options for stable, long-term gains in farming ventures.”",
+      "“Investing in livestock is a rewarding opportunity. Goldgroveco provides the best options for stable, long-term gains in farming ventures.”",
     imageUrl: "/livestock.jpg", // Add your image URL
   },
   {
     title: "Crop Investments",
     description:
-      "“Grow your portfolio with Payyed by investing in high-demand crops. Our expert analysis ensures your farming investments flourish.”",
+      "“Grow your portfolio with Goldgroveco by investing in high-demand crops. Our expert analysis ensures your farming investments flourish.”",
     imageUrl: "/crop.jpg", // Add your image URL
   },
 ];
@@ -35,7 +35,7 @@ const Products = () => {
           Our Products
         </h2>
         <p className="text-center text-gray-400 mb-12">
-          Explore diverse investment options with Payyed
+          Explore diverse investment options with Goldgroveco
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

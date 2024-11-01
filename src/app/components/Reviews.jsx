@@ -5,37 +5,37 @@ import { useState, useEffect } from "react";
 const testimonials = [
   {
     quote:
-      "Payyed Investors has been a game-changer for our investment strategy. Their expertise and personalized service have significantly improved our portfolio's performance.",
+      "Goldgroveco Investors has been a game-changer for our investment strategy. Their expertise and personalized service have significantly improved our portfolio's performance.",
     author: "John Thompson",
     position: "CFO at Bright Ventures",
   },
   {
     quote:
-      "I'm thoroughly impressed with Payyed Investors. Their deep market insights and commitment to customer success are unmatched.",
+      "I'm thoroughly impressed with Goldgroveco Investors. Their deep market insights and commitment to customer success are unmatched.",
     author: "Emily Roberts",
     position: "Senior Financial Analyst at Global Holdings",
   },
   {
     quote:
-      "Payyed's approach to customer service and investment strategy is world-class. They made it easy for us to diversify and increase our returns.",
+      "Goldgroveco's approach to customer service and investment strategy is world-class. They made it easy for us to diversify and increase our returns.",
     author: "Michael Sanders",
     position: "CEO at Investwise",
   },
   {
     quote:
-      "Payyed Investors stands out because of their in-depth knowledge of the markets and their personalized approach to investing.",
+      "Goldgroveco Investors stands out because of their in-depth knowledge of the markets and their personalized approach to investing.",
     author: "Sarah Mitchell",
     position: "Portfolio Manager at FinGrowth",
   },
   {
     quote:
-      "We’ve seen tremendous growth in our investments since working with Payyed Investors. Their strategy is truly superior.",
+      "We’ve seen tremendous growth in our investments since working with Goldgroveco Investors. Their strategy is truly superior.",
     author: "David Johnson",
     position: "Investor at Future Wealth",
   },
   {
     quote:
-      "Thanks to Payyed, our investment returns have consistently outperformed expectations. Their insights and strategies are invaluable.",
+      "Thanks to Goldgroveco, our investment returns have consistently outperformed expectations. Their insights and strategies are invaluable.",
     author: "Laura Garcia",
     position: "Financial Consultant at ValuePro",
   },
@@ -93,7 +93,7 @@ const Testimonials = () => {
     <div className="bg-white py-16">
       <div className="max-w-6xl mx-auto px-6">
         <h2 className="text-3xl font-bold text-black text-center mb-8">
-          What people are saying about Payyed Investors
+          What people are saying about Goldgroveco Investors
         </h2>
 
         {/* Testimonials */}

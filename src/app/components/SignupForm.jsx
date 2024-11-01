@@ -57,7 +57,7 @@ const SignUpForm = () => {
               Register Account
             </p>
             <p className="text-center text-gray-600 mb-4">
-              Get your Free Payyed Investors account.
+              Get your Free Goldgroveco Investors account.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">

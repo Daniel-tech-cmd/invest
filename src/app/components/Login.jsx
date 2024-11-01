@@ -48,7 +48,7 @@ const LoginForm = () => {
               Login
             </h2>
             <p className="text-center text-gray-600 mb-4">
-              Access your Payyed Investors account.
+              Access your Goldgroveco Investors account.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">

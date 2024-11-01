@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import Script from "next/script";
 
-const PayyedInvestors = () => {
+const GoldgrovecoInvestors = () => {
   useEffect(() => {
     // Dynamically load the TradingView widget
     const script = document.createElement("script");
@@ -33,7 +33,7 @@ const PayyedInvestors = () => {
         {/* Text Section */}
         <div className="md:w-1/2 w-full md:pr-8 mb-8 md:mb-0">
           <h1 className="text-2xl text-black font-bold mb-4">
-            Payyed Investors
+            Goldgroveco Investors
           </h1>
           <p className="text-gray-700 mb-4">
             is a highly selective independent firm specializing in advisory,
@@ -43,10 +43,10 @@ const PayyedInvestors = () => {
             indices, stocks and more.
           </p>
           <p className="text-gray-700">
-            Payyed Investors has over 350 financial derivatives accessible over
-            3 types of trading terminals in 11 different languages. When
+            Goldgroveco Investors has over 350 financial derivatives accessible
+            over 3 types of trading terminals in 11 different languages. When
             combined with the range of analytical and charting tools and
-            flexible account types, Payyed Investors emerges as a powerful
+            flexible account types, Goldgroveco Investors emerges as a powerful
             contender in the online and investment company.
           </p>
         </div>
@@ -64,4 +64,4 @@ const PayyedInvestors = () => {
   );
 };
 
-export default PayyedInvestors;
+export default GoldgrovecoInvestors;

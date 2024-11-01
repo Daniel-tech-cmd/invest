@@ -125,10 +125,10 @@ const InvestmentPlans = () => {
               We Protect Your Investment Needs
             </h2>
             <p className="text-base mb-4">
-              One of the most compelling aspects of investing with Payyed is our
-              commitment to protecting our investors from market losses. Unlike
-              other investment companies, Payyed does not share the burden of
-              market downturns with our investors.
+              One of the most compelling aspects of investing with Goldgroveco
+              is our commitment to protecting our investors from market losses.
+              Unlike other investment companies, Goldgroveco does not share the
+              burden of market downturns with our investors.
             </p>
             <p className="text-base mb-4">
               We guarantee the promised percentage return regardless of market
@@ -137,7 +137,7 @@ const InvestmentPlans = () => {
               mind and financial stability.
             </p>
             <p className="text-base">
-              Invest with Payyed, where your success is our priority.
+              Invest with Goldgroveco, where your success is our priority.
             </p>
           </div>
         </div>

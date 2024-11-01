@@ -61,7 +61,7 @@ const Footer = () => {
             <h3 className="text-white text-lg mb-4">KEEP IN TOUCH</h3>
             <ul>
               <li className="mb-2">📞 +44 0203 0990123</li>
-              <li className="mb-2">✉️ support@payyed-investors.com</li>
+              <li className="mb-2">✉️ support@Goldgroveco-investors.com</li>
               <li>📍 20 Audley St. London, W1K 6WE, United Kingdom</li>
             </ul>
           </div>
@@ -87,7 +87,9 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="border-t border-gray-700 mt-12 pt-8 text-center text-sm">
-          <p>Copyright © 2018 - 2022 Payyed-Investors. All Rights Reserved</p>
+          <p>
+            Copyright © 2018 - 2022 Goldgroveco-Investors. All Rights Reserved
+          </p>
         </div>
       </div>
     </footer>

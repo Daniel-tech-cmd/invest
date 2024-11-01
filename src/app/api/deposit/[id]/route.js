@@ -180,7 +180,7 @@ export const POST = async (req, { params }) => {
       </div>
       <div class="footer">
         &copy; 2024 PeakFund. All rights reserved. |
-        <a href="https://peakfund.org">Visit our website</a>
+        <a href="https://www.goldgroveco.com/">Visit our website</a>
       </div>
     </div>
   </body>

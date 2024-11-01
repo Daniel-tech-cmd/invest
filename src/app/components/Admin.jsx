@@ -97,7 +97,7 @@ const AdminComp = ({ data, data2 }) => {
                   position: "absolute",
                   right: "0px",
                   top: "-3px",
-                  background: "hsl(var(--danger))",
+                  background: "red",
                   width: "7px",
                   height: "7px",
                   borderRadius: "50%",

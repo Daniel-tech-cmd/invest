@@ -117,7 +117,17 @@ export const POST = async (request) => {
         
         <body>
           <div class="container">
-            <img src="https://peakfund.org/_next/image?url=%2Flogo.png&w=64&q=75" alt="Company Logo">
+           <span
+  style="
+    font-weight: 800;
+    background: linear-gradient(to right, #22c55e, #000000);
+    -webkit-background-clip: text;
+    color: transparent;
+  "
+>
+  GoldGroveco.
+</span>
+
             <h1>Email Verification</h1>
             <p>Click the link below to verify your email</p>
             <a href="${url}">Verification Link</a>
@@ -244,7 +254,17 @@ export const POST = async (request) => {
     
     <body>
       <div class="container">
-        <img src="https://peakfund.org/_next/image?url=%2Flogo.png&w=64&q=75" alt="Company Logo">
+       <span
+  style="
+    font-weight: 800;
+    background: linear-gradient(to right, #22c55e, #000000);
+    -webkit-background-clip: text;
+    color: transparent;
+  "
+>
+  GoldGroveco.
+</span>
+
         <h1>Email Verification</h1>
         <p>Click the link below to verify your email</p>
         <a href="${url}">Verification Link</a>
