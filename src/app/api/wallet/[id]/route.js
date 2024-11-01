@@ -2,7 +2,7 @@
 import Wallet from "../../../models/wallet";
 import { connectToDB } from "../../../utils/database";
 import { cloudinary } from "@/app/utils/cloudinary";
-
+export const maxDuration = 60;
 async function handler(req) {
   await dbConnect();
 

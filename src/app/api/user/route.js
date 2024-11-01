@@ -1,6 +1,6 @@
 import User from "../../models/user";
 import { connectToDB } from "@/app/utils/database";
-
+export const maxDuration = 60;
 export const GET = async (request) => {
   try {
     await connectToDB();

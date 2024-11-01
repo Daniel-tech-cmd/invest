@@ -45,7 +45,7 @@ async function handler(req) {
       );
   }
 }
-
+export const maxDuration = 60;
 export const POST = async (req) => {
   await connectToDB();
 
@@ -98,6 +98,7 @@ export const POST = async (req) => {
 
 export const GET = async (req) => {
   try {
+    await connectToDB();
     const wallets = await Wallet.find({});
     return new Response(JSON.stringify(wallets), {
       status: 200,
