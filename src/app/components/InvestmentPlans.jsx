@@ -38,7 +38,7 @@ const InvestmentPlans = () => {
               onClick={() => togglePlan("standard")}
             >
               <div className="flex justify-between items-center">
-                <span>Standard Plan</span>
+                <span>Basic Plan</span>
                 <FaChevronDown
                   className={`transition-transform ${
                     openPlan === "standard" ? "rotate-180" : ""
@@ -47,7 +47,11 @@ const InvestmentPlans = () => {
               </div>
               {openPlan === "standard" && (
                 <div className="mt-2">
-                  <p>Details about the Standard Plan...</p>
+                  <p>
+                    Designed for new investors, the Basic Plan offers a solid
+                    entry into investment growth with a manageable initial
+                    deposit
+                  </p>
                 </div>
               )}
             </div>
@@ -60,7 +64,7 @@ const InvestmentPlans = () => {
               onClick={() => togglePlan("premium")}
             >
               <div className="flex justify-between items-center">
-                <span>Premium Plan</span>
+                <span>Standard Plan</span>
                 <FaChevronDown
                   className={`transition-transform ${
                     openPlan === "premium" ? "rotate-180" : ""
@@ -69,7 +73,11 @@ const InvestmentPlans = () => {
               </div>
               {openPlan === "premium" && (
                 <div className="mt-2">
-                  <p>Details about the Premium Plan...</p>
+                  <p>
+                    The Standard Plan provides a higher daily return, suitable
+                    for those ready to commit a bit more for increased
+                    profitability.
+                  </p>
                 </div>
               )}
             </div>
@@ -82,7 +90,7 @@ const InvestmentPlans = () => {
               onClick={() => togglePlan("corporate")}
             >
               <div className="flex justify-between items-center">
-                <span>Corporate Plan</span>
+                <span>Advanced Plan</span>
                 <FaChevronDown
                   className={`transition-transform ${
                     openPlan === "corporate" ? "rotate-180" : ""
@@ -91,7 +99,11 @@ const InvestmentPlans = () => {
               </div>
               {openPlan === "corporate" && (
                 <div className="mt-2">
-                  <p>Details about the Corporate Plan...</p>
+                  <p>
+                    Ideal for seasoned investors, the Advanced Plan combines
+                    substantial returns with a moderate entry amount, making it
+                    a balanced choice for committed growth..
+                  </p>
                 </div>
               )}
             </div>
@@ -104,7 +116,7 @@ const InvestmentPlans = () => {
               onClick={() => togglePlan("ultimate")}
             >
               <div className="flex justify-between items-center">
-                <span>Ultimate Plan</span>
+                <span>Silver Plan</span>
                 <FaChevronDown
                   className={`transition-transform ${
                     openPlan === "ultimate" ? "rotate-180" : ""
@@ -113,7 +125,11 @@ const InvestmentPlans = () => {
               </div>
               {openPlan === "ultimate" && (
                 <div className="mt-2">
-                  <p>Details about the Ultimate Plan...</p>
+                  <p>
+                    With significant daily profits, the Silver Plan caters to
+                    serious investors aiming to maximize returns within a
+                    well-defined investment range..
+                  </p>
                 </div>
               )}
             </div>
