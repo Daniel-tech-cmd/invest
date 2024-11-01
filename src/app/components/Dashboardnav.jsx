@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import useSignup from "../hooks/useSignup";
 import { useState } from "react";
 
 // Icon color and size
@@ -120,6 +121,7 @@ export default function Sidebar({ data }) {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isReferralsOpen, setIsReferralsOpen] = useState(false);
+  const { logout } = useSignup();
 
   return (
     <div className="min-h-screen bg-[#1c222c] text-gray-300 w-64 p-4 flex flex-col justify-between fixed left-0 lg:block hidden nav">
@@ -440,9 +442,10 @@ export default function Sidebar({ data }) {
             </>
           )}
           <Link
-            href="/logout"
+            href="#"
             className="flex items-center gap-4 hover:text-orange-400 transition-colors"
             style={{ fontSize: "14px", padding: "0 15px" }}
+            onClick={logout}
           >
             {logoutIcon}
             <span>Logout</span>

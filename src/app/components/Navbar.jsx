@@ -14,7 +14,12 @@ const Navbar = () => {
           <div className="flex items-center space-x-8">
             <div className="flex-shrink-0">
               <Link href="/">
-                <img src="/logo.png" alt="Payyed" className="h-8 w-auto" />
+                <span
+                  className="bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-black"
+                  style={{ fontWeight: "800" }}
+                >
+                  GoldGroveco.
+                </span>
               </Link>
             </div>
             <div className="hidden md:flex space-x-6">

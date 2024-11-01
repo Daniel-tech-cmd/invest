@@ -1,7 +1,10 @@
+"use client";
 import Image from "next/image";
 import Hamburg from "./Hamburger";
+import useSignup from "../hooks/useSignup";
 
 export default function TopNav() {
+  const { logout } = useSignup();
   return (
     <header
       className="w-full bg-[#1c222c] h-16 flex justify-between items-center px-6 border-b-2 border-orange-400"
@@ -10,12 +13,20 @@ export default function TopNav() {
       {/* Left: Logo */}
       <div className="flex items-center">
         <Hamburg />
-        <Image src="/logo.png" alt="Logo" width={120} height={40} />
+        <span
+          className="bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-black"
+          style={{ fontWeight: "800" }}
+        >
+          GoldGroveco.
+        </span>
       </div>
 
       {/* Right: Logout Icon */}
       <div className="flex items-center">
-        <button className="hover:text-orange-400 transition-colors">
+        <button
+          className="hover:text-orange-400 transition-colors"
+          onClick={logout}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 -960 960 960"
