@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { connectToDB } from "@/app/utils/database";
 import sendEmail from "@/app/utils/sendEmail";
 import jwt from "jsonwebtoken";
+export const maxDuration = 60;
 
 const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "365d" });
