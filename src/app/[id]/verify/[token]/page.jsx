@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Navbar from "@/app/components/Navbar";
 import Link from "next/link";
+import Success from "@/app/components/Success";
 
 async function getdatabyId(id, token) {
   const res = await fetch(

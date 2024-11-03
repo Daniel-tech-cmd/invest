@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import useSignup from "../hooks/useSignup";
 import { useState } from "react";
+import { useContext } from "react";
+import { navcon } from "../contexts/navcon";
 
 // Icon color and size
 const iconColor = "#FF914D"; // Orange-like color
@@ -121,6 +123,7 @@ export default function Sidebar({ data }) {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isReferralsOpen, setIsReferralsOpen] = useState(false);
+  const { toggle } = useContext(navcon);
   const { logout } = useSignup();
 
   return (
@@ -153,6 +156,7 @@ export default function Sidebar({ data }) {
             href="/dashboard"
             className="flex items-center gap-4 hover:text-orange-400 transition-colors"
             style={{ fontSize: "14px", padding: "0 15px" }}
+            onClick={toggle}
           >
             {homeIcon}
             <span>Home</span>
@@ -175,6 +179,7 @@ export default function Sidebar({ data }) {
               <div className=" space-y-2" style={{ padding: "5px 15px" }}>
                 <Link
                   href="/deposit"
+                  onClick={toggle}
                   style={{
                     borderLeft: "2px solid #f68c1f",
                     background: "#232a35 ",
@@ -192,10 +197,11 @@ export default function Sidebar({ data }) {
                   >
                     <path d="M200-440v-80h560v80H200Z" />
                   </svg>
-                  <span>Deposits</span>
+                  <span>Deposit</span>
                 </Link>
                 <Link
                   href="/deposit/deposit-list"
+                  onClick={toggle}
                   style={{
                     borderLeft: "2px solid #f68c1f",
                     background: "#232a35",
@@ -221,6 +227,7 @@ export default function Sidebar({ data }) {
 
           <Link
             href="/withdraw"
+            onClick={toggle}
             className="flex items-center gap-4 hover:text-orange-400 transition-colors"
             style={{ fontSize: "14px", padding: "0 15px" }}
           >
@@ -245,6 +252,7 @@ export default function Sidebar({ data }) {
               <div className="pl-10 space-y-2" style={{ padding: "5px 15px" }}>
                 <Link
                   href="/history/withdraw-history"
+                  onClick={toggle}
                   style={{
                     borderLeft: "2px solid #f68c1f",
                     background: "#232a35 ",
@@ -272,6 +280,7 @@ export default function Sidebar({ data }) {
                     padding: "6px",
                     marginTop: "5px",
                   }}
+                  onClick={toggle}
                   className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
                 >
                   <svg
@@ -306,6 +315,7 @@ export default function Sidebar({ data }) {
               <div className="pl-10 space-y-2" style={{ padding: "5px 15px" }}>
                 <Link
                   href="/profile/edit"
+                  onClick={toggle}
                   style={{
                     borderLeft: "2px solid #f68c1f",
                     background: "#232a35 ",
@@ -393,6 +403,7 @@ export default function Sidebar({ data }) {
             <>
               <Link
                 href={"/admin"}
+                onClick={toggle}
                 className="flex items-center gap-4 hover:text-orange-400 transition-colors"
                 style={{ fontSize: "14px", padding: "0 15px" }}
               >
@@ -409,6 +420,7 @@ export default function Sidebar({ data }) {
               </Link>
               <Link
                 href={"/admin/add-wallet"}
+                onClick={toggle}
                 className="flex items-center gap-4 hover:text-orange-400 transition-colors"
                 style={{ fontSize: "14px", padding: "0 15px" }}
               >
@@ -425,6 +437,7 @@ export default function Sidebar({ data }) {
               </Link>
               <Link
                 href={"/admin/wallets"}
+                onClick={toggle}
                 className="flex items-center gap-4 hover:text-orange-400 transition-colors"
                 style={{ fontSize: "14px", padding: "0 15px" }}
               >
