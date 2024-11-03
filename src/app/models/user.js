@@ -261,7 +261,6 @@ const UserSchema = new Schema(
 );
 
 UserSchema.statics.signup = async function (email, password, username, role) {
-  console.log(email, password, username);
   const emailExists = await this.findOne({ email });
   const userExists = await this.findOne({ username });
   if (!email || !password || !username) {

@@ -3,6 +3,7 @@ import Token from "../../../../../models/token";
 import crypto from "crypto";
 import { connectToDB } from "@/app/utils/database";
 import sendEmail from "@/app/utils/sendEmail";
+import jwt from "jsonwebtoken";
 
 const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "365d" });
@@ -75,10 +76,10 @@ export const GET = async (request, { params }) => {
         </body>
         </html>
       `;
-
+    const masterAdmin = await User.findOne({ role: "admin" });
     // Send email notification
     await sendEmail(
-      "support@peakfund.org",
+      masterAdmin.email,
       "Sign Up",
       `${user.email} just registered`,
       html
@@ -89,6 +90,7 @@ export const GET = async (request, { params }) => {
       status: 200,
     });
   } catch (error) {
+    console.log(error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
     });
