@@ -49,7 +49,7 @@ export const POST = async (request) => {
             token: crypto.randomBytes(32).toString("hex"),
             exp: Date.now() + 60 * 60 * 1000,
           });
-          const url = `${process.env.BASE_URL}/${user._id}/verify/${token.token}`;
+          const url = `https://www.goldgroveco.com/${user._id}/verify/${token.token}`;
           const html = `<!DOCTYPE html>
             <html lang="en">
             
