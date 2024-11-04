@@ -104,8 +104,9 @@ export const GET = async (req) => {
       status: 200,
     });
   } catch (error) {
+    console.log(error);
     return new Response(
-      JSON.stringify({ success: false, error: "Error fetching wallets" }),
+      JSON.stringify({ success: false, error: error.message }),
       { status: 400 }
     );
   }
