@@ -114,7 +114,7 @@ const Dashboard = ({ data }) => {
                     href={`https://goldgroveco.com?ref=${data?.username}`}
                     className="text-blue-400 text-sm md:text-base"
                   >
-                    http://horizoncapitaltrade.com?ref={data?.username}
+                    https://goldgroveco.com?ref={data?.username}
                   </a>
                 </td>
               </tr>
