@@ -15,6 +15,7 @@ import TradingViewTimelineWidget from "./components/News";
 import Footer from "./components/Footer";
 import Statistics from "./components/Statistics";
 import VerifySection from "./components/Verify";
+import NotificationPopup from "./components/Notify";
 
 export default function Home() {
   return (
@@ -33,6 +34,7 @@ export default function Home() {
       <Products />
       <Statistics />
       <VerifySection />
+      <NotificationPopup />
       <TradingViewTimelineWidget />
       <Footer />
     </>
