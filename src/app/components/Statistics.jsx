@@ -1,6 +1,12 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import CountUp from "react-countup";
+import {
+  ClockIcon,
+  UserGroupIcon,
+  ArrowDownIcon,
+  ArrowUpIcon,
+} from "@heroicons/react/outline";
 
 const Statistics = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -43,6 +49,7 @@ const Statistics = () => {
 
         <div className="flex flex-col md:flex-row justify-around w-full max-w-4xl">
           <div className="text-center m-4 p-6 border-2 border-dotted border-white rounded-lg">
+            <ClockIcon className="h-8 w-8 text-white mx-auto mb-2" />
             <div className="text-3xl md:text-2xl font-semibold text-white">
               {isVisible && <CountUp end={4000} duration={6} />}
             </div>
@@ -50,6 +57,7 @@ const Statistics = () => {
           </div>
 
           <div className="text-center m-4 p-6 border-2 border-dotted border-white rounded-lg">
+            <UserGroupIcon className="h-8 w-8 text-white mx-auto mb-2" />
             <div className="text-3xl md:text-2xl font-semibold text-white">
               {isVisible && <CountUp end={823000} duration={6} />}
             </div>
@@ -59,6 +67,7 @@ const Statistics = () => {
           </div>
 
           <div className="text-center m-4 p-6 border-2 border-dotted border-white rounded-lg">
+            <ArrowDownIcon className="h-8 w-8 text-white mx-auto mb-2" />
             <div className="text-3xl md:text-2xl font-semibold text-white">
               {isVisible && (
                 <CountUp
@@ -75,6 +84,7 @@ const Statistics = () => {
           </div>
 
           <div className="text-center m-4 p-6 border-2 border-dotted border-white rounded-lg">
+            <ArrowUpIcon className="h-8 w-8 text-white mx-auto mb-2" />
             <div className="text-3xl md:text-2xl font-semibold text-white">
               {isVisible && (
                 <CountUp
