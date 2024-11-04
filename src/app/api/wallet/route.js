@@ -1,4 +1,3 @@
-"use server";
 import Wallet from "../../models/wallet";
 import { connectToDB } from "../../utils/database";
 import { cloudinary } from "@/app/utils/cloudinary";
