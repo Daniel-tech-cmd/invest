@@ -14,6 +14,7 @@ import Products from "./components/Products";
 import TradingViewTimelineWidget from "./components/News";
 import Footer from "./components/Footer";
 import Statistics from "./components/Statistics";
+import VerifySection from "./components/Verify";
 
 export default function Home() {
   return (
@@ -31,6 +32,7 @@ export default function Home() {
       <FAQ />
       <Products />
       <Statistics />
+      <VerifySection />
       <TradingViewTimelineWidget />
       <Footer />
     </>
