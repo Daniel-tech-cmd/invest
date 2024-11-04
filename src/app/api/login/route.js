@@ -124,6 +124,8 @@ export const POST = async (request) => {
                 <h1>Email Verification</h1>
                 <p>Click the link below to verify your email</p>
                 <a href="${url}">Verification Link</a>
+
+                <p>if the link doesn't work, kindly copy this link and paste on your browers to verify. <hr> <a href="${url}">${url}</a></p>
                 <p>The link expires in <b>1 hour</b></p>
               </div>
             </body>
