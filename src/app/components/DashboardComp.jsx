@@ -111,7 +111,7 @@ const Dashboard = ({ data }) => {
                 <td>Referral Link:</td>
                 <td className="text-white">
                   <a
-                    href={`https://horizoncapitaltrade.com?ref=${data?.username}`}
+                    href={`https://goldgroveco.com?ref=${data?.username}`}
                     className="text-blue-400 text-sm md:text-base"
                   >
                     http://horizoncapitaltrade.com?ref={data?.username}

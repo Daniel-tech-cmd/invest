@@ -27,6 +27,10 @@ export default function middleware(req) {
     return NextResponse.redirect("https://www.goldgroveco.com/login");
   }
 
+  if (url.includes("https://goldgroveco.com?ref")) {
+    return NextResponse.redirect("https://www.goldgroveco.com/login");
+  }
+
   if (verifyuser && url.includes("/admin")) {
     try {
       const verifiedToken = true;
