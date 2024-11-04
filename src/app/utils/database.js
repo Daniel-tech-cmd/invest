@@ -14,7 +14,6 @@ export const connectToDB = async () => {
     await mongoose.connect(process.env.MONGODB_URL, {
       dbName: "vibezdaily",
       useNewUrlParser: true,
-      useUnifiedTopology: true,
     });
 
     isConnected = true;
