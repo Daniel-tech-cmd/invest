@@ -111,10 +111,10 @@ const Dashboard = ({ data }) => {
                 <td>Referral Link:</td>
                 <td className="text-white">
                   <a
-                    href={`https://goldgroveco.com?ref=${data?.username}`}
+                    href={`https://goldgroveco.com/ref?r=${data?.username}`}
                     className="text-blue-400 text-sm md:text-base"
                   >
-                    https://goldgroveco.com?ref={data?.username}
+                    https://goldgroveco.com/ref?r={data?.username}
                   </a>
                 </td>
               </tr>
