@@ -46,19 +46,5 @@ export default function middleware(req) {
     }
   }
 
-  if (verifyuser && url.includes("/api")) {
-    try {
-      const verifiedToken = true;
-      if (userValue.role === "admin") {
-        return NextResponse.next();
-      } else if (userValue.role !== "admin") {
-        return NextResponse.redirect("https://www.goldgroveco.com/not-found");
-      } else {
-        return NextResponse.redirect("https://www.goldgroveco.com/not-found");
-      }
-    } catch (error) {
-      return NextResponse.redirect("https://www.goldgroveco.com/not-found");
-    }
-  }
   return NextResponse.next();
 }
