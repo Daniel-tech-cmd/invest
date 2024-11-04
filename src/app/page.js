@@ -13,6 +13,7 @@ import FAQ from "./components/FaQ";
 import Products from "./components/Products";
 import TradingViewTimelineWidget from "./components/News";
 import Footer from "./components/Footer";
+import Statistics from "./components/Statistics";
 
 export default function Home() {
   return (
@@ -29,6 +30,7 @@ export default function Home() {
       <Testimonials />
       <FAQ />
       <Products />
+      <Statistics />
       <TradingViewTimelineWidget />
       <Footer />
     </>
