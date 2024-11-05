@@ -37,7 +37,20 @@ const Dashboard = ({ data }) => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+  const sumPendingDeposits = (deposits) => {
+    // Filter the deposits to only include those with "pending" status
+    const pendingDeposits = deposits.filter(
+      (deposit) => deposit.status === "pending"
+    );
 
+    // Sum the amounts of the pending deposits
+    const totalPendingAmount = pendingDeposits.reduce(
+      (sum, deposit) => sum + deposit.amount,
+      0
+    );
+
+    return totalPendingAmount;
+  };
   return (
     <div
       className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full dash"
@@ -139,11 +152,15 @@ const Dashboard = ({ data }) => {
               </tr>
               <tr>
                 <td>Pending Deposit:</td>
-                <td className="text-white">$0.00</td>
+                <td className="text-white">
+                  ${sumPendingDeposits(data?.deposit)}
+                </td>
               </tr>
               <tr>
                 <td>Pending Withdrawal:</td>
-                <td className="text-white">$0.00</td>
+                <td className="text-white">
+                  ${sumPendingDeposits(data?.withdraw) || 0.0}
+                </td>
               </tr>
             </tbody>
           </table>
