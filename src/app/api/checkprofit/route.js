@@ -26,47 +26,49 @@ const calculateProfit = (planName, amount) => {
       planName: "Basic Plan",
       planDescription: "Plan 1",
       amountRange: "$100.00 - $499.00",
-      dailyProfit: 4.6,
+      hourlyProfit: 4.6 / 24, // 0.1917% per hour
       hasDeposit: false,
     },
     {
       planName: "Standard Plan",
       planDescription: "Plan 2",
       amountRange: "$500.00 - $4999.00",
-      dailyProfit: 6.8,
+      hourlyProfit: 6.8 / 24, // 0.2833% per hour
       hasDeposit: false,
     },
     {
       planName: "Advanced Plan",
       planDescription: "Plan 3",
       amountRange: "$5000.00 - $9999.00",
-      dailyProfit: 7.7,
+      hourlyProfit: 7.7 / 24, // 0.3208% per hour
       hasDeposit: false,
     },
     {
       planName: "Silver Plan",
       planDescription: "Plan 4",
       amountRange: "$10000.00 - $19999.00",
-      dailyProfit: 8.4,
+      hourlyProfit: 8.4 / 24, // 0.35% per hour
       hasDeposit: false,
     },
     {
       planName: "Gold Plan",
       planDescription: "Plan 5",
       amountRange: "$20000.00 - ∞",
-      dailyProfit: 9.2,
+      hourlyProfit: 9.2 / 24, // 0.3833% per hour
       hasDeposit: false,
     },
   ];
+
   const plan = plans.find((p) => p.planName === planName);
   if (!plan) return 0;
 
-  const dailyProfitPercent = plan.dailyProfit;
-  return (amount * dailyProfitPercent) / 100;
+  const hourlyProfitPercent = plan.hourlyProfit;
+  return (amount * hourlyProfitPercent) / 100;
 };
 
 export const GET = async (request) => {
   try {
+    await connectToDB();
     const users = await User.find({});
     for (const user of users) {
       let totalProfit = 0;
@@ -91,6 +93,9 @@ export const GET = async (request) => {
     }
     return new Response(JSON.stringify(users), { status: 200 });
   } catch (error) {
-    return new Response(JSON.stringify(error), { status: 500 });
+    console.log(error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+    });
   }
 };
