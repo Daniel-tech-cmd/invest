@@ -20,17 +20,17 @@ const AdminComp = ({ data, data2 }) => {
     setResponseData(null);
 
     const data = { ...trans };
-    const action =
+    const endpoint =
       trans.type === "deposit"
         ? path === "approve"
-          ? "approvedepo"
-          : "declinedepo"
+          ? `/api/deposit/${user._id}`
+          : `/api/deposit/decline/${user._id}`
         : path === "approve"
-        ? "approvedwith"
-        : "declinedwith";
+        ? `/api/withdraw/${user._id}`
+        : `/api/withdraw/decline/${user._id}`;
 
     try {
-      const response = await axios.patch(`/api/deposit//${user._id}`, data, {
+      const response = await axios.patch(endpoint, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -224,7 +224,7 @@ const AdminComp = ({ data, data2 }) => {
                     >
                       <button
                         style={{
-                          backgroundColor: "hsl(var(--success))",
+                          backgroundColor: "green",
                           color: "#fff",
                           padding: "8px 16px",
                           borderRadius: "5px",
@@ -236,7 +236,7 @@ const AdminComp = ({ data, data2 }) => {
                       </button>
                       <button
                         style={{
-                          backgroundColor: "hsl(var(--danger))",
+                          backgroundColor: "red",
                           color: "#fff",
                           padding: "8px 16px",
                           borderRadius: "5px",

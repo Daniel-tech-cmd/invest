@@ -176,10 +176,10 @@ export const POST = async (req, { params }) => {
         <p>
           If you have any questions or need further assistance, please feel free to contact our support team.
         </p>
-        <p>Thank you for choosing PeakFund!</p>
+        <p>Thank you for choosing GoldGreveco!</p>
       </div>
       <div class="footer">
-        &copy; 2024 PeakFund. All rights reserved. |
+        &copy; 2024 GoldGreveco. All rights reserved. |
         <a href="https://www.goldgroveco.com/">Visit our website</a>
       </div>
     </div>
@@ -341,10 +341,10 @@ export const PATCH = async (req, { params }) => {
                   Amount: ${amount} USD<br />
                   Charge: 0.0000 USD
                 </p>
-                <p>Thank you for choosing PeakFund!</p>
+                <p>Thank you for choosing GoldGreveco!</p>
               </div>
               <div class="footer">
-                &copy; 2024 PeakFund. All rights reserved.
+                &copy; 2024 GoldGreveco. All rights reserved.
               </div>
             </div>
           </body>
