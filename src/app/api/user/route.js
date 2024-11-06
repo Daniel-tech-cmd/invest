@@ -8,7 +8,7 @@ export const GET = async (request) => {
     const user = await User.find({}).sort({ createdAt: -1 });
 
     if (!user) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
+      return new Response(JSON.stringify({ error: "User not found!" }), {
         status: 404,
       });
     }
