@@ -1,5 +1,6 @@
 import User from "../../models/user";
 import cron from "node-cron";
+export const dynamic = "force-dynamic";
 import { connectToDB } from "@/app/utils/database";
 export const maxDuration = 60;
 export const GET = async (request) => {
