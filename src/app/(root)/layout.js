@@ -1,4 +1,5 @@
 import Dashboardnav from "../components/Dashboardnav";
+import NotificationPopup from "../components/Notify";
 import TopNav from "../components/Topnav";
 import { NavProvider } from "../contexts/navcon";
 import { cookies } from "next/headers";
@@ -31,6 +32,7 @@ export default async function RootLayout({ children }) {
           <TopNav />
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <Dashboardnav data={dat} />
+            <NotificationPopup />
 
             {children}
           </div>
