@@ -62,9 +62,24 @@ const Edit = ({ data }) => {
     e.preventDefault();
     setError(null);
 
-    if (!username || !balance || !role || !email) {
-      setError("All fields must be filled!");
-      toast.error("All fields must be filled!");
+    if (!username) {
+      setError("Username is missing!");
+      toast.error("Username is missing!");
+      return;
+    }
+    if (balance < 0) {
+      setError("Balance is missing!");
+      toast.error("Balance is missing!");
+      return;
+    }
+    if (!role) {
+      setError("Role is missing!");
+      toast.error("Role is missing!");
+      return;
+    }
+    if (!email) {
+      setError("Email is missing!");
+      toast.error("Email is missing!");
       return;
     }
 
