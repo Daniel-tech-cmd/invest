@@ -57,7 +57,7 @@ const Withdrawal = ({ data }) => {
   const handleConfirmClick = async () => {
     const requestData = {
       coin: selectedCoin,
-      accountId: data[selectedCoin.toLowerCase() + "AccountId"],
+      wallet: data[selectedCoin.toLowerCase() + "AccountId"],
       amount: parseFloat(amount),
       note: comment,
     };

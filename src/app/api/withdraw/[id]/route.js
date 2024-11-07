@@ -17,7 +17,7 @@ export const POST = async (req, { params }) => {
   await connectToDB();
 
   try {
-    const { amount, coin, note } = await req.json();
+    const { amount, coin, note, wallet } = await req.json();
     const userId = params.id;
 
     const user = await User.findById(userId);
@@ -44,6 +44,7 @@ export const POST = async (req, { params }) => {
       status: "pending",
       method: coin,
       date: Date.now(),
+      wallet,
       note,
     });
 
@@ -227,6 +228,7 @@ export const PATCH = async (req, { params }) => {
 
     // Update user's balance
     user.balance = Math.max(0, Number(user.balance) - Number(amount));
+    user.totalWithdraw = (user.totalWithdraw || 0) + Number(amount);
 
     // Remove notification from admin
     const admin = await User.findOne({ role: "admin" });

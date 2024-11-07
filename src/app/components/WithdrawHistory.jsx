@@ -3,7 +3,7 @@ import { formatDate } from "../utils/formdate";
 
 const WithdrawalHistory = ({ data }) => {
   // Dummy data for withdrawals
-  const withdrawals = [...data?.withdraw];
+  const withdrawals = [...data?.withdraw].reverse();
 
   // Format date
 
@@ -39,7 +39,7 @@ const WithdrawalHistory = ({ data }) => {
           <div className="text-center md:text-right">
             <p className="text-gray-400 text-sm md:text-base">Total Withdraw</p>
             <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              $0.00
+              ${data?.totalWithdraw}
             </h2>
           </div>
         </div>
@@ -113,7 +113,7 @@ const WithdrawalHistory = ({ data }) => {
                       {formatDate(withdrawal.date)}
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      {withdrawal.transactid}
+                      <td className="px-6 py-4 text-sm">{`#${withdrawal?._id[3]}${withdrawal?._id[5]}${withdrawal?._id[6]}${withdrawal?._id[10]}${withdrawal?._id[9]}`}</td>
                     </td>
                   </tr>
                 ))}
