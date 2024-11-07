@@ -1,6 +1,7 @@
 import User from "../../../models/user";
 import { connectToDB } from "@/app/utils/database";
 import { cloudinary } from "../../../utils/cloudinary";
+export const dynamic = "force-dynamic";
 import sendEmail from "@/app/utils/sendEmail";
 
 const generateRandomString = () => {
@@ -242,6 +243,20 @@ export const PATCH = async (req, { params }) => {
     // Update user's balance
     user.balance = Number(user.balance) + Number(amount);
     user.totalDeposit = Number(user.totalDeposit) + Number(amount);
+
+    // Ensure activeDeposit object exists
+    if (!user.activeDeposit) {
+      user.activeDeposit = { amount: 0, date: null };
+    }
+
+    // Update active deposit
+    if (
+      user.activeDeposit.amount === 0 ||
+      user.activeDeposit.amount == undefined
+    ) {
+      user.activeDeposit.date = Date.now(); // Set date if it's the first deposit
+    }
+    user.activeDeposit.amount += Number(amount);
 
     try {
       const planName = user.deposit[index].plan;

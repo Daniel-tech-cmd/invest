@@ -177,8 +177,13 @@ const UserSchema = new Schema(
       default: 0.0,
     },
     activeDeposit: {
-      type: Number,
-      default: 0,
+      amount: {
+        type: Number,
+        default: 0,
+      },
+      date: {
+        type: Date,
+      },
     },
     referals: [
       {

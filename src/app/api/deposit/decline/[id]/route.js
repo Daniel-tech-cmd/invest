@@ -1,5 +1,6 @@
 import User from "../../../../models/user";
 import { connectToDB } from "@/app/utils/database";
+export const dynamic = "force-dynamic";
 import { cloudinary } from "../../../../utils/cloudinary";
 import sendEmail from "@/app/utils/sendEmail";
 
