@@ -67,6 +67,9 @@ const UserSchema = new Schema(
         method: {
           type: String,
         },
+        note: {
+          type: String,
+        },
         date: {
           type: Date,
         },

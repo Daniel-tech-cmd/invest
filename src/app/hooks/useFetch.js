@@ -168,16 +168,12 @@ const useFetch = () => {
     setError(null);
     setIsLoading(true);
     try {
-      const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_URL}/api/transact/withdraw/${user?._id}`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.post(`/api/withdraw/${user?._id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
 
       if (response.status !== 200) {
         setIsLoading(false);
@@ -188,13 +184,17 @@ const useFetch = () => {
       if (response.status === 200) {
         setResponseData(response.data);
         setIsLoading(false);
-        toast.success("Withdraw Request, successful.");
+        toast.success("Withdraw Request successful.");
+
+        // Refresh the page
+        window.location.reload();
       }
     } catch (error) {
       if (error?.message) {
         if (error.message.includes("ENOTFOUND")) {
           setError("Network error");
           toast.error("Network error");
+          setIsLoading(false);
         } else {
           setError(error.message);
           setIsLoading(false);
@@ -204,6 +204,7 @@ const useFetch = () => {
         if (error.response?.data.error.includes("ENOTFOUND")) {
           setError("Network error");
           toast.error("Network error");
+          setIsLoading(false);
         } else {
           setError(error.response.data.error);
           setIsLoading(false);

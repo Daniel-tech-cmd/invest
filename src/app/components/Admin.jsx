@@ -20,6 +20,7 @@ const AdminComp = ({ data, data2 }) => {
     setResponseData(null);
 
     const data = { ...trans };
+    console.log(data);
     const endpoint =
       trans.type === "deposit"
         ? path === "approve"
