@@ -61,7 +61,7 @@ const Footer = () => {
             <h3 className="text-white text-lg mb-4">KEEP IN TOUCH</h3>
             <ul>
               <li className="mb-2">📞 +44 0203 0990123</li>
-              <li className="mb-2">✉️ support@Goldgroveco-investors.com</li>
+              <li className="mb-2">✉️ support@Goldgroveco.com</li>
               <li>📍 20 Audley St. London, W1K 6WE, United Kingdom</li>
             </ul>
           </div>
