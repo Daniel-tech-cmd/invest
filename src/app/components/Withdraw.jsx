@@ -40,12 +40,15 @@ const Withdrawal = ({ data }) => {
   const availableCoins = coins.filter((coin) => data[coin.id]);
 
   // Calculate available and pending deposits for each coin
-  const getAvailableAmount = (method) =>
-    data.deposit
+  const getAvailableAmount = (method) => {
+    return data.deposit
       .filter(
-        (deposit) => deposit.method === method && deposit.status === "approved"
+        (deposit) =>
+          deposit.method.toLowerCase() === method.toLowerCase() &&
+          deposit.status === "approved"
       )
       .reduce((sum, deposit) => sum + deposit.amount, 0);
+  };
 
   const getPendingAmount = (method) =>
     data.deposit
@@ -148,7 +151,7 @@ const Withdrawal = ({ data }) => {
                     {crypto.icon} {crypto.name}
                   </td>
                   <td className="py-4 px-2 text-green-400">
-                    ${getAvailableAmount(crypto.method).toFixed(2)}
+                    ${getAvailableAmount(crypto.name)}
                   </td>
                   <td className="py-4 px-2 text-red-400">
                     ${getPendingAmount(crypto.method).toFixed(2)}
