@@ -24,9 +24,15 @@ const generateRandomString = () => {
   return generatedString.substring(0, 6);
 };
 export const POST = async (request) => {
-  const { email, password, username, confirmPassword, referralCode, role } =
-    await request.json();
-
+  const {
+    email,
+    password,
+    username,
+    confirmPassword,
+    referralCode,
+    role,
+    gender,
+  } = await request.json();
   try {
     if (username.length < 4) {
       return new Response(
@@ -47,7 +53,14 @@ export const POST = async (request) => {
       let user;
       try {
         const lowercaseEmail = email.toLowerCase();
-        user = await User.signup(lowercaseEmail, password, username, role);
+        const genderr = gender.toLowerCase();
+        user = await User.signup(
+          lowercaseEmail,
+          password,
+          username,
+          role,
+          genderr
+        );
         if (user.isnot === true) {
           const deletetok = await Token.findOneAndDelete({ userId: user.id });
           try {

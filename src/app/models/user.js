@@ -9,6 +9,11 @@ const UserSchema = new Schema(
       unique: [true, "Email already exists!"],
       required: [true, "Email is required!"],
     },
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+      required: [true, "Gender is required"],
+    },
     username: {
       type: String,
       required: [true, "Username is required!"],
@@ -176,10 +181,7 @@ const UserSchema = new Schema(
       // required: false,
       default: 0.0,
     },
-    gender: {
-      type: String,
-      enum: ["male", "female"],
-    },
+
     activeDeposit: {
       amount: {
         type: Number,
@@ -277,7 +279,14 @@ const UserSchema = new Schema(
   { timestamps: true }
 );
 
-UserSchema.statics.signup = async function (email, password, username, role) {
+UserSchema.statics.signup = async function (
+  email,
+  password,
+  username,
+  role,
+  gender
+) {
+  console.log(gender);
   const emailExists = await this.findOne({ email });
   const userExists = await this.findOne({ username });
   if (!email || !password || !username) {
@@ -302,13 +311,17 @@ UserSchema.statics.signup = async function (email, password, username, role) {
   }
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
-
+  if (!gender) {
+    throw Error("Gender is required");
+  }
   const user = await this.create({
     username,
     email,
     password: hash,
     role,
+    gender,
   });
+
   const data = {
     _id: user._id,
     role: user.role,

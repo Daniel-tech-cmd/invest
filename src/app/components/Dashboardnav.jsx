@@ -134,9 +134,13 @@ export default function Sidebar({ data }) {
           <Image
             src={data?.gender ? `/${data.gender}.webp` : "/user.png"}
             alt="User Profile"
-            width={40}
-            height={40}
-            style={{ borderRadius: "50%" }}
+            width={50}
+            height={50}
+            style={{
+              borderRadius: "50%",
+              objectFit: "contain",
+              maxHeight: "50px",
+            }}
           />
 
           <div
