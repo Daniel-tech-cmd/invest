@@ -132,12 +132,13 @@ export default function Sidebar({ data }) {
         {/* Logo */}
         <div className="flex items-center gap-4 mb-6 mt-14">
           <Image
-            src="/user.png"
+            src={data?.gender ? `/${data.gender}.webp` : "/user.png"}
             alt="User Profile"
             width={40}
             height={40}
             style={{ borderRadius: "50%" }}
           />
+
           <div
             className="text-xl text-orange-400 font-semibold"
             style={{

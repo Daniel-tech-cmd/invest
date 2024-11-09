@@ -12,6 +12,7 @@ const SignUpForm = () => {
     password: "",
     confirmPassword: "",
     referralCode: "",
+    gender: "", // Added gender to the form data
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -32,8 +33,6 @@ const SignUpForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // console.log(formData);
     await signup(formData);
   };
 
@@ -44,7 +43,7 @@ const SignUpForm = () => {
           {/* Left Side Image */}
           <div className="md:w-1/2 hidden md:block relative">
             <img
-              src="/auth-one-bg.jpg" // Image source updated
+              src="/auth-one-bg.jpg"
               alt="Signup Background"
               className="w-full h-full object-cover"
             />
@@ -76,6 +75,7 @@ const SignUpForm = () => {
                   placeholder="Enter email address"
                 />
               </div>
+
               <div>
                 <label htmlFor="username" className="sr-only">
                   Full Name
@@ -91,6 +91,28 @@ const SignUpForm = () => {
                   placeholder="Enter username"
                 />
               </div>
+
+              {/* Gender Select */}
+              <div>
+                <label htmlFor="gender" className="sr-only">
+                  Gender
+                </label>
+                <select
+                  id="gender"
+                  name="gender"
+                  required
+                  value={formData.gender}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="" disabled>
+                    Select Gender
+                  </option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+
               <div className="relative">
                 <label htmlFor="password" className="sr-only">
                   Password
@@ -113,6 +135,7 @@ const SignUpForm = () => {
                   {showPassword ? "🙈" : "👁️"}
                 </button>
               </div>
+
               <div className="relative">
                 <label htmlFor="confirmPassword" className="sr-only">
                   Confirm Password
@@ -135,6 +158,7 @@ const SignUpForm = () => {
                   {showConfirmPassword ? "🙈" : "👁️"}
                 </button>
               </div>
+
               <div>
                 <label htmlFor="referralCode" className="sr-only">
                   Referral Code
@@ -170,11 +194,7 @@ const SignUpForm = () => {
         </div>
       </div>
       {showsuccess && (
-        <Success
-          message={
-            "A verification link has been sent to your email. Verify and Log in"
-          }
-        />
+        <Success message="A verification link has been sent to your email. Verify and Log in" />
       )}
     </div>
   );

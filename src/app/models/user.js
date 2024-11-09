@@ -176,6 +176,10 @@ const UserSchema = new Schema(
       // required: false,
       default: 0.0,
     },
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+    },
     activeDeposit: {
       amount: {
         type: Number,
