@@ -154,7 +154,11 @@ const Withdrawal = ({ data }) => {
                     ${getPendingAmount(crypto.method).toFixed(2)}
                   </td>
                   <td className="py-4 px-2 text-blue-400">
-                    {data[crypto.id] ? "Set" : "Not Set"}
+                    {data[crypto.id] ? (
+                      "Set"
+                    ) : (
+                      <Link href="/profile/edit">Not Set</Link>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -180,9 +184,8 @@ const Withdrawal = ({ data }) => {
                 <p className="mb-2">
                   <span className="font-bold text-gray-300">Account:</span>{" "}
                   <span className="text-white">
-                    {data[selectedCoin.toLowerCase() + "AccountId"] || (
-                      <Link href="/profile/edit">Not Set</Link>
-                    )}
+                    {data[selectedCoin.toLowerCase() + "AccountId"] ||
+                      "Not Set"}
                   </span>
                 </p>
                 <p className="mb-2">
