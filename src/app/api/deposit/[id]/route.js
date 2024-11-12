@@ -256,7 +256,6 @@ export const PATCH = async (req, { params }) => {
     ) {
       user.activeDeposit.date = Date.now(); // Set date if it's the first deposit
     }
-    user.activeDeposit.amount += Number(amount);
 
     try {
       const planName = user.deposit[index].plan;
@@ -276,6 +275,19 @@ export const PATCH = async (req, { params }) => {
           planName,
           amount,
           hasDeposit: true,
+        });
+      }
+      const existactivedepo = user.activeDeposit.find(
+        (plan) => plan.plan === planName
+      );
+      if (existactivedepo) {
+        existactivedepo.amount += Number(amount);
+        existactivedepo.date = Date.now();
+      } else {
+        user.activeDeposit.push({
+          date: Date.now(),
+          amount: user.deposit[index].amount,
+          plan: user.deposit[index].plan,
         });
       }
     } catch (error) {

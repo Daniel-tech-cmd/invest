@@ -71,17 +71,24 @@ export const GET = async (request) => {
   try {
     await connectToDB();
     const users = await User.find({});
+    const sevenDaysInMillis = 7 * 24 * 60 * 60 * 1000;
+
     for (const user of users) {
       let totalProfit = 0;
 
-      if (user.plans && user.plans.length > 0) {
-        for (const plan of user.plans) {
-          const { planName, amount } = plan;
+      if (user.activeDeposit && user.activeDeposit.length > 0) {
+        for (const deposit of user.activeDeposit) {
+          const { plan, amount, date, stopped } = deposit;
+          const depositAge = Date.now() - new Date(date).getTime();
 
-          const profit = calculateProfit(planName, amount);
-
-          // Add calculated profit to the total profit
-          totalProfit += profit;
+          if (depositAge >= sevenDaysInMillis) {
+            // Mark deposits older than 7 days as stopped
+            deposit.stopped = true;
+          } else if (!stopped) {
+            // Calculate profit only for active deposits within 7 days
+            const profit = calculateProfit(plan, amount);
+            totalProfit += profit;
+          }
         }
 
         // Update the user's profit and balance in the database

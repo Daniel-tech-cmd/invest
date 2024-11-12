@@ -182,15 +182,40 @@ const UserSchema = new Schema(
       default: 0.0,
     },
 
-    activeDeposit: {
-      amount: {
-        type: Number,
-        default: 0,
+    activeDeposit: [
+      {
+        amount: {
+          type: Number,
+        },
+        status: {
+          type: String,
+          default: "approved",
+        },
+        method: {
+          type: String,
+        },
+        date: {
+          type: Date,
+        },
+        index: {
+          type: Number,
+        },
+        transactid: {
+          type: String,
+        },
+        reciept: {
+          url: String,
+          public_id: String,
+        },
+        plan: {
+          type: String,
+        },
+        stopped: {
+          type: Boolean,
+          default: false,
+        },
       },
-      date: {
-        type: Date,
-      },
-    },
+    ],
     referals: [
       {
         name: { type: String },

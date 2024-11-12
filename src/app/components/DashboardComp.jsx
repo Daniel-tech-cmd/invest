@@ -51,6 +51,10 @@ const Dashboard = ({ data }) => {
 
     return totalPendingAmount;
   };
+  const totalActiveDeposit = data?.activeDeposit
+    ?.filter((deposit) => deposit.stopped === false)
+    .reduce((sum, deposit) => sum + deposit.amount, 0)
+    .toFixed(2);
   return (
     <div
       className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full dash"
@@ -103,7 +107,7 @@ const Dashboard = ({ data }) => {
             <div>
               <p className="text-gray-400">Active Deposit</p>
               <p className="text-2xl font-bold text-blue-400">
-                ${data?.activeDeposit?.amount?.toFixed(2)}
+                ${totalActiveDeposit}
               </p>
             </div>
             <div>

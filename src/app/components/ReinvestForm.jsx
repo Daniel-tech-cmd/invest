@@ -5,13 +5,13 @@ import useFetch from "../hooks/useFetch";
 
 const ReinvestForm = ({ data: dat }) => {
   const [selectedPlan, setSelectedPlan] = useState("");
+  const [selectedDeposit, setSelectedDeposit] = useState(null);
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
   const { reinvest, error: error2, isLoading } = useFetch();
 
   // Filter plans based on the plans user is currently on
   const [plans, setPlans] = useState([]);
-
   useEffect(() => {
     const activePlans = [
       {
@@ -51,17 +51,28 @@ const ReinvestForm = ({ data: dat }) => {
       },
     ];
 
-    // Filter only the plans the user is subscribed to
+    // Filter only active deposits that are stopped
     const userPlans = activePlans.filter((plan) =>
-      dat.plans.some((userPlan) => userPlan.planName === plan.planName)
+      dat.activeDeposit.some(
+        (deposit) => deposit.plan === plan.planName && deposit.stopped === true
+      )
     );
 
     setPlans(userPlans);
-  }, [dat.plans]);
+  }, [dat.activeDeposit]);
 
   const handlePlanChange = (e) => {
-    setSelectedPlan(e.target.value);
+    const selectedPlanName = e.target.value;
+    setSelectedPlan(selectedPlanName);
     setError("");
+
+    // Find the active deposit with matching plan and stopped = true
+    const deposit = dat.activeDeposit.find(
+      (deposit) => deposit.plan === selectedPlanName && deposit.stopped === true
+    );
+
+    // Set the found deposit as the selectedDeposit for the request
+    setSelectedDeposit(deposit || null);
   };
 
   const handleAmountChange = (e) => {
@@ -80,18 +91,17 @@ const ReinvestForm = ({ data: dat }) => {
       setError("Please enter a valid reinvestment amount.");
       return;
     }
-    if (parseFloat(amount) > dat?.profit) {
-      setError("Reinvestment amount exceeds available profit.");
+
+    if (!selectedDeposit) {
+      setError("No valid deposit found for reinvestment.");
       return;
     }
 
     const data = {
-      plan: selectedPlan,
-      crypto: "GoldGroveco Re-invest",
-      amount: parseFloat(amount),
-      wallet: "GoldGroveco wallet",
+      ...selectedDeposit,
+      amount,
     };
-
+    console.log(data);
     await reinvest(data);
   };
 
@@ -115,9 +125,12 @@ const ReinvestForm = ({ data: dat }) => {
               value={selectedPlan}
               onChange={handlePlanChange}
               className="w-full p-3 bg-[#323a47] text-white rounded-lg border border-gray-600 focus:outline-none focus:border-[#f57c00] text-sm"
+              disabled={plans.length === 0} // Disable if no plans
             >
               <option value="" disabled>
-                -- Choose a Plan --
+                {plans.length === 0
+                  ? "No plan to reinvest now"
+                  : "-- Choose a Plan --"}
               </option>
               {plans.map((plan, index) => (
                 <option key={index} value={plan.planName}>
@@ -152,6 +165,7 @@ const ReinvestForm = ({ data: dat }) => {
           <button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold text-sm"
+            disabled={plans.length === 0} // Disable if no plans
           >
             {isLoading ? "Reinvesting..." : "Submit Reinvestment"}
           </button>
