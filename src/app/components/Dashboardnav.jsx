@@ -5,6 +5,7 @@ import useSignup from "../hooks/useSignup";
 import { useState } from "react";
 import { useContext } from "react";
 import { navcon } from "../contexts/navcon";
+import { FiRefreshCcw } from "react-icons/fi";
 
 // Icon color and size
 const iconColor = "#FF914D"; // Orange-like color
@@ -238,6 +239,18 @@ export default function Sidebar({ data }) {
           >
             {withdrawIcon}
             <span>Withdraw</span>
+          </Link>
+
+          <Link
+            href="/reinvest"
+            onClick={toggle}
+            className="flex items-center gap-4 hover:text-orange-400 transition-colors"
+            style={{ fontSize: "14px", padding: "0 15px" }}
+          >
+            <FiRefreshCcw
+              style={{ color: `${iconColor}`, fontSize: `${iconSize}` }}
+            />
+            <span>Re-invest Profit</span>
           </Link>
 
           {/* History Dropdown */}

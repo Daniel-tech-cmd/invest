@@ -358,16 +358,12 @@ const useFetch = () => {
     setError(null);
     setIsLoading(true);
     try {
-      const response = await axios.patch(
-        `${process.env.NEXT_PUBLIC_URL}/api/transact/reinvest/${user?._id}`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
-      );
+      const response = await axios.post(`/api/reinvest/${user?._id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
 
       if (response.status !== 200) {
         setIsLoading(false);
