@@ -1,19 +1,29 @@
 "use client"; // Ensures it's used in client-side rendering
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useSignup from "../hooks/useSignup";
 import Success from "./Success";
+import { useSearchParams } from "next/navigation";
 
 const SignUpForm = () => {
   const { signup, isLoading, error, showsuccess } = useSignup();
+  const router = useSearchParams();
+  const r = router.get("r");
+
   const [formData, setFormData] = useState({
     email: "",
     username: "",
     password: "",
     confirmPassword: "",
     referralCode: "",
-    gender: "", // Added gender to the form data
+    gender: "",
   });
+
+  useEffect(() => {
+    if (r) {
+      setFormData((prevData) => ({ ...prevData, referralCode: r }));
+    }
+  }, [r]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
