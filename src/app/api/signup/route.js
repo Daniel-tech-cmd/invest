@@ -59,7 +59,8 @@ export const POST = async (request) => {
           password,
           username,
           role,
-          genderr
+          genderr,
+          referralCode || null
         );
         if (user.isnot === true) {
           const deletetok = await Token.findOneAndDelete({ userId: user.id });
@@ -183,6 +184,7 @@ export const POST = async (request) => {
           referal.referals[referal.referals.length] = {
             name: username,
             id: generateRandomString(),
+            verified: false,
           };
           const updateref = await User.findByIdAndUpdate(
             { _id: referal._id },

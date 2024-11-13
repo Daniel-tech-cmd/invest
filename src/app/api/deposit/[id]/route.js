@@ -249,14 +249,34 @@ export const PATCH = async (req, { params }) => {
       user.activeDeposit = { amount: 0, date: null };
     }
 
-    // Update active deposit
+    // Update active deposit date for the first deposit
     if (
       user.activeDeposit.amount === 0 ||
       user.activeDeposit.amount == undefined
     ) {
-      user.activeDeposit.date = Date.now(); // Set date if it's the first deposit
+      user.activeDeposit.date = Date.now();
     }
 
+    // Check for referral and first approved deposit conditions
+    if (
+      user.referredby &&
+      user.deposit.filter((dep) => dep.status === "approved").length === 1
+    ) {
+      console.log("here");
+      const referringUser = await User.findOne({ username: user.referredby });
+
+      if (referringUser) {
+        const referralBonus = amount * 0.1;
+
+        referringUser.referralBonus =
+          (referringUser.referralBonus || 0) + referralBonus;
+        referringUser.balance = (referringUser.balance || 0) + referralBonus;
+
+        await referringUser.save();
+      }
+    }
+
+    // Plan and activeDeposit update logic
     try {
       const planName = user.deposit[index].plan;
 
@@ -277,6 +297,7 @@ export const PATCH = async (req, { params }) => {
           hasDeposit: true,
         });
       }
+
       const existactivedepo = user.activeDeposit.find(
         (plan) => plan.plan === planName
       );

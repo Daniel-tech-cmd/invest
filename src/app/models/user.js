@@ -220,8 +220,12 @@ const UserSchema = new Schema(
       {
         name: { type: String },
         id: { type: String },
+        verified: { type: Boolean },
       },
     ],
+    referredby: {
+      type: String,
+    },
     profit: {
       type: Number,
       // required: false,
@@ -309,9 +313,9 @@ UserSchema.statics.signup = async function (
   password,
   username,
   role,
-  gender
+  gender,
+  referredby
 ) {
-  console.log(gender);
   const emailExists = await this.findOne({ email });
   const userExists = await this.findOne({ username });
   if (!email || !password || !username) {
@@ -345,6 +349,7 @@ UserSchema.statics.signup = async function (
     password: hash,
     role,
     gender,
+    referredby,
   });
 
   const data = {

@@ -32,6 +32,22 @@ export const GET = async (request, { params }) => {
 
     // Mark user as verified
     user.verified = true;
+    if (user.referredby) {
+      // Find the referring user by username
+      const referal = await User.findOne({ username: user.referredby });
+
+      // Find the referral object where name matches user.username
+      const obj = referal.referals.find((item) => item.name === user.username);
+
+      // If the referral object is found, update its verified property to true
+      if (obj) {
+        obj.verified = true;
+      }
+
+      // Save the changes to the referal document
+      await referal.save();
+    }
+
     await user.save(); // Save the updated user
 
     // Remove the token after verification

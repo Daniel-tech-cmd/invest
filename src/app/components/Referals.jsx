@@ -56,7 +56,7 @@ const ReferralHistory = ({ data }) => {
                 </th>
 
                 <th className="px-6 py-3 text-left text-sm font-semibold">
-                  Referral Date
+                  Referral ID
                 </th>
               </tr>
             </thead>
@@ -68,9 +68,7 @@ const ReferralHistory = ({ data }) => {
                 >
                   <td className="px-6 py-4 text-sm">{index + 1}</td>
                   <td className="px-6 py-4 text-sm">{referral.name}</td>
-                  <td className="px-6 py-4 text-sm">
-                    {formatDate(referral.date)}
-                  </td>
+                  <td className="px-6 py-4 text-sm">{referral.id}</td>
                 </tr>
               ))}
             </tbody>
