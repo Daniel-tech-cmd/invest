@@ -1,4 +1,5 @@
 "use client";
+
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
@@ -9,15 +10,15 @@ import { ToastContainer, toast } from "react-toastify";
 const Edit = ({ data }) => {
   const router = useSearchParams();
   const query = router.get("query");
-  // const {updatePost,isLoading,error} = useFetch()
 
   const [res, setRes] = useState("");
   const [username, setUsername] = useState(res.username || "");
   const [email, setEmail] = useState(res.email || "");
   const [role, setRole] = useState(res.role || "");
-  const [plan, setPlan] = useState(res.plan || "");
+  const [plan, setPlan] = useState("");
   const [card, setCard] = useState(res.card || "");
   const [balance, setBalance] = useState(res.balance || "");
+  const [prevBalance, setPrevBalance] = useState(res.balance || ""); // Track previous balance
   const [number, setNumber] = useState(res.number || "");
   const [country, setCountry] = useState(res.country || "");
   const [profit, setProfit] = useState(res.profit || "");
@@ -26,6 +27,43 @@ const Edit = ({ data }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [suspended, setsuspended] = useState(res.suspended || "");
+  const [plans] = useState([
+    {
+      planName: "Basic Plan",
+      planDescription: "Plan 1",
+      amountRange: "$100.00 - $499.00",
+      dailyProfit: "4.60%",
+      hasDeposit: false,
+    },
+    {
+      planName: "Standard Plan",
+      planDescription: "Plan 2",
+      amountRange: "$500.00 - $4999.00",
+      dailyProfit: "6.80%",
+      hasDeposit: false,
+    },
+    {
+      planName: "Advanced Plan",
+      planDescription: "Plan 3",
+      amountRange: "$5000.00 - $9999.00",
+      dailyProfit: "7.70%",
+      hasDeposit: false,
+    },
+    {
+      planName: "Silver Plan",
+      planDescription: "Plan 4",
+      amountRange: "$10000.00 - $19999.00",
+      dailyProfit: "8.40%",
+      hasDeposit: false,
+    },
+    {
+      planName: "Gold Plan",
+      planDescription: "Plan 5",
+      amountRange: "$20000.00 - ∞",
+      dailyProfit: "9.20%",
+      hasDeposit: false,
+    },
+  ]);
 
   useEffect(() => {
     if (query) {
@@ -42,9 +80,10 @@ const Edit = ({ data }) => {
       setUsername(data.username);
       setEmail(data.email);
       setRole(data.role);
-      setPlan(data.plan);
+      setPlan(""); // Reset plan on fetch
       setCard(data.card);
       setBalance(data.balance);
+      setPrevBalance(data.balance); // Track fetched balance
       setNumber(data.number);
       setCountry(data.country);
       setProfit(data.profit);
@@ -82,6 +121,11 @@ const Edit = ({ data }) => {
       toast.error("Email is missing!");
       return;
     }
+    if (balance !== prevBalance && !plan) {
+      setError("Please select a plan before submitting.");
+      toast.error("Please select a plan before submitting.");
+      return;
+    }
 
     const data = {
       username: username?.trim(),
@@ -94,11 +138,11 @@ const Edit = ({ data }) => {
       minimumWithdrawal,
       verified,
       suspended,
+      plan, // Include selected plan
     };
 
     try {
       setIsLoading(true);
-      console.log(res._id);
       await updatePost(res._id, data);
       toast.success("User updated successfully!");
     } catch (err) {
@@ -144,7 +188,7 @@ const Edit = ({ data }) => {
 
         <div className="flex flex-col items-center mb-6">
           <Image
-            src="/user.png"
+            src={`/${data.gender}.webp`}
             width={100}
             height={100}
             alt="Profile"
@@ -171,9 +215,9 @@ const Edit = ({ data }) => {
             <label className="block text-gray-300 font-semibold">Email</label>
             <input
               type="email"
-              required
               className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Email"
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -183,9 +227,9 @@ const Edit = ({ data }) => {
             <label className="block text-gray-300 font-semibold">Role</label>
             <input
               type="text"
-              required
               className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Role"
+              required
               value={role}
               onChange={(e) => setRole(e.target.value)}
             />
@@ -203,25 +247,56 @@ const Edit = ({ data }) => {
           </div>
 
           <div>
+            <label className="block text-gray-300 font-semibold">Country</label>
+            <input
+              type="text"
+              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Country"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+            />
+          </div>
+
+          <div>
             <label className="block text-gray-300 font-semibold">Balance</label>
             <input
               type="number"
-              required
               className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Balance"
+              required
               value={balance}
               onChange={(e) => setBalance(e.target.value)}
             />
           </div>
 
+          {balance !== prevBalance && (
+            <div>
+              <label className="block text-gray-300 font-semibold">
+                Select a Plan
+              </label>
+              <select
+                className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={plan}
+                onChange={(e) => setPlan(e.target.value)}
+              >
+                <option value="">Select Plan</option>
+                {plans.map((p) => (
+                  <option key={p.planName} value={p.planName}>
+                    {p.planName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div>
             <label className="block text-gray-300 font-semibold">
-              verified
+              Verified
             </label>
             <input
               type="text"
               className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="verified"
+              placeholder="Verified"
               value={verified}
               onChange={(e) => setVerified(e.target.value)}
             />
@@ -237,6 +312,19 @@ const Edit = ({ data }) => {
               placeholder="Suspended"
               value={suspended}
               onChange={(e) => setsuspended(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-300 font-semibold">
+              Minimum Withdrawal
+            </label>
+            <input
+              type="number"
+              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Minimum Withdrawal"
+              value={minimumWithdrawal}
+              onChange={(e) => setMinWith(e.target.value)}
             />
           </div>
 

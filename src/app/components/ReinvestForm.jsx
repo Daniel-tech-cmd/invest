@@ -101,7 +101,6 @@ const ReinvestForm = ({ data: dat }) => {
       ...selectedDeposit,
       amount,
     };
-    console.log(data);
     await reinvest(data);
   };
 

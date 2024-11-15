@@ -39,12 +39,12 @@ const Dashboard = ({ data }) => {
   }, []);
   const sumPendingDeposits = (deposits) => {
     // Filter the deposits to only include those with "pending" status
-    const pendingDeposits = deposits.filter(
+    const pendingDeposits = deposits?.filter(
       (deposit) => deposit.status === "pending"
     );
 
     // Sum the amounts of the pending deposits
-    const totalPendingAmount = pendingDeposits.reduce(
+    const totalPendingAmount = pendingDeposits?.reduce(
       (sum, deposit) => sum + deposit.amount,
       0
     );
@@ -81,7 +81,7 @@ const Dashboard = ({ data }) => {
           <div className="text-center md:text-right">
             <p className="text-gray-400 text-sm md:text-base">Total Balance</p>
             <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              ${data?.balance.toFixed(2)}
+              ${data?.balance?.toFixed(2)}
             </h2>
           </div>
           <div className="text-center md:text-right">
@@ -148,11 +148,11 @@ const Dashboard = ({ data }) => {
 
               <tr>
                 <td>Account Balance:</td>
-                <td className="text-white">${data?.balance.toFixed(2)}</td>
+                <td className="text-white">${data?.balance?.toFixed(2)}</td>
               </tr>
               <tr>
                 <td>Earned Total:</td>
-                <td className="text-white">${data?.profit.toFixed(2)}</td>
+                <td className="text-white">${data?.profit?.toFixed(2)}</td>
               </tr>
               <tr>
                 <td>Pending Deposit:</td>
@@ -163,7 +163,7 @@ const Dashboard = ({ data }) => {
               <tr>
                 <td>Pending Withdrawal:</td>
                 <td className="text-white">
-                  ${sumPendingDeposits(data?.withdraw) || 0.0}
+                  ${sumPendingDeposits(data?.withdraw)}
                 </td>
               </tr>
             </tbody>

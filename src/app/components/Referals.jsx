@@ -3,7 +3,10 @@ import { formatDate } from "../utils/formdate"; // Assuming you have a formatDat
 
 const ReferralHistory = ({ data }) => {
   // Dummy data for referrals
-  const referrals = [...data?.referals];
+  // Filter referrals to include only those with verified set to true
+  const referrals = [...data?.referals].filter(
+    (referral) => referral.verified === true
+  );
 
   return (
     <div
