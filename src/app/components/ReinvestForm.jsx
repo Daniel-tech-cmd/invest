@@ -111,7 +111,7 @@ const ReinvestForm = ({ data: dat }) => {
 
         {/* Display Current Profit */}
         <div className="text-center">
-          <p className="text-lg">Current Profit: ${dat?.profit.toFixed(2)}</p>
+          <p className="text-lg">Current Balance: ${dat?.balance.toFixed(2)}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
