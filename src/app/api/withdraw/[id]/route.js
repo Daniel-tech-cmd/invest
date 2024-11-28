@@ -104,6 +104,15 @@ export const POST = async (req, { params }) => {
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
+          .banner {
+        text-align: center;
+        background-color: #f9fafb;
+        padding: 20px;
+      }
+      .banner img {
+        max-width: 100%;
+        max-height: 200px;
+      }
       .header {
         text-align: center;
         padding: 10px 0;
@@ -141,6 +150,9 @@ export const POST = async (req, { params }) => {
     <div class="email-container">
       <div class="header">
         <h1>Withdrawal Confirmation</h1>
+      </div>
+      <div class="banner">
+        <img src="https://goldgroveco.com/email-banner.jpg" alt="Banner Image" />
       </div>
       <div class="content">
         <p>Hello ${user.username},</p>
@@ -315,10 +327,9 @@ export const PATCH = async (req, { params }) => {
       <div class="header">
         Payment Processed
       </div>
-        <div class="banner">
+  <div class="banner">
         <img src="https://goldgroveco.com/email-banner.jpg" alt="Banner Image" />
       </div>
-
       <!-- Content Section -->
       <div class="content">
         <p>Hello ${user.username},</p>

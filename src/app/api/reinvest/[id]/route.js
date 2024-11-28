@@ -79,8 +79,53 @@ export const POST = async (req, { params }) => {
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <title>Reinvestment Confirmation</title>
-            <style>
-              /* Styles */
+        <style>
+              body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+              }
+              .email-container {
+                max-width: 600px;
+                margin: 20px auto;
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              }
+                   .banner {
+        text-align: center;
+        background-color: #f9fafb;
+        padding: 20px;
+      }
+      .banner img {
+        max-width: 100%;
+        max-height: 200px;
+      }
+              .header {
+                text-align: center;
+                padding: 10px 0;
+                background-color: #1daad9;
+                color: #ffffff;
+                border-radius: 8px 8px 0 0;
+              }
+              .content {
+                margin: 20px 0;
+              }
+              .content p {
+                font-size: 16px;
+                color: #333333;
+                line-height: 1.6;
+              }
+              .footer {
+                text-align: center;
+                padding: 15px;
+                color: #ffffff;
+                background-color: #1daad9;
+                font-size: 14px;
+                border-radius: 0 0 8px 8px;
+              }
             </style>
           </head>
           <body>
@@ -88,6 +133,9 @@ export const POST = async (req, { params }) => {
               <div class="header">
                 <h1>Reinvestment Confirmation</h1>
               </div>
+               <div class="banner">
+        <img src="https://goldgroveco.com/email-banner.jpg" alt="Banner Image" />
+      </div>
               <div class="content">
                 <p>Hello ${user.username},</p>
                 <p>
