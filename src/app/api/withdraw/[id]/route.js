@@ -269,7 +269,7 @@ export const PATCH = async (req, { params }) => {
       }
       .banner img {
         max-width: 100%;
-        height: auto;
+        max-height: 200px;
       }
       .header {
         text-align: center;
@@ -310,7 +310,7 @@ export const PATCH = async (req, { params }) => {
     <div class="email-container">
       <!-- Banner Section -->
       <div class="banner">
-        <img src="https://goldgroveco.com/email-banner.webp" alt="Banner Image" />
+        <img src="https://goldgroveco.com/email-banner.jpg" alt="Banner Image" />
       </div>
 
       <!-- Header Section -->
