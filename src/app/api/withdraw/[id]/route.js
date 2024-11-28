@@ -309,13 +309,14 @@ export const PATCH = async (req, { params }) => {
   <body>
     <div class="email-container">
       <!-- Banner Section -->
-      <div class="banner">
-        <img src="https://goldgroveco.com/email-banner.jpg" alt="Banner Image" />
-      </div>
+    
 
       <!-- Header Section -->
       <div class="header">
         Payment Processed
+      </div>
+        <div class="banner">
+        <img src="https://goldgroveco.com/email-banner.jpg" alt="Banner Image" />
       </div>
 
       <!-- Content Section -->
