@@ -196,8 +196,6 @@ export const PATCH = async (req, { params }) => {
     }
     const { index, amount, userid, id } = await req.json();
 
-    console.log(index);
-
     const user = await User.findById(userid);
     if (!user) {
       return new Response(JSON.stringify({ error: "User not found" }), {
@@ -244,71 +242,108 @@ export const PATCH = async (req, { params }) => {
       url: `Hello ${user.username},\n\nYour withdrawal request of ${amount} USD has been approved.\n\nDetails of your Withdrawal:\nAmount: ${amount} USD\nCharge: 0.0000 USD\n`,
       html: `
         <!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Withdrawal Approval</title>
-            <style>
-              body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                margin: 0;
-                padding: 0;
-              }
-              .email-container {
-                max-width: 600px;
-                margin: 20px auto;
-                background-color: #ffffff;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-              }
-              .header {
-                text-align: center;
-                padding: 10px 0;
-                background-color: #1daad9;
-                color: #ffffff;
-                border-radius: 8px 8px 0 0;
-              }
-              .content {
-                margin: 20px 0;
-              }
-              .content p {
-                font-size: 16px;
-                color: #333333;
-                line-height: 1.6;
-              }
-              .footer {
-                text-align: center;
-                padding: 15px;
-                color: #ffffff;
-                background-color: #1daad9;
-                font-size: 14px;
-                border-radius: 0 0 8px 8px;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="email-container">
-              <div class="header">
-                <h1>Withdrawal Approved</h1>
-              </div>
-              <div class="content">
-                <p>Hello ${user.username},</p>
-                <p>Your withdrawal request of <strong>${amount} USD</strong> has been approved.</p>
-                <p><strong>Withdrawal Details:</strong><br />
-                  Amount: ${amount} USD<br />
-                  Charge: 0.0000 USD
-                </p>
-                <p>Thank you for choosing GoldGreveco!</p>
-              </div>
-              <div class="footer">
-                &copy; 2024 GoldGreveco. All rights reserved.
-              </div>
-            </div>
-          </body>
-        </html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Processed</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .banner {
+        text-align: center;
+        background-color: #f9fafb;
+        padding: 20px;
+      }
+      .banner img {
+        max-width: 100%;
+        height: auto;
+      }
+      .header {
+        text-align: center;
+        padding: 15px;
+        background-color: #1daad9;
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .content {
+        padding: 20px;
+        font-size: 16px;
+        color: #333333;
+        line-height: 1.6;
+      }
+      .content strong {
+        color: #1daad9;
+      }
+      .footer {
+        text-align: center;
+        padding: 15px;
+        background-color: #1daad9;
+        color: #ffffff;
+        font-size: 14px;
+      }
+      .transaction-details {
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #f9fafb;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #555555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <!-- Banner Section -->
+      <div class="banner">
+        <img src="https://goldgroveco.com/email-banner.webp" alt="Banner Image" />
+      </div>
+
+      <!-- Header Section -->
+      <div class="header">
+        Payment Processed
+      </div>
+
+      <!-- Content Section -->
+      <div class="content">
+        <p>Hello ${user.username},</p>
+        <p>
+          Your withdrawal has been successfully confirmed and sent to your
+          Bitcoin wallet.
+        </p>
+        <div class="transaction-details">
+          <p><strong>Withdrawal Details:</strong></p>
+          <p>
+            <strong>Amount:</strong> ${amount} USD<br />
+            <strong>Account:</strong> ${user.withdraw[index].wallet}
+          </p>
+         
+        </div>
+        <p>Thank you for choosing ${"Goldgroveco"}!</p>
+      </div>
+
+      <!-- Footer Section -->
+      <div class="footer">
+        &copy; ${2024} ${"Goldgroveco"}. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>
+
       `,
     };
 
