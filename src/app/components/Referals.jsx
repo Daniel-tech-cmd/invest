@@ -1,12 +1,19 @@
 import React from "react";
-import { formatDate } from "../utils/formdate"; // Assuming you have a formatDate utility
 
 const ReferralHistory = ({ data }) => {
-  // Dummy data for referrals
   // Filter referrals to include only those with verified set to true
   const referrals = [...data?.referals].filter(
     (referral) => referral.verified === true
   );
+
+  const totalReferrals = referrals.length;
+  // const activeReferrals = referrals.filter((ref) => ref.active === true).length;
+  // const totalCommission = referrals.reduce(
+  //   (sum, ref) => sum + (ref.commission || 0),
+  //   0
+  // );
+
+  const upline = data?.upline || "N/A";
 
   return (
     <div
@@ -18,6 +25,7 @@ const ReferralHistory = ({ data }) => {
         overflowX: "hidden",
       }}
     >
+      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div className="mb-4 md:mb-0">
           <h1
@@ -28,19 +36,34 @@ const ReferralHistory = ({ data }) => {
           </h1>
           <p className="text-gray-400">/ Referral</p>
         </div>
+      </div>
 
-        {/* Total Referrals */}
-        <div className="flex gap-6 md:gap-4 sm:justify-between sm:flex-row sm:items-center sm:text-left text-white cont-bal">
-          <div className="text-center md:text-right">
-            <p className="text-gray-400 text-sm md:text-base">
-              Total Referrals
-            </p>
-            <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              {referrals.length}
+      {/* Summary Card */}
+      <div className="bg-[#232a35] text-white rounded-lg p-4 shadow-lg mb-6">
+        <h2 className="text-xl font-bold text-center mb-4">Your Referrals</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+          <div>
+            <p className="text-gray-400 text-sm">Referrals</p>
+            <h2 className="text-2xl font-bold">{totalReferrals}</h2>
+          </div>
+          <div>
+            <p className="text-gray-400 text-sm">Active Referrals</p>
+            <h2 className="text-2xl font-bold">{data.activereferrals}</h2>
+          </div>
+          <div>
+            <p className="text-gray-400 text-sm">Total Referral Commission</p>
+            <h2 className="text-2xl font-bold">
+              ${data.referralBonus.toFixed(2)}
             </h2>
           </div>
+          {/* <div>
+            <p className="text-gray-400 text-sm">Your Upline</p>
+            <h2 className="text-xl font-bold">{upline}</h2>
+          </div> */}
         </div>
       </div>
+
+      {/* Referral History Table */}
       <h2 className="text-2xl font-bold text-white mb-6 text-center">
         Referral History
       </h2>
@@ -57,7 +80,6 @@ const ReferralHistory = ({ data }) => {
                 <th className="px-6 py-3 text-left text-sm font-semibold">
                   Name
                 </th>
-
                 <th className="px-6 py-3 text-left text-sm font-semibold">
                   Referral ID
                 </th>

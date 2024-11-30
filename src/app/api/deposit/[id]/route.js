@@ -282,7 +282,8 @@ export const PATCH = async (req, { params }) => {
         referringUser.referralBonus =
           (referringUser.referralBonus || 0) + referralBonus;
         referringUser.balance = (referringUser.balance || 0) + referralBonus;
-
+        referringUser.activereferrals =
+          (Number(referringUser.activereferrals) || 0) + 1;
         await referringUser.save();
         const htm = `<!DOCTYPE html>
 <html lang="en">

@@ -57,7 +57,10 @@ const UserSchema = new Schema(
         },
       },
     ],
-
+    activereferrals: {
+      type: Number,
+      default: 0,
+    },
     withdraw: [
       {
         amount: {
