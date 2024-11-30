@@ -274,7 +274,6 @@ export const PATCH = async (req, { params }) => {
       user.referredby &&
       user.deposit.filter((dep) => dep.status === "approved").length === 1
     ) {
-      console.log("here");
       const referringUser = await User.findOne({ username: user.referredby });
 
       if (referringUser) {
@@ -285,6 +284,83 @@ export const PATCH = async (req, { params }) => {
         referringUser.balance = (referringUser.balance || 0) + referralBonus;
 
         await referringUser.save();
+        const htm = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Referral Commission</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .banner {
+        text-align: center;
+        background-color: #f9fafb;
+        padding: 20px;
+      }
+      .banner img {
+        max-width: 100%;
+        max-height: 200px;
+      }
+      .content {
+        margin: 20px 0;
+        text-align: center;
+      }
+      .content p {
+        font-size: 16px;
+        color: #333333;
+        line-height: 1.6;
+      }
+      .content strong {
+        font-size: 18px;
+        color: #1daad9;
+      }
+      .footer {
+        text-align: center;
+        padding: 15px;
+        color: #ffffff;
+        background-color: #1daad9;
+        font-size: 14px;
+        border-radius: 0 0 8px 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <div class="banner">
+        <img src="https://goldgroveco.com/email-banner.jpg" alt="Crypto Made Simple" />
+      </div>
+      <div class="content">
+        <p>Hello <strong>${referringUser.username}</strong>,</p>
+        <p>You have received a referral commission of <strong>${referralBonus} USDT</strong> from the <strong>${user.username} </strong> deposit.</p>
+        <p>Thank you for choosing <strong>Goldgroveco</strong>.</p>
+        <p>For any inquiries, visit our website: <a href="https://goldgroveco.com">goldgroveco.com</a></p>
+      </div>
+      <div class="footer">
+        &copy; 2024 Goldgroveco. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>
+`;
+        await sendEmail(
+          referringUser.email,
+          "Referral Bonus",
+          `email error`,
+          htm
+        );
       }
     }
 
