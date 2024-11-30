@@ -54,7 +54,7 @@ export const POST = async (req, { params }) => {
       });
 
       // Update total deposit and decrease profit by amount reinvested
-      user.totalDeposit = Number(user.totalDeposit) + Number(amount);
+      // user.totalDeposit = Number(user.totalDeposit) + Number(amount);
       user.profit = Number(user.profit) - Number(amount);
 
       if (user.profit < 0) {
