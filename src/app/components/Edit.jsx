@@ -18,7 +18,7 @@ const Edit = ({ data }) => {
   const [plan, setPlan] = useState("");
   const [card, setCard] = useState(res.card || "");
   const [balance, setBalance] = useState(res.balance || "");
-  const [prevBalance, setPrevBalance] = useState(res.balance || ""); // Track previous balance
+  const [prevBalance, setPrevBalance] = useState(res.balance || "");
   const [number, setNumber] = useState(res.number || "");
   const [country, setCountry] = useState(res.country || "");
   const [profit, setProfit] = useState(res.profit || "");
@@ -27,6 +27,13 @@ const Edit = ({ data }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [suspended, setsuspended] = useState(res.suspended || "");
+  // Crypto account ID states
+  const [bitcoinAccountId, setBitcoinAccountId] = useState(res.bitcoinAccountId || "");
+  const [ethereumAccountId, setEthereumAccountId] = useState(res.ethereumAccountId || "");
+  const [dogeAccountId, setDogeAccountId] = useState(res.dogeAccountId || "");
+  const [litecoinAccountId, setLitecoinAccountId] = useState(res.litecoinAccountId || "");
+  const [usdtAccountId, setUsdtAccountId] = useState(res.usdtAccountId || "");
+
   const [plans] = useState([
     {
       planName: "Basic Plan",
@@ -80,16 +87,22 @@ const Edit = ({ data }) => {
       setUsername(data.username);
       setEmail(data.email);
       setRole(data.role);
-      setPlan(""); // Reset plan on fetch
+      setPlan("");
       setCard(data.card);
       setBalance(data.balance);
-      setPrevBalance(data.balance); // Track fetched balance
+      setPrevBalance(data.balance);
       setNumber(data.number);
       setCountry(data.country);
       setProfit(data.profit);
       setVerified(data.verified);
       setMinWith(data.minimumWithdrawal);
       setsuspended(data.suspended);
+      // Set crypto account IDs
+      setBitcoinAccountId(data.bitcoinAccountId || "");
+      setEthereumAccountId(data.ethereumAccountId || "");
+      setDogeAccountId(data.dogeAccountId || "");
+      setLitecoinAccountId(data.litecoinAccountId || "");
+      setUsdtAccountId(data.usdtAccountId || "");
     } catch (err) {
       console.error(err);
     }
@@ -138,7 +151,12 @@ const Edit = ({ data }) => {
       minimumWithdrawal,
       verified,
       suspended,
-      plan, // Include selected plan
+      plan,
+      bitcoinAccountId: bitcoinAccountId?.trim(),
+      ethereumAccountId: ethereumAccountId?.trim(),
+      dogeAccountId: dogeAccountId?.trim(),
+      litecoinAccountId: litecoinAccountId?.trim(),
+      usdtAccountId: usdtAccountId?.trim(),
     };
 
     try {
@@ -266,6 +284,61 @@ const Edit = ({ data }) => {
               required
               value={balance}
               onChange={(e) => setBalance(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-300 font-semibold">Bitcoin Account ID</label>
+            <input
+              type="text"
+              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Bitcoin Account ID"
+              value={bitcoinAccountId}
+              onChange={(e) => setBitcoinAccountId(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-300 font-semibold">Ethereum Account ID</label>
+            <input
+              type="text"
+              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Ethereum Account ID"
+              value={ethereumAccountId}
+              onChange={(e) => setEthereumAccountId(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-300 font-semibold">Dogecoin Account ID</label>
+            <input
+              type="text"
+              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Dogecoin Account ID"
+              value={dogeAccountId}
+              onChange={(e) => setDogeAccountId(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-300 font-semibold">Litecoin Account ID</label>
+            <input
+              type="text"
+              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Litecoin Account ID"
+              value={litecoinAccountId}
+              onChange={(e) => setLitecoinAccountId(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-300 font-semibold">USDT Account ID</label>
+            <input
+              type="text"
+              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="USDT Account ID"
+              value={usdtAccountId}
+              onChange={(e) => setUsdtAccountId(e.target.value)}
             />
           </div>
 
