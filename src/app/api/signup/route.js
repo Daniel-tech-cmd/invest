@@ -62,115 +62,115 @@ export const POST = async (request) => {
           genderr,
           referralCode || null
         );
-        if (user.isnot === true) {
-          const deletetok = await Token.findOneAndDelete({ userId: user.id });
-          try {
-            const token = await Token.create({
-              userId: user.id,
-              token: crypto.randomBytes(32).toString("hex"),
-              exp: Date.now() + 60 * 60 * 1000,
-            });
-            const url = `https://www.goldgroveco.com/${user.id}/verify/${token.token}`;
-            const html = `<!DOCTYPE html>
-        <html lang="en">
+//         if (user.isnot === true) {
+//           const deletetok = await Token.findOneAndDelete({ userId: user.id });
+//           try {
+//             const token = await Token.create({
+//               userId: user.id,
+//               token: crypto.randomBytes(32).toString("hex"),
+//               exp: Date.now() + 60 * 60 * 1000,
+//             });
+//             const url = `https://www.goldgroveco.com/${user.id}/verify/${token.token}`;
+//             const html = `<!DOCTYPE html>
+//         <html lang="en">
         
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body {
-              font-family: 'Arial', sans-serif;
-              background-color: #f5f5f5;
-              text-align: center;
-              margin: 0;
-              padding: 0;
-            }
+//         <head>
+//           <meta charset="UTF-8">
+//           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//           <style>
+//             body {
+//               font-family: 'Arial', sans-serif;
+//               background-color: #f5f5f5;
+//               text-align: center;
+//               margin: 0;
+//               padding: 0;
+//             }
         
-            .container {
-              max-width: 600px;
-              margin: 20px auto;
-              padding: 20px;
-              background-color: #fff;
-              border-radius: 10px;
-              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
+//             .container {
+//               max-width: 600px;
+//               margin: 20px auto;
+//               padding: 20px;
+//               background-color: #fff;
+//               border-radius: 10px;
+//               box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+//             }
         
-            h1 {
-              color: #333;
-            }
+//             h1 {
+//               color: #333;
+//             }
         
-            p {
-              color: #666;
-              margin-bottom: 20px;
-            }
+//             p {
+//               color: #666;
+//               margin-bottom: 20px;
+//             }
         
-            a {
-              display: inline-block;
-              padding: 10px 20px;
-              margin: 10px 0;
-              color: #fff;
-              text-decoration: none;
-              background-color: #3498db;
-              border-radius: 5px;
-            }
+//             a {
+//               display: inline-block;
+//               padding: 10px 20px;
+//               margin: 10px 0;
+//               color: #fff;
+//               text-decoration: none;
+//               background-color: #3498db;
+//               border-radius: 5px;
+//             }
         
-            a:hover {
-              background-color: #2980b9;
-            }
+//             a:hover {
+//               background-color: #2980b9;
+//             }
         
-            b {
-              color: #333;
-            }
+//             b {
+//               color: #333;
+//             }
         
-            img {
-              max-width: 100%;
-              height: auto;
-            }
-          </style>
-        </head>
+//             img {
+//               max-width: 100%;
+//               height: auto;
+//             }
+//           </style>
+//         </head>
         
-        <body>
-          <div class="container">
-           <span
-  style="
-    font-weight: 800;
-    background: linear-gradient(to right, #22c55e, #000000);
-    -webkit-background-clip: text;
-    color: transparent;
-  "
->
-  GoldGroveco.
-</span>
+//         <body>
+//           <div class="container">
+//            <span
+//   style="
+//     font-weight: 800;
+//     background: linear-gradient(to right, #22c55e, #000000);
+//     -webkit-background-clip: text;
+//     color: transparent;
+//   "
+// >
+//   GoldGroveco.
+// </span>
 
-            <h1>Email Verification</h1>
-            <p>Click the link below to verify your email</p>
-            <a href="${url}">Verification Link</a>
-            <p>The link expires in <b>1 hour</b></p>
-          </div>
-        </body>
+//             <h1>Email Verification</h1>
+//             <p>Click the link below to verify your email</p>
+//             <a href="${url}">Verification Link</a>
+//             <p>The link expires in <b>1 hour</b></p>
+//           </div>
+//         </body>
         
-        </html>
-        `;
-            await sendEmail(email, "Verify email", url, html);
-            return new Response(
-              JSON.stringify({
-                message:
-                  "an email has been sent to your email account.kindly verify our identity!",
-              }),
-              { status: 201 }
-            );
-          } catch (error) {
-            console.log(error);
-            return new Response(
-              JSON.stringify({
-                error: error.message,
-              }),
-              { status: 500 }
-            );
+//         </html>
+//         `;
+//             await sendEmail(email, "Verify email", url, html);
+//             return new Response(
+//               JSON.stringify({
+//                 message:
+//                   "an email has been sent to your email account.kindly verify our identity!",
+//               }),
+//               { status: 201 }
+//             );
+//           } catch (error) {
+//             console.log(error);
+//             return new Response(
+//               JSON.stringify({
+//                 error: error.message,
+//               }),
+//               { status: 500 }
+//             );
 
-            // console.log(error)
-          }
-        }
+//             // console.log(error)
+//           }
+//         }
       } catch (error) {
         console.log(error);
         return new Response(JSON.stringify({ error: error.message }), {
