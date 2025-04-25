@@ -34,9 +34,19 @@ const useSignup = () => {
         }
 
         if (response.status === 201) {
-          setIsLoading(false);
-          setverify(true);
-          setshowsuccess(true);
+          try {
+            setResponseData(response.data);
+            localStorage.setItem("user", JSON.stringify(response.data));
+            dispatch({
+              type: "LOGIN",
+              payload: response.data,
+            });
+            Cookies.set("user", JSON.stringify(response.data));
+            setIsLoading(false);
+            router.push(`/account/${response?.data?._id}`);
+          } catch (error) {
+            console.log(error);
+          }
         }
         if (response.status === 200) {
           try {
@@ -99,9 +109,16 @@ const useSignup = () => {
         router.push(`/dashboard`);
       }
       if (response.status === 201) {
+        setResponseData(response.data);
+        localStorage.setItem("user", JSON.stringify(response.data));
+        dispatch({
+          type: "LOGIN",
+          payload: response.data,
+        });
+        Cookies.set("user", JSON.stringify(response.data));
         setIsLoading(false);
-        setverify(true);
-        setshowsuccess(true);
+        setloginsucess(true);
+        router.push(`/dashboard`);
       }
     } catch (error) {
       if (error?.message) {
