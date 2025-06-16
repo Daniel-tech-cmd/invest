@@ -343,16 +343,7 @@ UserSchema.statics.signup = async function (
   if (!validator.isEmail(email)) {
     throw Error("email is not valid!");
   }
-  if (
-    emailExists &&
-    emailExists.verified === false
-  ) {
-    const data = {
-      _id: user._id,
-      role: user.role,
-    };
-    return data;
-  }
+
   if (emailExists) {
     throw Error("email already in use!");
   }
