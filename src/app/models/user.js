@@ -68,7 +68,11 @@ const UserSchema = new Schema(
         },
         status: {
           type: String,
-          enum: ["pending", "approved", "declined"],
+          enum: [
+            "pending",
+            "approved",
+            "declined",
+          ],
         },
         wallet: {
           type: String,
@@ -97,7 +101,11 @@ const UserSchema = new Schema(
         },
         status: {
           type: String,
-          enum: ["pending", "approved", "declined"],
+          enum: [
+            "pending",
+            "approved",
+            "declined",
+          ],
         },
         method: {
           type: String,
@@ -252,7 +260,11 @@ const UserSchema = new Schema(
         },
         status: {
           type: String,
-          enum: ["pending", "approved", "declined"],
+          enum: [
+            "pending",
+            "approved",
+            "declined",
+          ],
         },
         method: {
           type: String,
@@ -319,18 +331,25 @@ UserSchema.statics.signup = async function (
   gender,
   referredby
 ) {
-  const emailExists = await this.findOne({ email });
-  const userExists = await this.findOne({ username });
+  const emailExists = await this.findOne({
+    email,
+  });
+  const userExists = await this.findOne({
+    username,
+  });
   if (!email || !password || !username) {
     throw Error("All fields must be filled!");
   }
   if (!validator.isEmail(email)) {
     throw Error("email is not valid!");
   }
-  if (emailExists && emailExists.verified === false) {
+  if (
+    emailExists &&
+    emailExists.verified === false
+  ) {
     const data = {
-      id: emailExists._id,
-      isnot: true,
+      _id: user._id,
+      role: user.role,
     };
     return data;
   }
@@ -362,7 +381,10 @@ UserSchema.statics.signup = async function (
   return data;
 };
 
-UserSchema.statics.login = async function (email, password) {
+UserSchema.statics.login = async function (
+  email,
+  password
+) {
   if (!email || !password) {
     throw Error("all fields must be filled!");
   }
@@ -372,7 +394,10 @@ UserSchema.statics.login = async function (email, password) {
     throw Error("no such user!");
   }
 
-  const match = await bcrypt.compare(password, user.password);
+  const match = await bcrypt.compare(
+    password,
+    user.password
+  );
   if (!match) {
     throw Error("incorrect password!");
   }
@@ -383,6 +408,7 @@ UserSchema.statics.login = async function (email, password) {
   return data;
 };
 
-const User = models.User || model("User", UserSchema);
+const User =
+  models.User || model("User", UserSchema);
 
 export default User;
