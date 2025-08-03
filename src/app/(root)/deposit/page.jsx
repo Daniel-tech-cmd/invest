@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 async function getdatabyId(id) {
-  const res = await fetch(`${process.env.URL}/api/wallet/`, {
+  const res = await fetch(`${process.env.URI}/api/wallet/`, {
     cache: "no-store",
   });
   if (!res.ok) {

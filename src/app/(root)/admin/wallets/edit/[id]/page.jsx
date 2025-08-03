@@ -2,7 +2,7 @@ import EditWallet from "@/app/components/EditWallet";
 import { Suspense } from "react";
 
 async function getdatabyId(id) {
-  const res = await fetch(`${process.env.URL}/api/wallet/${id}`, {
+  const res = await fetch(`${process.env.URI}/api/wallet/${id}`, {
     cache: "no-store",
   });
   if (!res.ok) {
