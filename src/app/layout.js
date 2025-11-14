@@ -3,6 +3,7 @@ import "./globals.css";
 import { Rubik } from "next/font/google";
 import { NavProvider } from "./contexts/navcon";
 import { AuthContextProvider } from "./contexts/AuthContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import SmartsuppChat from "./components/Tawtto";
 
 const rubik = Rubik({ subsets: ["latin"], weight: ["400", "500", "700"] });
@@ -25,7 +26,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="min-h-full">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -40,9 +41,13 @@ export default function RootLayout({ children }) {
       </head>
       <SmartsuppChat />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${rubik.className} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${rubik.className} antialiased min-h-full bg-surface text-foreground transition-colors duration-300`}
       >
-        <AuthContextProvider>{children}</AuthContextProvider>
+        <ThemeProvider>
+          <AuthContextProvider>
+            <NavProvider>{children}</NavProvider>
+          </AuthContextProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

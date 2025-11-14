@@ -120,20 +120,30 @@ const DepositForm = ({ wallet }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen w-full bg-[#1c222c] p-4">
-      <div className="bg-[#232a35] text-white max-w-lg w-full rounded-lg shadow-lg p-8 space-y-6">
-        <h2 className="text-2xl font-bold text-center">Make a Deposit</h2>
+    <div
+      className="dash min-h-screen w-full bg-canvas px-4 sm:px-6 lg:px-10 py-6 sm:py-10"
+      style={{
+        maxWidth: "calc(100vw - 260px)",
+        paddingTop: "96px",
+        boxSizing: "border-box",
+        overflowX: "hidden",
+      }}
+    >
+      <div className="mx-auto w-full max-w-xl rounded-3xl border border-stroke bg-surface-elevated p-6 shadow-xl transition-colors sm:p-8">
+        <h2 className="text-center text-2xl font-semibold text-foreground">
+          Make a Deposit
+        </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-5">
           {/* Plan Selection */}
           <div>
-            <label className="block text-sm font-semibold mb-1">
+            <label className="mb-1 block text-sm font-semibold text-muted">
               Select a Plan
             </label>
             <select
               value={selectedPlan}
               onChange={handlePlanChange}
-              className="w-full p-3 bg-[#323a47] text-white rounded-lg border border-gray-600 focus:outline-none focus:border-[#f57c00] text-sm"
+              className="w-full rounded-xl border border-stroke bg-surface-muted px-3 py-3 text-sm text-foreground transition-colors focus:border-accent focus:outline-none"
             >
               <option value="" disabled>
                 -- Choose a Plan --
@@ -149,13 +159,13 @@ const DepositForm = ({ wallet }) => {
 
           {/* Cryptocurrency Selection */}
           <div>
-            <label className="block text-sm font-semibold mb-1">
+            <label className="mb-1 block text-sm font-semibold text-muted">
               Select Cryptocurrency
             </label>
             <select
               value={selectedCrypto}
               onChange={handleCryptoChange}
-              className="w-full p-3 bg-[#323a47] text-white rounded-lg border border-gray-600 focus:outline-none focus:border-[#f57c00] text-sm"
+              className="w-full rounded-xl border border-stroke bg-surface-muted px-3 py-3 text-sm text-foreground transition-colors focus:border-accent focus:outline-none"
             >
               <option value="" disabled>
                 -- Choose Cryptocurrency --
@@ -170,7 +180,7 @@ const DepositForm = ({ wallet }) => {
 
           {/* Display Selected Crypto Wallet ICO */}
           {selectedCrypto && (
-            <div className="flex items-center space-x-4 mt-4">
+            <div className="mt-4 flex items-center space-x-4">
               <Image
                 src={wallet.find((w) => w.name === selectedCrypto)?.ico?.url}
                 alt={`${selectedCrypto} icon`}
@@ -178,67 +188,69 @@ const DepositForm = ({ wallet }) => {
                 height={40}
                 className="rounded-full"
               />
-              <p className="text-sm">{selectedCrypto.toUpperCase()}</p>
+              <p className="text-sm text-muted">
+                {selectedCrypto.toUpperCase()}
+              </p>
             </div>
           )}
 
           {/* Amount Input */}
           <div>
-            <label className="block text-sm font-semibold mb-1">
+            <label className="mb-1 block text-sm font-semibold text-muted">
               Deposit Amount
             </label>
             <input
               type="number"
               value={amount}
               onChange={handleAmountChange}
-              className="w-full p-3 bg-[#323a47] text-white rounded-lg border border-gray-600 focus:outline-none focus:border-[#f57c00] text-sm"
+              className="w-full rounded-xl border border-stroke bg-surface-muted px-3 py-3 text-sm text-foreground transition-colors placeholder:text-muted focus:border-accent focus:outline-none"
               placeholder="Enter amount in USD"
             />
           </div>
 
           {/* Upload Receipt */}
           <div>
-            <label className="block text-sm font-semibold mb-1">
+            <label className="mb-1 block text-sm font-semibold text-muted">
               Upload Receipt of Payment
             </label>
             <input
               type="file"
               onChange={handleReceiptUpload}
               accept="application/pdf,image/*"
-              className="w-full p-3 bg-[#323a47] text-white rounded-lg border border-gray-600 focus:outline-none focus:border-[#f57c00] text-sm"
+              className="w-full rounded-xl border border-stroke bg-surface-muted px-3 py-3 text-sm text-foreground transition-colors file:mr-3 file:rounded-lg file:border-0 file:bg-surface file:px-3 file:py-2 file:text-sm file:font-semibold file:text-muted focus:border-accent focus:outline-none"
             />
           </div>
 
           {/* Display Selected Crypto Wallet Address */}
           {selectedCrypto && (
-            <div className="p-4 bg-[#f57c00] text-center rounded-lg flex items-center justify-between">
-              <p className="font-semibold break-all text-sm">
+            <div className="flex items-center justify-between rounded-2xl border border-stroke bg-accent px-4 py-3 text-accent-contrast">
+              <p className="break-all text-sm font-semibold">
                 {wallet.find((w) => w.name === selectedCrypto)?.address}
               </p>
               <button
                 type="button"
                 onClick={handleCopyToClipboard}
-                className="ml-2 text-white bg-blue-600 hover:bg-blue-700 rounded-full p-2"
+                className="ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-accent-contrast/10 text-accent-contrast transition hover:bg-accent-contrast/20"
               >
                 <FaCopy className="text-lg" />
               </button>
             </div>
           )}
           {copied && (
-            <p className="text-green-400 text-center text-sm">
+            <p className="text-center text-sm text-accent">
               Address copied to clipboard!
             </p>
           )}
 
           {/* Error Message */}
           {error && (
-            <div className="text-red-400 text-sm text-center">{error}</div>
+            <div className="text-center text-sm text-red-500">{error}</div>
           )}
           {error2 && <p className="text-red-500 text-sm mb-4">{error2}</p>}
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold text-sm"
+            className="btn-accent w-full rounded-xl py-3 text-sm font-semibold"
           >
             {isLoading ? "Submitting..." : "Submit Deposit"}
           </button>
@@ -247,6 +259,6 @@ const DepositForm = ({ wallet }) => {
       <ToastContainer />
     </div>
   );
-};
+}
 
 export default DepositForm;

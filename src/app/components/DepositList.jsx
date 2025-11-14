@@ -1,8 +1,19 @@
 "use client";
-import { useState } from "react";
 
 const DepositList = ({ data }) => {
-  const [total, setTotal] = useState(0.0);
+  const safeNumber = (value) => {
+    if (value === null || value === undefined) return 0;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  const formatCurrency = (value) =>
+    safeNumber(value).toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
 
   const checkPlan = (plansArray, planName) => {
     // Find the plan with the specified name in the array
@@ -21,7 +32,7 @@ const DepositList = ({ data }) => {
       };
     }
   };
-  const [plans] = useState([
+  const plans = [
     {
       planName: "Basic Plan",
       planDescription: "Plan 1",
@@ -57,180 +68,143 @@ const DepositList = ({ data }) => {
       dailyProfit: "9.20",
       hasDeposit: checkPlan(data?.plans, "Gold Plan").found,
     },
-  ]);
+  ];
+
+  const metricCards = [
+    {
+      label: "Total Balance",
+      value: formatCurrency(data?.balance),
+    },
+    {
+      label: "Total Deposit",
+      value: formatCurrency(data?.totalDeposit),
+    },
+    {
+      label: "Total Withdrawal",
+      value: formatCurrency(data?.totalWithdraw),
+    },
+    {
+      label: "Profit",
+      value: formatCurrency(data?.profit),
+    },
+  ];
 
   return (
     <div
+      className="dash min-h-screen w-full bg-canvas px-4 py-6 sm:px-6 sm:py-10 lg:px-10"
       style={{
-        backgroundColor: "#131722",
-        color: "#fff",
-        padding: "70px 20px",
-        width: "100%",
         maxWidth: "calc(100vw - 260px)",
-        margin: "0",
+        paddingTop: "96px",
+        boxSizing: "border-box",
+        overflowX: "hidden",
       }}
-      className="dash"
     >
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div className="mb-4 md:mb-0">
-          <h1
-            className="text-2xl text-white font-bold"
-            style={{ fontSize: "19px" }}
-          >
-            Dashboard
-          </h1>
-          <p className="text-gray-400">/ Dashboard</p>
-        </div>
-
-        {/* Total Balance and Total Withdraw Section */}
-        <div className="flex gap-6 md:gap-4 sm:justify-between sm:flex-row sm:items-center sm:text-left text-white cont-bal">
-          <div className="text-center md:text-right">
-            <p className="text-gray-400 text-sm md:text-base">Total Balance</p>
-            <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              ${data?.balance.toFixed(2)}
-            </h2>
-          </div>
-          <div className="text-center md:text-right">
-            <p className="text-gray-400 text-sm md:text-base">Total Withdraw</p>
-            <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              ${data?.totalWithdraw.toFixed(2)}
-            </h2>
-          </div>
-        </div>
-      </div>
-
-      <div
-        style={{
-          backgroundColor: "rgb(251 146 60 / var(--tw-text-opacity))",
-          padding: "15px",
-          borderRadius: "8px",
-          marginBottom: "15px",
-          fontWeight: "bold",
-        }}
-      >
-        Your deposits
-      </div>
-      <div
-        style={{
-          backgroundColor: "#202631",
-          padding: "10px",
-          borderRadius: "8px",
-          marginBottom: "20px",
-        }}
-      >
-        <p style={{ color: "#4caf50", fontWeight: "bold" }}>
-          TOTAL: ${data?.totalDeposit.toFixed(2)}
-        </p>
-      </div>
-
-      {plans.map((plan, index) => (
-        <div
-          key={index}
-          style={{
-            marginBottom: "20px",
-            padding: "10px",
-            borderRadius: "8px",
-            backgroundColor: "#2a2e3e",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-
-              backgroundColor: "#202631",
-              padding: "10px",
-              color: "#fff",
-              marginBottom: "5px",
-              fontWeight: "bold",
-            }}
-            className="profit"
-          >
-            <span style={{ flex: 1, textAlign: "center" }}>Plan</span>
-            <span style={{ flex: 1, textAlign: "center" }}>
-              Amount Spent ($)
-            </span>
-            <span style={{ flex: 1, textAlign: "center" }}>
-              Daily Profit (%)
-            </span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              backgroundColor: "#f68c1f",
-              padding: "15px",
-              borderBottom: "1px solid #333",
-              color: "#fff",
-            }}
-            className="amount"
-          >
-            <span style={{ flex: 1, textAlign: "center" }}>
-              {plan.planName}
-            </span>
-            <span style={{ flex: 1, textAlign: "center" }}>
-              {plan.amountRange}
-            </span>
-            <span style={{ flex: 1, textAlign: "center" }}>
-              {plan.dailyProfit}
-            </span>
-          </div>
-          <div
-            style={{
-              padding: "10px",
-              textAlign: "center",
-              color: "#aaa",
-              fontSize: "0.9em",
-            }}
-          >
-            {plan.planDescription}
-          </div>
-          {!plan.hasDeposit ? (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "10px",
-                backgroundColor: "transparent",
-                border: "1px solid #ff4d4d",
-                color: "#ff4d4d",
-                width: "fit-content",
-                borderRadius: "4px",
-                textTransform: "capitalize !important",
-                fontSize: "14px",
-                fontWeight: "500",
-              }}
-            >
-              NO DEPOSITS FOR THIS PLAN
+      <div className="flex flex-col gap-8 text-foreground">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-medium uppercase tracking-wide text-muted">
+                Deposits
+              </p>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-3xl">
+                Deposit Plans Overview
+              </h1>
             </div>
-          ) : (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "10px",
-                backgroundColor: "transparent",
-                border: "1px solid green",
-                color: "green",
-                width: "fit-content",
-                borderRadius: "4px",
-                textTransform: "capitalize !important",
-                fontSize: "14px",
-                fontWeight: "500",
-              }}
-            >
-              You have deposited $
-              {checkPlan(data?.plans, plan?.planName).amount} for this plan.
-            </div>
-          )}
-        </div>
-      ))}
+            <p className="mt-4 text-sm text-muted md:mt-0">/ Deposit List</p>
+          </div>
 
-      <style jsx>{`
-        @media (max-width: 1000px) {
-          div {
-            max-width: 100%;
-          }
-        }
-      `}</style>
+          <div className="rounded-3xl border border-stroke bg-surface-elevated p-6 shadow-xl transition-colors sm:p-8">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {metricCards.map(({ label, value }) => (
+                <div
+                  key={label}
+                  className="rounded-2xl border border-stroke bg-surface px-5 py-5 shadow-sm transition-colors"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                    {label}
+                  </p>
+                  <p className="mt-2 text-lg font-semibold text-foreground sm:text-xl">
+                    {value}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-stroke bg-surface-elevated p-6 shadow-xl transition-colors">
+          <h2 className="text-lg font-semibold text-foreground">Deposit Summary</h2>
+          <p className="mt-2 text-sm text-muted">
+            Overview of all available plans and your participation
+          </p>
+
+          <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+            {plans.map((plan) => {
+              const planDetails = checkPlan(data?.plans ?? [], plan.planName);
+              const hasDeposit = Boolean(planDetails.found);
+
+              return (
+                <div
+                  key={plan.planName}
+                  className="flex flex-col justify-between gap-6 rounded-2xl border border-stroke bg-surface p-6 shadow-sm transition-colors"
+                >
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold text-foreground">
+                          {plan.planName}
+                        </h3>
+                        <p className="text-xs uppercase tracking-[0.3em] text-muted">
+                          {plan.planDescription}
+                        </p>
+                      </div>
+                      <span className="inline-flex items-center rounded-full border border-stroke bg-chip px-3 py-1 text-xs font-medium text-muted">
+                        Daily Profit: {plan.dailyProfit}%
+                      </span>
+                    </div>
+
+                    <div className="rounded-xl border border-stroke bg-surface-muted px-4 py-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                        Deposit Range
+                      </p>
+                      <p className="mt-1 text-base font-medium text-foreground">
+                        {plan.amountRange}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    {hasDeposit ? (
+                      <div className="rounded-xl border border-stroke bg-surface-muted px-4 py-3 text-sm text-foreground">
+                        <span className="block text-xs font-semibold uppercase tracking-wide text-accent">
+                          Active Deposit
+                        </span>
+                        <span className="mt-1 block text-base font-semibold text-foreground">
+                          {formatCurrency(planDetails.amount)}
+                        </span>
+                        <span className="mt-1 block text-xs text-muted">
+                          You currently have funds earning under this plan.
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="rounded-xl border border-dashed border-stroke bg-surface-muted px-4 py-3 text-sm text-muted">
+                        <span className="block text-xs font-semibold uppercase tracking-wide text-accent">
+                          No Active Deposit
+                        </span>
+                        <span className="mt-1 block text-xs">
+                          Explore this plan to start earning returns.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
+}
 
 export default DepositList;

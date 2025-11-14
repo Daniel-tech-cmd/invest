@@ -105,25 +105,37 @@ const ReinvestForm = ({ data: dat }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen w-full bg-[#1c222c] p-4">
-      <div className="bg-[#232a35] text-white max-w-lg w-full rounded-lg shadow-lg p-8 space-y-6">
-        <h2 className="text-2xl font-bold text-center">Reinvest Profit</h2>
+    <div
+      className="dash min-h-screen w-full bg-canvas px-4 sm:px-6 lg:px-10 py-6 sm:py-10"
+      style={{
+        maxWidth: "calc(100vw - 260px)",
+        paddingTop: "96px",
+        boxSizing: "border-box",
+        overflowX: "hidden",
+      }}
+    >
+      <div className="mx-auto w-full max-w-xl rounded-3xl border border-stroke bg-surface-elevated p-6 shadow-xl transition-colors sm:p-8">
+        <h2 className="text-center text-2xl font-semibold text-foreground">
+          Reinvest Profit
+        </h2>
 
         {/* Display Current Profit */}
-        <div className="text-center">
-          <p className="text-lg">Current Balance: ${dat?.balance.toFixed(2)}</p>
+        <div className="text-center text-foreground">
+          <p className="text-lg">
+            Current Balance: ${dat?.balance.toFixed(2)}
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-5">
           {/* Plan Selection */}
           <div>
-            <label className="block text-sm font-semibold mb-1">
+            <label className="mb-1 block text-sm font-semibold text-muted">
               Select Reinvestment Plan
             </label>
             <select
               value={selectedPlan}
               onChange={handlePlanChange}
-              className="w-full p-3 bg-[#323a47] text-white rounded-lg border border-gray-600 focus:outline-none focus:border-[#f57c00] text-sm"
+              className="w-full rounded-xl border border-stroke bg-surface-muted px-3 py-3 text-sm text-foreground transition-colors focus:border-accent focus:outline-none"
               disabled={plans.length === 0} // Disable if no plans
             >
               <option value="" disabled>
@@ -142,28 +154,28 @@ const ReinvestForm = ({ data: dat }) => {
 
           {/* Reinvestment Amount Input */}
           <div>
-            <label className="block text-sm font-semibold mb-1">
+            <label className="mb-1 block text-sm font-semibold text-muted">
               Reinvestment Amount
             </label>
             <input
               type="number"
               value={amount}
               onChange={handleAmountChange}
-              className="w-full p-3 bg-[#323a47] text-white rounded-lg border border-gray-600 focus:outline-none focus:border-[#f57c00] text-sm"
+              className="w-full rounded-xl border border-stroke bg-surface-muted px-3 py-3 text-sm text-foreground transition-colors placeholder:text-muted focus:border-accent focus:outline-none"
               placeholder="Enter amount to reinvest"
             />
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="text-red-400 text-sm text-center">{error}</div>
+            <div className="text-center text-sm text-red-500">{error}</div>
           )}
           {error2 && <p className="text-red-500 text-sm mb-4">{error2}</p>}
 
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold text-sm"
+            className="btn-accent w-full rounded-xl py-3 text-sm font-semibold"
             disabled={plans.length === 0} // Disable if no plans
           >
             {isLoading ? "Reinvesting..." : "Submit Reinvestment"}
@@ -173,6 +185,6 @@ const ReinvestForm = ({ data: dat }) => {
       <ToastContainer />
     </div>
   );
-};
+}
 
 export default ReinvestForm;

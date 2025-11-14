@@ -81,219 +81,218 @@ const Withdrawal = ({ data }) => {
 
   return (
     <div
-      className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full dash"
+      className="dash min-h-screen w-full bg-canvas px-4 py-6 sm:px-6 sm:py-10 lg:px-10"
       style={{
         maxWidth: "calc(100vw - 260px)",
-        padding: "70px 20px",
+        paddingTop: "96px",
         boxSizing: "border-box",
         overflowX: "hidden",
       }}
     >
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div className="mb-4 md:mb-0">
-          <h1
-            className="text-2xl text-white font-bold"
-            style={{ fontSize: "19px" }}
-          >
-            Dashboard
-          </h1>
-          <p className="text-gray-400">/ Dashboard</p>
-        </div>
-
-        {/* Total Balance and Total Withdraw Section */}
-        <div className="flex gap-6 md:gap-4 sm:justify-between sm:flex-row sm:items-center sm:text-left text-white cont-bal">
-          <div className="text-center md:text-right">
-            <p className="text-gray-400 text-sm md:text-base">Total Balance</p>
-            <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              ${data?.balance.toFixed(2)}
-            </h2>
+      <div className="flex flex-col gap-8 text-foreground">
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight">Dashboard</h1>
+            <p className="text-sm text-muted">/ Dashboard</p>
           </div>
-          <div className="text-center md:text-right">
-            <p className="text-gray-400 text-sm md:text-base">Total Withdraw</p>
-            <h2 className="text-xl md:text-2xl font-semibold md:font-bold">
-              ${data?.totalWithdraw.toFixed(2)}
-            </h2>
+          <div className="cont-bal flex gap-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between md:gap-8">
+            <div className="text-right">
+              <p>Total Balance</p>
+              <h2 className="text-xl font-semibold text-foreground">
+                ${data?.balance.toFixed(2)}
+              </h2>
+            </div>
+            <div className="text-right">
+              <p>Total Withdraw</p>
+              <h2 className="text-xl font-semibold text-foreground">
+                ${data?.totalWithdraw.toFixed(2)}
+              </h2>
+            </div>
           </div>
-        </div>
-      </div>
+        </header>
 
-      <div
-        className="bg-[#f57c00] text-white text-xl font-semibold py-4 px-6"
-        style={{ marginBottom: "20px", fontSize: "16px", fontWeight: "500" }}
-      >
-        Ask for withdrawal
-      </div>
-      <div className="bg-[#232a35] text-gray-200 p-6 rounded-lg">
-        <div className="flex justify-between mb-4">
-          <p>Account Balance:</p>
-          <p>${data?.balance.toFixed(2)}</p>
-        </div>
-        <div className="flex justify-between mb-6">
-          <p>Pending Withdrawals:</p>
-          <p>$0.00</p>
-        </div>
+        <section className="rounded-3xl border border-stroke bg-surface-elevated p-6 shadow-xl transition-colors sm:p-8">
+          <div className="flex flex-col gap-6">
+            <div className="rounded-2xl border border-stroke bg-accent/10 px-5 py-4">
+              <h2 className="text-lg font-semibold text-foreground">
+                Ask for withdrawal
+              </h2>
+            </div>
 
-        {/* Cryptocurrency Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-gray-200 border-collapse max-w-full">
-            <thead>
-              <tr className="bg-[#323a47] text-gray-300 text-sm">
-                <th className="py-3 px-2">Processing</th>
-                <th className="py-3 px-2">Available</th>
-                <th className="py-3 px-2">Pending</th>
-                <th className="py-3 px-2">Account</th>
-              </tr>
-            </thead>
-            <tbody>
-              {coins.map((crypto) => (
-                <tr key={crypto.name} className="border-b border-gray-500">
-                  <td className="py-4 px-2 flex items-center gap-2">
-                    {crypto.icon} {crypto.name}
-                  </td>
-                  <td className="py-4 px-2 text-green-400">
-                    ${getAvailableAmount(crypto.name)}
-                  </td>
-                  <td className="py-4 px-2 text-red-400">
-                    ${getPendingAmount(crypto.method).toFixed(2)}
-                  </td>
-                  <td className="py-4 px-2 text-blue-400">
-                    {data[crypto.id] ? (
-                      "Set"
-                    ) : (
-                      <Link href="/profile/edit">Not Set</Link>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Withdrawal Form or Confirmation Section */}
-        <div className="text-center mt-6">
-          {data?.balance > 0 ? (
-            showConfirmation ? (
-              // Confirmation Menu with Enhanced Styling
-              <div className="bg-[#2a3340] p-6 rounded-lg text-left">
-                <h3 className="text-lg font-semibold text-orange-500 mb-4">
-                  Withdrawal Confirmation
-                </h3>
-                <p className="mb-2">
-                  <span className="font-bold text-gray-300">
-                    Payment System:
-                  </span>{" "}
-                  <span className="text-white">{selectedCoin}</span>
+            <div className="grid gap-6 rounded-2xl border border-stroke bg-surface p-6">
+              <div className="flex justify-between text-sm text-muted">
+                <p>Account Balance:</p>
+                <p className="font-medium text-foreground">
+                  ${data?.balance.toFixed(2)}
                 </p>
-                <p className="mb-2">
-                  <span className="font-bold text-gray-300">Account:</span>{" "}
-                  <span className="text-white">
-                    {data[selectedCoin.toLowerCase() + "AccountId"] ||
-                      "Not Set"}
-                  </span>
-                </p>
-                <p className="mb-2">
-                  <span className="font-bold text-gray-300">Debit Amount:</span>{" "}
-                  <span className="text-white">${amount}</span>
-                </p>
-                <p className="mb-2">
-                  <span className="font-bold text-gray-300">
-                    Withdrawal Fee:
-                  </span>{" "}
-                  <span className="text-white">
-                    We have no fee for this operation.
-                  </span>
-                </p>
-                <p className="mb-2">
-                  <span className="font-bold text-gray-300">
-                    Credit Amount:
-                  </span>{" "}
-                  <span className="text-white">${amount}</span>
-                </p>
-                <p className="mb-2">
-                  <span className="font-bold text-gray-300">Note:</span>{" "}
-                  <span className="text-white">
-                    {comment || "No comment provided"}
-                  </span>
-                </p>
-                {erro && <p className="text-red-500 mb-4">{erro}</p>}
-                <button
-                  className="bg-orange-600 hover:bg-orange-700 text-white py-2 px-6 rounded mt-6"
-                  onClick={handleConfirmClick}
-                >
-                  {isLoading ? "Submitting..." : "Confirm"}
-                </button>
               </div>
-            ) : (
-              // Withdrawal Form with Enhanced Styling
-              <div className="bg-[#2a3340] p-6 rounded-lg">
-                <div className="mb-4">
-                  <label className="block text-gray-300 mb-2">
-                    Withdrawal Amount:
-                  </label>
-                  <input
-                    type="number"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="w-full p-2 rounded bg-[#1c222c] text-white border border-gray-400 focus:outline-none focus:border-orange-500"
-                    placeholder="Enter amount"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-300 mb-2">Comment:</label>
-                  <input
-                    type="text"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    className="w-full p-2 rounded bg-[#1c222c] text-white border border-gray-400 focus:outline-none focus:border-orange-500"
-                    placeholder="Enter a comment"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-300 mb-2">
-                    Select Coin:
-                  </label>
-                  <select
-                    value={selectedCoin}
-                    onChange={(e) => setSelectedCoin(e.target.value)}
-                    className="w-full p-2 rounded bg-[#1c222c] text-white border border-gray-400 focus:outline-none focus:border-orange-500"
-                  >
-                    <option value="">Select a coin</option>
-                    {availableCoins.map((coin) => (
-                      <option key={coin.name} value={coin.name}>
-                        {coin.name}
-                      </option>
+              <div className="flex justify-between text-sm text-muted">
+                <p>Pending Withdrawals:</p>
+                <p className="font-medium text-foreground">$0.00</p>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="min-w-full border-collapse text-left text-sm text-foreground">
+                  <thead className="bg-surface-muted text-muted">
+                    <tr>
+                      <th className="py-3 px-2 font-semibold">Processing</th>
+                      <th className="py-3 px-2 font-semibold">Available</th>
+                      <th className="py-3 px-2 font-semibold">Pending</th>
+                      <th className="py-3 px-2 font-semibold">Account</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {coins.map((crypto) => (
+                      <tr
+                        key={crypto.name}
+                        className="border-b border-stroke last:border-none"
+                      >
+                        <td className="py-4 px-2 flex items-center gap-2 text-foreground">
+                          {crypto.icon} {crypto.name}
+                        </td>
+                        <td className="py-4 px-2 text-sm text-emerald-500">
+                          ${getAvailableAmount(crypto.name)}
+                        </td>
+                        <td className="py-4 px-2 text-sm text-rose-500">
+                          ${getPendingAmount(crypto.method).toFixed(2)}
+                        </td>
+                        <td className="py-4 px-2 text-sm text-accent">
+                          {data[crypto.id] ? (
+                            "Set"
+                          ) : (
+                            <Link href="/profile/edit" className="underline">
+                              Not Set
+                            </Link>
+                          )}
+                        </td>
+                      </tr>
                     ))}
-                  </select>
-                </div>
-                {errorMessage && (
-                  <p className="text-red-500 mb-4">{errorMessage}</p>
-                )}
-
-                <button
-                  onClick={handleNextClick}
-                  className="bg-orange-600 hover:bg-orange-700 text-white py-2 px-6 rounded mt-4"
-                >
-                  Next
-                </button>
+                  </tbody>
+                </table>
               </div>
-            )
-          ) : (
-            <p
-              className="bg-red-500 text-white py-2 px-4 inline-block rounded"
-              style={{
-                borderRadius: "5px",
-                fontSize: "14px",
-                border: "1px solid rgb(255, 77, 77)",
-              }}
-            >
-              YOU HAVE NO FUNDS TO WITHDRAW.
-            </p>
-          )}
-        </div>
+
+              <div className="mt-4 text-center">
+                {data?.balance > 0 ? (
+                  showConfirmation ? (
+                    <div className="rounded-2xl border border-stroke bg-surface-muted px-6 py-6 text-left text-foreground">
+                      <h3 className="text-lg font-semibold text-foreground">
+                        Withdrawal Confirmation
+                      </h3>
+                      <div className="mt-4 space-y-2 text-sm text-muted">
+                        <p>
+                          <span className="font-semibold text-foreground">
+                            Payment System:
+                          </span>{" "}
+                          {selectedCoin}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-foreground">
+                            Account:
+                          </span>{" "}
+                          {data[selectedCoin.toLowerCase() + "AccountId"] ||
+                            "Not Set"}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-foreground">
+                            Debit Amount:
+                          </span>{" "}
+                          ${amount}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-foreground">
+                            Withdrawal Fee:
+                          </span>{" "}
+                          We have no fee for this operation.
+                        </p>
+                        <p>
+                          <span className="font-semibold text-foreground">
+                            Credit Amount:
+                          </span>{" "}
+                          ${amount}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-foreground">
+                            Note:
+                          </span>{" "}
+                          {comment || "No comment provided"}
+                        </p>
+                      </div>
+                      {erro && <p className="mt-4 text-sm text-red-500">{erro}</p>}
+                      <button
+                        className="btn-accent mt-6 w-full rounded-xl py-3 text-sm font-semibold"
+                        onClick={handleConfirmClick}
+                      >
+                        {isLoading ? "Submitting..." : "Confirm"}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-stroke bg-surface-muted px-6 py-6 text-left text-foreground">
+                      <div className="mb-4">
+                        <label className="mb-2 block text-sm font-medium text-muted">
+                          Withdrawal Amount
+                        </label>
+                        <input
+                          type="number"
+                          value={amount}
+                          onChange={(e) => setAmount(e.target.value)}
+                          className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors placeholder:text-muted focus:border-accent focus:outline-none"
+                          placeholder="Enter amount"
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="mb-2 block text-sm font-medium text-muted">
+                          Comment
+                        </label>
+                        <input
+                          type="text"
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                          className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors placeholder:text-muted focus:border-accent focus:outline-none"
+                          placeholder="Enter a comment"
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label className="mb-2 block text-sm font-medium text-muted">
+                          Select Coin
+                        </label>
+                        <select
+                          value={selectedCoin}
+                          onChange={(e) => setSelectedCoin(e.target.value)}
+                          className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors focus:border-accent focus:outline-none"
+                        >
+                          <option value="">Select a coin</option>
+                          {availableCoins.map((coin) => (
+                            <option key={coin.name} value={coin.name}>
+                              {coin.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      {errorMessage && (
+                        <p className="text-sm text-red-500">{errorMessage}</p>
+                      )}
+
+                      <button
+                        onClick={handleNextClick}
+                        className="btn-accent mt-4 w-full rounded-xl py-3 text-sm font-semibold"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )
+                ) : (
+                  <p className="inline-block rounded-xl border border-red-500 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-500">
+                    YOU HAVE NO FUNDS TO WITHDRAW.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
       <ToastContainer />
     </div>
   );
-};
+}
 
 export default Withdrawal;

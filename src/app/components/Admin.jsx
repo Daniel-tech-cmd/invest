@@ -1,26 +1,54 @@
 "use client";
+
 import Link from "next/link";
 import axios from "axios";
 import { useAuthContext } from "../hooks/useAuthContext";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 
-const AdminComp = ({ data, data2 }) => {
-  const [openinves, setopeninvest] = useState(false);
-  const [error, setError] = useState("");
-  const [response, setResponseData] = useState("");
-  const [isLoading, setIsLoading] = useState("");
+const AdminComp = ({ data = [], data2 = {} }) => {
+  const [showNotifications, setShowNotifications] = useState(false);
   const { user } = useAuthContext();
-  const [patt, setpatt] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [processingId, setProcessingId] = useState("");
+
+  const notifications = data2?.notifications ?? [];
+
+  const formatCurrency = (value) =>
+    Number(value || 0).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+  const metrics = useMemo(() => {
+    const totalUsers = data.length;
+    const totalBalance = data.reduce(
+      (sum, current) => sum + (Number(current?.balance) || 0),
+      0
+    );
+    const pendingDeposits = notifications.filter(
+      (item) => item?.type === "deposit"
+    ).length;
+    const pendingWithdrawals = notifications.filter(
+      (item) => item?.type === "withdrawal"
+    ).length;
+
+    return {
+      totalUsers,
+      totalBalance,
+      pendingDeposits,
+      pendingWithdrawals,
+    };
+  }, [data, notifications]);
 
   const approvedepofn = async (trans, path) => {
-    setError(false);
-    setIsLoading(true);
-    setResponseData(null);
+    if (!user?._id) return;
 
-    const data = { ...trans };
-    console.log(data);
+    setIsSubmitting(true);
+    setProcessingId(trans?.id || "");
+
+    const payload = { ...trans };
     const endpoint =
       trans.type === "deposit"
         ? path === "approve"
@@ -31,7 +59,7 @@ const AdminComp = ({ data, data2 }) => {
         : `/api/withdraw/decline/${user._id}`;
 
     try {
-      const response = await axios.patch(endpoint, data, {
+      const response = await axios.patch(endpoint, payload, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user?.token}`,
@@ -39,224 +67,354 @@ const AdminComp = ({ data, data2 }) => {
       });
 
       if (response.status === 200) {
-        setResponseData(response.data);
-        setIsLoading(false);
         toast.success(
           `${path === "approve" ? "Approved" : "Declined"} successfully!`
         );
       } else {
-        setError(response.data.error);
-        setIsLoading(false);
+        toast.error(response.data?.error || "Something went wrong");
       }
     } catch (error) {
       const errMessage =
         error?.response?.data?.error || error.message || "An error occurred";
-      setError(errMessage);
-      setIsLoading(false);
       toast.error(errMessage);
+    } finally {
+      setIsSubmitting(false);
+      setProcessingId("");
     }
   };
 
   return (
-    <>
-      <section
-        style={{
-          padding: "15px",
-          backgroundColor: "#1F2937",
-          minHeight: "100vh",
-
-          maxWidth: "calc(100vw - 260px)",
-          padding: "70px 20px",
-          boxSizing: "border-box",
-          overflowX: "hidden",
-        }}
-        className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full dash"
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <h2
-            style={{
-              fontWeight: 400,
-              fontSize: "22px",
-              color: "hsl(var(--border) / 0.7)",
-            }}
-          >
-            Users
-          </h2>
-          <div
-            style={{ position: "relative", cursor: "pointer" }}
-            onClick={() => setopeninvest(true)}
-          >
-            {data2.notifications.length > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  right: "0px",
-                  top: "-3px",
-                  background: "red",
-                  width: "7px",
-                  height: "7px",
-                  borderRadius: "50%",
-                }}
-              ></span>
-            )}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="#e8eaed"
-            >
-              <path d="M80-560q0-100 44.5-183.5T244-882l47 64q-60 44-95.5 111T160-560H80Zm720 0q0-80-35.5-147T669-818l47-64q75 55 119.5 138.5T880-560h-80ZM160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z" />
-            </svg>
+    <section
+      className="dash min-h-screen w-full px-4 py-8 text-foreground sm:px-6 lg:px-10"
+      style={{
+        maxWidth: "calc(100vw - 260px)",
+        paddingTop: "96px",
+        boxSizing: "border-box",
+        overflowX: "hidden",
+        background: "var(--canvas-gradient)",
+      }}
+    >
+      <div className="flex flex-col gap-8">
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-wide text-muted">
+              Admin Console
+            </p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+              User Management
+            </h1>
           </div>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-            gap: "15px",
-            marginTop: "20px",
-          }}
-        >
-          {data.map((dat) => (
+          <div className="flex items-center gap-3">
             <Link
-              key={dat._id}
-              href={`/admin/edit?query=${dat._id}`}
-              style={{
-                backgroundColor: "#374151",
-                padding: "20px",
-                borderRadius: "8px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                color: "#CBD5E1",
-                minWidth: "fit-content",
-                textDecoration: "none",
-              }}
+              href="/admin/management"
+              className="rounded-full border border-stroke bg-surface px-5 py-2.5 text-sm font-semibold text-muted transition hover:border-accent hover:text-foreground"
             >
-              <span>{dat.email}</span>
+              Review Requests
+            </Link>
+            <button
+              onClick={() => setShowNotifications(true)}
+              className="relative inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-contrast shadow-lg transition hover:brightness-110"
+            >
+              <span>Notifications</span>
+              {notifications.length > 0 && (
+                <span className="absolute -right-1 -top-1 inline-flex h-3.5 w-3.5 rounded-full bg-rose-500"></span>
+              )}
+            </button>
+          </div>
+        </header>
+
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {[
+            {
+              label: "Total Users",
+              value: metrics.totalUsers.toLocaleString(),
+              description: "Registered accounts",
+            },
+            {
+              label: "Platform Balance",
+              value: `$${formatCurrency(metrics.totalBalance)}`,
+              description: "Aggregated user balances",
+            },
+            {
+              label: "Pending Deposits",
+              value: metrics.pendingDeposits,
+              description: "Awaiting approval",
+            },
+            {
+              label: "Pending Withdrawals",
+              value: metrics.pendingWithdrawals,
+              description: "Awaiting approval",
+            },
+          ].map(({ label, value, description }) => (
+            <div
+              key={label}
+              className="rounded-3xl border border-stroke bg-surface-elevated p-5 shadow-xl transition-colors"
+            >
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
+                {label}
+              </p>
+              <p className="mt-3 text-2xl font-semibold text-foreground">{value}</p>
+              <p className="mt-2 text-xs text-muted">{description}</p>
+            </div>
+          ))}
+        </section>
+
+        <section className="rounded-3xl border border-stroke bg-surface-elevated p-6 shadow-xl transition-colors">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">All Users</h2>
+              <p className="text-sm text-muted">
+                Click any profile to review balances, plans, and account details.
+              </p>
+            </div>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted">
+              Updated {new Date().toLocaleDateString()}
+            </p>
+          </div>
+
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {data.map((userItem) => (
+              <Link
+                key={userItem?._id}
+                href={`/admin/edit?query=${userItem?._id}`}
+                className="group flex flex-col gap-4 rounded-2xl border border-stroke bg-surface p-5 shadow-lg transition-colors hover:border-accent"
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {userItem?.username || "Unnamed User"}
+                    </p>
+                    <p className="text-xs text-muted">{userItem?.email}</p>
+                  </div>
+                  <span className="inline-flex items-center rounded-full border border-stroke bg-surface-muted px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted">
+                    {userItem?.role === "admin" ? "Admin" : "Investor"}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs text-muted">
+                  <div className="rounded-xl border border-stroke bg-surface-muted px-4 py-3">
+                    <p className="uppercase tracking-wide text-[10px] text-muted">
+                      Balance
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">
+                      ${formatCurrency(userItem?.balance)}
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-stroke bg-surface-muted px-4 py-3">
+                    <p className="uppercase tracking-wide text-[10px] text-muted">
+                      Active Plans
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">
+                      {userItem?.activeDeposit?.filter((d) => d?.stopped === false)
+                        ?.length || 0}
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-stroke bg-surface-muted px-4 py-3">
+                    <p className="uppercase tracking-wide text-[10px] text-muted">
+                      Total Deposit
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">
+                      ${formatCurrency(userItem?.totalDeposit)}
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-stroke bg-surface-muted px-4 py-3">
+                    <p className="uppercase tracking-wide text-[10px] text-muted">
+                      Total Withdraw
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-foreground">
+                      ${formatCurrency(userItem?.totalWithdraw)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-muted">
+                  <span className="inline-flex items-center gap-1 font-medium text-accent">
+                    View details
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-3.5 w-3.5 transition group-hover:translate-x-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </span>
+                  <span>
+                    Joined {new Date(userItem?.createdAt || Date.now()).toLocaleDateString()}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {showNotifications && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-8">
+          <div className="relative w-full max-w-xl rounded-3xl border border-stroke bg-surface-elevated p-6 shadow-2xl transition-colors">
+            <button
+              onClick={() => setShowNotifications(false)}
+              className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-stroke bg-surface text-muted transition hover:border-accent hover:text-foreground"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                height="18px"
-                viewBox="0 -960 960 960"
-                width="18px"
-                fill="red"
-                style={{ marginLeft: "5px" }}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                className="h-5 w-5"
               >
-                <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />
               </svg>
-            </Link>
-          ))}
-        </div>
+            </button>
 
-        {openinves && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: "#1F2937",
-                padding: "20px",
-                borderRadius: "8px",
-                width: "400px",
-                maxHeight: "80vh",
-                overflowY: "auto",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "20px",
-                }}
-              >
-                <h2 style={{ color: "#FFFFFF" }}>Notifications</h2>
+            <div className="pr-8">
+              <h2 className="text-2xl font-semibold text-foreground">Activity Notifications</h2>
+              <p className="mt-1 text-sm text-muted">
+                Track new funding requests and take action directly from this panel.
+              </p>
+            </div>
 
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="#e8eaed"
-                  onClick={() => setopeninvest(false)}
-                >
-                  <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
-                </svg>
-              </div>
-
-              {data2?.notifications
-                ?.slice()
-                .reverse()
-                .map((dat) => (
-                  <div
-                    key={dat._id}
-                    style={{
-                      backgroundColor: "#374151",
-                      padding: "15px",
-                      borderRadius: "8px",
-                      marginBottom: "15px",
-                    }}
-                  >
-                    <p style={{ color: "#E5E7EB" }}>{dat.text}</p>
+            <div className="mt-6 space-y-4 overflow-y-auto pr-2" style={{ maxHeight: "60vh" }}>
+              {notifications.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-stroke bg-surface-muted p-6 text-center">
+                  <p className="text-sm font-semibold text-foreground">No pending notifications</p>
+                  <p className="mt-1 text-xs text-muted">
+                    You're all caught up. New requests will appear here automatically.
+                  </p>
+                </div>
+              ) : (
+                notifications
+                  .slice()
+                  .reverse()
+                  .map((item) => (
                     <div
-                      style={{
-                        marginTop: "15px",
-                        display: "flex",
-                        gap: "10px",
-                      }}
+                      key={item?.id || item?._id}
+                      className="rounded-2xl border border-stroke bg-surface p-5 shadow-sm transition-colors"
                     >
-                      <button
-                        style={{
-                          backgroundColor: "green",
-                          color: "#fff",
-                          padding: "8px 16px",
-                          borderRadius: "5px",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => approvedepofn(dat, "approve")}
-                      >
-                        Approve
-                      </button>
-                      <button
-                        style={{
-                          backgroundColor: "red",
-                          color: "#fff",
-                          padding: "8px 16px",
-                          borderRadius: "5px",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => approvedepofn(dat, "decline")}
-                      >
-                        Decline
-                      </button>
+                      {(() => {
+                        const requestUser = data.find((usr) => usr?._id === item?.userid);
+                        const record =
+                          item?.type === "deposit"
+                            ? requestUser?.deposit?.[item?.index ?? -1]
+                            : requestUser?.withdraw?.[item?.index ?? -1];
+
+                        return (
+                          <>
+                            <div className="flex flex-col gap-2">
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <p className="text-sm font-medium text-foreground">{item?.text}</p>
+                                  <p className="mt-1 text-xs text-muted">
+                                    {requestUser?.email || "Unknown user"}
+                                  </p>
+                                </div>
+                                <span className="inline-flex items-center rounded-full border border-stroke bg-surface-muted px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted">
+                                  {item?.type === "deposit" ? "Deposit" : "Withdrawal"}
+                                </span>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-3 text-xs text-muted">
+                                <div className="rounded-xl border border-stroke bg-surface-muted px-3 py-2">
+                                  <p className="text-[10px] uppercase tracking-wide text-muted">
+                                    Amount
+                                  </p>
+                                  <p className="mt-1 text-sm font-semibold text-foreground">
+                                    ${formatCurrency(item?.amount)}
+                                  </p>
+                                </div>
+                                <div className="rounded-xl border border-stroke bg-surface-muted px-3 py-2">
+                                  <p className="text-[10px] uppercase tracking-wide text-muted">
+                                    Requested
+                                  </p>
+                                  <p className="mt-1 text-sm font-semibold text-foreground">
+                                    {new Date(item?.date || Date.now()).toLocaleString()}
+                                  </p>
+                                </div>
+                                {record?.plan && (
+                                  <div className="rounded-xl border border-stroke bg-surface-muted px-3 py-2">
+                                    <p className="text-[10px] uppercase tracking-wide text-muted">
+                                      Plan
+                                    </p>
+                                    <p className="mt-1 text-sm font-semibold text-foreground">
+                                      {record.plan}
+                                    </p>
+                                  </div>
+                                )}
+                                {record?.method && (
+                                  <div className="rounded-xl border border-stroke bg-surface-muted px-3 py-2">
+                                    <p className="text-[10px] uppercase tracking-wide text-muted">
+                                      Method
+                                    </p>
+                                    <p className="mt-1 text-sm font-semibold text-foreground">
+                                      {record.method}
+                                    </p>
+                                  </div>
+                                )}
+                                {record?.wallet && (
+                                  <div className="col-span-2 rounded-xl border border-stroke bg-surface-muted px-3 py-2">
+                                    <p className="text-[10px] uppercase tracking-wide text-muted">
+                                      Wallet
+                                    </p>
+                                    <p className="mt-1 truncate text-sm font-semibold text-foreground">
+                                      {record.wallet}
+                                    </p>
+                                  </div>
+                                )}
+                                {record?.note && (
+                                  <div className="col-span-2 rounded-xl border border-stroke bg-surface-muted px-3 py-2">
+                                    <p className="text-[10px] uppercase tracking-wide text-muted">
+                                      Note
+                                    </p>
+                                    <p className="mt-1 text-sm font-semibold text-foreground">
+                                      {record.note}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="mt-4 flex flex-wrap items-center gap-3">
+                                <button
+                                  onClick={() => approvedepofn(item, "approve")}
+                                  className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-600"
+                                  disabled={isSubmitting && processingId === (item?.id || item?._id)}
+                                >
+                                  {isSubmitting && processingId === (item?.id || item?._id)
+                                    ? "Processing..."
+                                    : "Approve"}
+                                </button>
+                                <button
+                                  onClick={() => approvedepofn(item, "decline")}
+                                  className="inline-flex items-center justify-center rounded-full bg-rose-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-rose-600"
+                                  disabled={isSubmitting && processingId === (item?.id || item?._id)}
+                                >
+                                  {isSubmitting && processingId === (item?.id || item?._id)
+                                    ? "Processing..."
+                                    : "Decline"}
+                                </button>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
-                  </div>
-                ))}
+                  ))
+              )}
             </div>
           </div>
-        )}
-        <ToastContainer />
-      </section>
-    </>
+        </div>
+      )}
+
+      <ToastContainer />
+    </section>
   );
-};
+}
+;
 
 export default AdminComp;

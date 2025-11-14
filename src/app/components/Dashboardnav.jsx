@@ -7,8 +7,8 @@ import { useContext } from "react";
 import { navcon } from "../contexts/navcon";
 import { FiRefreshCcw } from "react-icons/fi";
 
-// Icon color and size
-const iconColor = "#FF914D"; // Orange-like color
+// Icon size remains consistent; color comes from CSS via currentColor
+const iconColor = "currentColor";
 const iconSize = "18px";
 
 // SVG icons
@@ -124,14 +124,28 @@ export default function Sidebar({ data }) {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isReferralsOpen, setIsReferralsOpen] = useState(false);
-  const { toggle } = useContext(navcon);
+  const { toggle, mode } = useContext(navcon);
   const { logout } = useSignup();
 
-  return (
-    <div className="min-h-screen bg-[#1c222c] text-gray-300 w-64 p-4 flex flex-col justify-between fixed left-0 lg:block hidden nav">
-      <div>
-        {/* Logo */}
-        <div className="flex items-center gap-4 mb-6 mt-14">
+  const isMobileOpen = mode === "nav-open";
+
+  const handleNavClick = () => {
+    if (isMobileOpen) {
+      toggle();
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    if (isMobileOpen) {
+      toggle();
+    }
+  };
+
+  const SidebarContent = ({ onNavigate, onLogout }) => (
+    <div className="flex h-full flex-col">
+      <div className="nav-scroll flex flex-1 flex-col overflow-y-auto px-4">
+        <div className="mt-20 mb-6 flex items-center gap-4">
           <Image
             src={data?.gender ? `/${data.gender}.webp` : "/user.png"}
             alt="User Profile"
@@ -144,36 +158,25 @@ export default function Sidebar({ data }) {
             }}
           />
 
-          <div
-            className="text-xl text-orange-400 font-semibold"
-            style={{
-              fontSize: "16px",
-              fontWeight: 500,
-              textTransform: "capitalize",
-            }}
-          >
+          <div className="text-base font-semibold text-foreground capitalize">
             Welcome,{data?.username}!
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="space-y-6">
+        <nav className="space-y-6 text-muted">
           <Link
             href="/dashboard"
-            className="flex items-center gap-4 hover:text-orange-400 transition-colors"
-            style={{ fontSize: "14px", padding: "0 15px" }}
-            onClick={toggle}
+            className="flex items-center gap-4 px-[15px] text-sm transition-colors hover:text-foreground"
+            onClick={onNavigate}
           >
             {homeIcon}
             <span>Home</span>
           </Link>
 
-          {/* Deposit Dropdown */}
           <div>
             <button
-              onClick={() => setIsDepositOpen(!isDepositOpen)}
-              className="flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
-              style={{ fontSize: "14px", padding: "0 15px" }}
+              onClick={() => setIsDepositOpen((open) => !open)}
+              className="flex w-full items-center gap-4 px-[15px] text-left text-sm transition-colors hover:text-foreground"
             >
               {depositIcon}
               <span>Deposits</span>
@@ -182,17 +185,11 @@ export default function Sidebar({ data }) {
               </span>
             </button>
             {isDepositOpen && (
-              <div className=" space-y-2" style={{ padding: "5px 15px" }}>
+              <div className="space-y-2 px-[15px] py-[5px]">
                 <Link
                   href="/deposit"
-                  onClick={toggle}
-                  style={{
-                    borderLeft: "2px solid #f68c1f",
-                    background: "#232a35 ",
-                    padding: "6px",
-                    marginTop: "5px",
-                  }}
-                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                  onClick={onNavigate}
+                  className="flex w-full items-center gap-3 border-l-2 border-accent/40 bg-surface-muted/40 px-3 py-2 text-sm transition-colors hover:text-foreground"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -207,14 +204,8 @@ export default function Sidebar({ data }) {
                 </Link>
                 <Link
                   href="/deposit/deposit-list"
-                  onClick={toggle}
-                  style={{
-                    borderLeft: "2px solid #f68c1f",
-                    background: "#232a35",
-                    padding: "6px",
-                    marginTop: "5px",
-                  }}
-                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                  onClick={onNavigate}
+                  className="flex w-full items-center gap-3 border-l-2 border-accent/40 bg-surface-muted/40 px-3 py-2 text-sm transition-colors hover:text-foreground"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -225,7 +216,7 @@ export default function Sidebar({ data }) {
                   >
                     <path d="M200-440v-80h560v80H200Z" />
                   </svg>
-                  <span> Deposit List </span>
+                  <span>Deposit List</span>
                 </Link>
               </div>
             )}
@@ -233,9 +224,8 @@ export default function Sidebar({ data }) {
 
           <Link
             href="/withdraw"
-            onClick={toggle}
-            className="flex items-center gap-4 hover:text-orange-400 transition-colors"
-            style={{ fontSize: "14px", padding: "0 15px" }}
+            onClick={onNavigate}
+            className="flex items-center gap-4 px-[15px] text-sm transition-colors hover:text-foreground"
           >
             {withdrawIcon}
             <span>Withdraw</span>
@@ -243,22 +233,17 @@ export default function Sidebar({ data }) {
 
           <Link
             href="/reinvest"
-            onClick={toggle}
-            className="flex items-center gap-4 hover:text-orange-400 transition-colors"
-            style={{ fontSize: "14px", padding: "0 15px" }}
+            onClick={onNavigate}
+            className="flex items-center gap-4 px-[15px] text-sm transition-colors hover:text-foreground"
           >
-            <FiRefreshCcw
-              style={{ color: `${iconColor}`, fontSize: `${iconSize}` }}
-            />
+            <FiRefreshCcw className="text-current" style={{ fontSize: iconSize }} />
             <span>Re-invest Profit</span>
           </Link>
 
-          {/* History Dropdown */}
           <div>
             <button
-              onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-              className="flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
-              style={{ fontSize: "14px", padding: "0 15px" }}
+              onClick={() => setIsHistoryOpen((open) => !open)}
+              className="flex w-full items-center gap-4 px-[15px] text-left text-sm transition-colors hover:text-foreground"
             >
               {historyIcon}
               <span>History</span>
@@ -267,17 +252,11 @@ export default function Sidebar({ data }) {
               </span>
             </button>
             {isHistoryOpen && (
-              <div className="pl-10 space-y-2" style={{ padding: "5px 15px" }}>
+              <div className="space-y-2 px-[15px] py-[5px] pl-10">
                 <Link
                   href="/history/withdraw-history"
-                  onClick={toggle}
-                  style={{
-                    borderLeft: "2px solid #f68c1f",
-                    background: "#232a35 ",
-                    padding: "6px",
-                    marginTop: "5px",
-                  }}
-                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                  onClick={onNavigate}
+                  className="flex w-full items-center gap-3 border-l-2 border-accent/40 bg-surface-muted/40 px-3 py-2 text-sm transition-colors hover:text-foreground"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -288,18 +267,12 @@ export default function Sidebar({ data }) {
                   >
                     <path d="M200-440v-80h560v80H200Z" />
                   </svg>
-                  <span> Withdrawal History</span>
+                  <span>Withdrawal History</span>
                 </Link>
                 <Link
                   href="/history/deposit-history"
-                  style={{
-                    borderLeft: "2px solid #f68c1f",
-                    background: "#232a35 ",
-                    padding: "6px",
-                    marginTop: "5px",
-                  }}
-                  onClick={toggle}
-                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                  onClick={onNavigate}
+                  className="flex w-full items-center gap-3 border-l-2 border-accent/40 bg-surface-muted/40 px-3 py-2 text-sm transition-colors hover:text-foreground"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -316,12 +289,10 @@ export default function Sidebar({ data }) {
             )}
           </div>
 
-          {/* Profile Dropdown */}
           <div>
             <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
-              style={{ fontSize: "14px", padding: "0 15px" }}
+              onClick={() => setIsProfileOpen((open) => !open)}
+              className="flex w-full items-center gap-4 px-[15px] text-left text-sm transition-colors hover:text-foreground"
             >
               {profileIcon}
               <span>Profile</span>
@@ -330,17 +301,11 @@ export default function Sidebar({ data }) {
               </span>
             </button>
             {isProfileOpen && (
-              <div className="pl-10 space-y-2" style={{ padding: "5px 15px" }}>
+              <div className="space-y-2 px-[15px] py-[5px] pl-10">
                 <Link
                   href="/profile/edit"
-                  onClick={toggle}
-                  style={{
-                    borderLeft: "2px solid #f68c1f",
-                    background: "#232a35 ",
-                    padding: "6px",
-                    marginTop: "5px",
-                  }}
-                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                  onClick={onNavigate}
+                  className="flex w-full items-center gap-3 border-l-2 border-accent/40 bg-surface-muted/40 px-3 py-2 text-sm transition-colors hover:text-foreground"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -357,12 +322,10 @@ export default function Sidebar({ data }) {
             )}
           </div>
 
-          {/* Referrals Dropdown */}
           <div>
             <button
-              onClick={() => setIsReferralsOpen(!isReferralsOpen)}
-              className="flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
-              style={{ fontSize: "14px", padding: "0 15px" }}
+              onClick={() => setIsReferralsOpen((open) => !open)}
+              className="flex w-full items-center gap-4 px-[15px] text-left text-sm transition-colors hover:text-foreground"
             >
               {referralsIcon}
               <span>Referrals</span>
@@ -371,16 +334,11 @@ export default function Sidebar({ data }) {
               </span>
             </button>
             {isReferralsOpen && (
-              <div className="pl-10 space-y-2" style={{ padding: "5px 15px" }}>
+              <div className="space-y-2 px-[15px] py-[5px] pl-10">
                 <Link
                   href="/referrals/"
-                  style={{
-                    borderLeft: "2px solid #f68c1f",
-                    background: "#232a35 ",
-                    padding: "6px",
-                    marginTop: "5px",
-                  }}
-                  className="block text-sm hover:text-orange-400 transition-colors flex items-center gap-4 w-full text-left hover:text-orange-400 transition-colors"
+                  onClick={onNavigate}
+                  className="flex w-full items-center gap-3 border-l-2 border-accent/40 bg-surface-muted/40 px-3 py-2 text-sm transition-colors hover:text-foreground"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -396,17 +354,17 @@ export default function Sidebar({ data }) {
               </div>
             )}
           </div>
+
           {data?.role === "admin" && (
             <>
               <Link
-                href={"/admin"}
-                onClick={toggle}
-                className="flex items-center gap-4 hover:text-orange-400 transition-colors"
-                style={{ fontSize: "14px", padding: "0 15px" }}
+                href="/admin"
+                onClick={onNavigate}
+                className="flex items-center gap-4 px-[15px] text-sm transition-colors hover:text-foreground"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  fill={iconColor}
+                  fill="currentColor"
                   height="24px"
                   viewBox="0 -960 960 960"
                   width="17px"
@@ -416,14 +374,13 @@ export default function Sidebar({ data }) {
                 <span>Admin</span>
               </Link>
               <Link
-                href={"/admin/add-wallet"}
-                onClick={toggle}
-                className="flex items-center gap-4 hover:text-orange-400 transition-colors"
-                style={{ fontSize: "14px", padding: "0 15px" }}
+                href="/admin/add-wallet"
+                onClick={onNavigate}
+                className="flex items-center gap-4 px-[15px] text-sm transition-colors hover:text-foreground"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  fill={iconColor}
+                  fill="currentColor"
                   height="24px"
                   viewBox="0 -960 960 960"
                   width="17px"
@@ -433,35 +390,60 @@ export default function Sidebar({ data }) {
                 <span>Add wallet</span>
               </Link>
               <Link
-                href={"/admin/wallets"}
-                onClick={toggle}
-                className="flex items-center gap-4 hover:text-orange-400 transition-colors"
-                style={{ fontSize: "14px", padding: "0 15px" }}
+                href="/admin/wallets"
+                onClick={onNavigate}
+                className="flex items-center gap-4 px-[15px] text-sm transition-colors hover:text-foreground"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  fill={iconColor}
+                  fill="currentColor"
                   height="24px"
                   viewBox="0 -960 960 960"
                   width="17px"
                 >
                   <path d="M680-280q25 0 42.5-17.5T740-340q0-25-17.5-42.5T680-400q-25 0-42.5 17.5T620-340q0 25 17.5 42.5T680-280Zm0 120q31 0 57-14.5t42-38.5q-22-13-47-20t-52-7q-27 0-52 7t-47 20q16 24 42 38.5t57 14.5ZM480-80q-139-35-229.5-159.5T160-516v-244l320-120 320 120v227q-19-8-39-14.5t-41-9.5v-147l-240-90-240 90v188q0 47 12.5 94t35 89.5Q310-290 342-254t71 60q11 32 29 61t41 52q-1 0-1.5.5t-1.5.5Zm200 0q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80ZM480-494Z" />
                 </svg>
-                <span>wallets</span>
+                <span>Wallets</span>
               </Link>
             </>
           )}
-          <Link
-            href="#"
-            className="flex items-center gap-4 hover:text-orange-400 transition-colors"
-            style={{ fontSize: "14px", padding: "0 15px" }}
-            onClick={logout}
-          >
-            {logoutIcon}
-            <span>Logout</span>
-          </Link>
         </nav>
       </div>
+      <div className="px-4 pb-6">
+        <button
+          type="button"
+          onClick={onLogout}
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-stroke bg-surface px-[15px] py-3 text-sm font-medium transition-colors hover:bg-surface-muted"
+        >
+          {logoutIcon}
+          <span>Logout</span>
+        </button>
+      </div>
     </div>
+  );
+
+  return (
+    <>
+      <aside className="nav fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-sidebar bg-sidebar text-foreground lg:flex">
+        <SidebarContent onNavigate={handleNavClick} onLogout={handleLogout} />
+      </aside>
+
+      <aside
+        className={`nav fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-sidebar bg-sidebar text-foreground transition-transform duration-300 lg:hidden ${
+          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <SidebarContent onNavigate={handleNavClick} onLogout={handleLogout} />
+      </aside>
+
+      {isMobileOpen && (
+        <button
+          type="button"
+          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm lg:hidden"
+          onClick={toggle}
+          aria-label="Close navigation"
+        />
+      )}
+    </>
   );
 }

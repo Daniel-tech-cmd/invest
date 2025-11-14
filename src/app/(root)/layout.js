@@ -27,17 +27,18 @@ export default async function RootLayout({ children }) {
   const data = getdatabyId(user._id);
   const [dat] = await Promise.all([data]);
   return (
-    <html lang="en">
-      <body className={` antialiased`}>
+    <html lang="en" className="min-h-full">
+      <body className="antialiased min-h-full bg-background text-foreground transition-colors duration-300">
         {dat?.suspended && <AccountSuspension />}
         {!dat?.suspended && (
           <NavProvider>
             <TopNav />
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <Dashboardnav data={dat} />
+            <Dashboardnav data={dat} />
+            <div className="min-h-screen bg-canvas lg:pl-64">
               <NotificationPopup />
-
-              {children}
+              <main className="min-h-screen bg-surface text-foreground transition-colors duration-300 pt-20 lg:pt-24">
+                {children}
+              </main>
             </div>
           </NavProvider>
         )}
