@@ -3,7 +3,7 @@ import Token from "@/app/models/token";
 import { connectToDB } from "@/app/utils/database";
 
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 // import Passwordrec from require("../models/passwordrec");
 // import Token from require("../models/token");
 import crypto from "crypto";
