@@ -9,7 +9,7 @@ module.exports = async (email, subject, url, html) => {
 
       auth: {
         user: process.env.USER,
-        pass: `Daniel650$`,
+        pass: `Daniel650##`,
       },
     });
 
