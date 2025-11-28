@@ -171,252 +171,305 @@ const Edit = ({ data }) => {
     }
   };
 
+  const formatCurrency = (value) =>
+    Number(value || 0).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
   return (
-    <div
-      className="min-h-screen bg-[#1c222c] p-4 md:p-6 w-full dash"
+    <section
+      className="dash min-h-screen w-full px-4 py-8 text-foreground sm:px-6 lg:px-10"
       style={{
         maxWidth: "calc(100vw - 260px)",
-        padding: "70px 20px",
+        paddingTop: "96px",
         boxSizing: "border-box",
         overflowX: "hidden",
+        background: "var(--canvas-gradient)",
       }}
     >
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div className="mb-4 md:mb-0">
-          <h1 className="text-2xl text-white font-bold">Dashboard</h1>
-          <p className="text-gray-400">/ Dashboard</p>
-        </div>
-
-        <div className="flex gap-6 md:gap-4 text-white">
-          <div className="text-center">
-            <p className="text-gray-400 text-sm">Total Balance</p>
-            <h2 className="text-xl font-semibold">${data?.balance}</h2>
-          </div>
-          <div className="text-center">
-            <p className="text-gray-400 text-sm">Total Withdraw</p>
-            <h2 className="text-xl font-semibold">$0.00</h2>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-3xl mx-auto bg-[#2d3748] shadow-lg rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-white text-center mb-6">
-          Edit User
-        </h2>
-
-        <div className="flex flex-col items-center mb-6">
-          <Image
-            src={`/${data.gender}.webp`}
-            width={100}
-            height={100}
-            alt="Profile"
-            className="rounded-full"
-          />
-        </div>
-
-        <form className="space-y-4" onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-8">
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <label className="block text-gray-300 font-semibold">
-              Username
-            </label>
-            <input
-              type="text"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Username"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+            <p className="text-sm font-medium uppercase tracking-wide text-muted">
+              Admin Console
+            </p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
+              Edit User Account
+            </h1>
           </div>
-
-          <div>
-            <label className="block text-gray-300 font-semibold">Email</label>
-            <input
-              type="email"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 font-semibold">Role</label>
-            <input
-              type="text"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Role"
-              required
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 font-semibold">Number</label>
-            <input
-              type="text"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Mobile Number"
-              value={number}
-              onChange={(e) => setNumber(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 font-semibold">Country</label>
-            <input
-              type="text"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Country"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 font-semibold">Balance</label>
-            <input
-              type="number"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Balance"
-              required
-              value={balance}
-              onChange={(e) => setBalance(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 font-semibold">Bitcoin Account ID</label>
-            <input
-              type="text"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Bitcoin Account ID"
-              value={bitcoinAccountId}
-              onChange={(e) => setBitcoinAccountId(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 font-semibold">Ethereum Account ID</label>
-            <input
-              type="text"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Ethereum Account ID"
-              value={ethereumAccountId}
-              onChange={(e) => setEthereumAccountId(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 font-semibold">Dogecoin Account ID</label>
-            <input
-              type="text"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Dogecoin Account ID"
-              value={dogeAccountId}
-              onChange={(e) => setDogeAccountId(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 font-semibold">Litecoin Account ID</label>
-            <input
-              type="text"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Litecoin Account ID"
-              value={litecoinAccountId}
-              onChange={(e) => setLitecoinAccountId(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-300 font-semibold">USDT Account ID</label>
-            <input
-              type="text"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="USDT Account ID"
-              value={usdtAccountId}
-              onChange={(e) => setUsdtAccountId(e.target.value)}
-            />
-          </div>
-
-          {balance !== prevBalance && (
-            <div>
-              <label className="block text-gray-300 font-semibold">
-                Select a Plan
-              </label>
-              <select
-                className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-                value={plan}
-                onChange={(e) => setPlan(e.target.value)}
-              >
-                <option value="">Select Plan</option>
-                {plans.map((p) => (
-                  <option key={p.planName} value={p.planName}>
-                    {p.planName}
-                  </option>
-                ))}
-              </select>
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="rounded-2xl border border-stroke bg-surface-elevated px-5 py-3">
+              <p className="text-xs uppercase tracking-wide text-muted">Balance</p>
+              <p className="mt-1 text-lg font-semibold text-foreground">
+                ${formatCurrency(data?.balance)}
+              </p>
             </div>
-          )}
-
-          <div>
-            <label className="block text-gray-300 font-semibold">
-              Verified
-            </label>
-            <input
-              type="text"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Verified"
-              value={verified}
-              onChange={(e) => setVerified(e.target.value)}
-            />
+            <div className="rounded-2xl border border-stroke bg-surface-elevated px-5 py-3">
+              <p className="text-xs uppercase tracking-wide text-muted">Total Withdraw</p>
+              <p className="mt-1 text-lg font-semibold text-foreground">
+                ${formatCurrency(data?.totalWithdraw || 0)}
+              </p>
+            </div>
           </div>
+        </header>
 
-          <div>
-            <label className="block text-gray-300 font-semibold">
-              Suspended
-            </label>
-            <input
-              type="text"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Suspended"
-              value={suspended}
-              onChange={(e) => setsuspended(e.target.value)}
-            />
+        <div className="rounded-3xl border border-stroke bg-surface-elevated p-6 shadow-xl transition-colors sm:p-8">
+          <div className="mx-auto max-w-3xl">
+            <div className="flex flex-col items-center gap-6 border-b border-stroke pb-6">
+              <Image
+                src={`/${data.gender}.webp`}
+                width={100}
+                height={100}
+                alt="Profile"
+                className="rounded-full ring-4 ring-accent/20"
+              />
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold text-foreground">
+                  {res?.username || "Loading..."}
+                </h2>
+                <p className="mt-1 text-sm text-muted">{res?.email}</p>
+              </div>
+            </div>
+
+            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    placeholder="Username"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    placeholder="Email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                    Role
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    placeholder="Role"
+                    required
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                    Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    placeholder="Mobile Number"
+                    value={number}
+                    onChange={(e) => setNumber(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                    Country
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    placeholder="Country"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                    Account Balance
+                  </label>
+                  <input
+                    type="number"
+                    className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    placeholder="Balance"
+                    required
+                    value={balance}
+                    onChange={(e) => setBalance(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                    Minimum Withdrawal
+                  </label>
+                  <input
+                    type="number"
+                    className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    placeholder="Minimum Withdrawal"
+                    value={minimumWithdrawal}
+                    onChange={(e) => setMinWith(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                    Verified Status
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    placeholder="true or false"
+                    value={verified}
+                    onChange={(e) => setVerified(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                    Suspended Status
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    placeholder="true or false"
+                    value={suspended}
+                    onChange={(e) => setsuspended(e.target.value)}
+                  />
+                </div>
+
+                {balance !== prevBalance && (
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                      Investment Plan
+                    </label>
+                    <select
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      value={plan}
+                      onChange={(e) => setPlan(e.target.value)}
+                    >
+                      <option value="">Select Plan</option>
+                      {plans.map((p) => (
+                        <option key={p.planName} value={p.planName}>
+                          {p.planName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-4 border-t border-stroke pt-6">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Cryptocurrency Wallet IDs
+                </h3>
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                      Bitcoin (BTC)
+                    </label>
+                    <input
+                      type="text"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Bitcoin Account ID"
+                      value={bitcoinAccountId}
+                      onChange={(e) => setBitcoinAccountId(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                      Ethereum (ETH)
+                    </label>
+                    <input
+                      type="text"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Ethereum Account ID"
+                      value={ethereumAccountId}
+                      onChange={(e) => setEthereumAccountId(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                      Dogecoin (DOGE)
+                    </label>
+                    <input
+                      type="text"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Dogecoin Account ID"
+                      value={dogeAccountId}
+                      onChange={(e) => setDogeAccountId(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                      Litecoin (LTC)
+                    </label>
+                    <input
+                      type="text"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Litecoin Account ID"
+                      value={litecoinAccountId}
+                      onChange={(e) => setLitecoinAccountId(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                      Tether (USDT)
+                    </label>
+                    <input
+                      type="text"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="USDT Account ID"
+                      value={usdtAccountId}
+                      onChange={(e) => setUsdtAccountId(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-4 border-t border-stroke pt-6">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="inline-flex items-center justify-center rounded-full bg-accent px-8 py-3 text-sm font-semibold text-accent-contrast shadow-lg transition hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? "Updating..." : "Save Changes"}
+                </button>
+              </div>
+
+              {error && (
+                <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-center text-sm font-medium text-rose-500">
+                  {error}
+                </div>
+              )}
+            </form>
           </div>
-
-          <div>
-            <label className="block text-gray-300 font-semibold">
-              Minimum Withdrawal
-            </label>
-            <input
-              type="number"
-              className="mt-1 w-full px-4 py-2 bg-[#1f2937] text-white border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Minimum Withdrawal"
-              value={minimumWithdrawal}
-              onChange={(e) => setMinWith(e.target.value)}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-2 mt-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors"
-          >
-            {isLoading ? "Updating..." : "Update"}
-          </button>
-
-          {error && (
-            <div className="text-red-500 text-center mt-2">{error}</div>
-          )}
-        </form>
-
-        <ToastContainer />
+        </div>
       </div>
-    </div>
+
+      <ToastContainer />
+    </section>
   );
 };
 

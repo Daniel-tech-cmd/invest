@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
+import Link from "next/link";
 import { formatDate } from "../utils/formdate";
 import MarketDashboard from "./Market";
 
@@ -170,12 +171,12 @@ const Dashboard = ({ data }) => {
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                <button className="btn-accent rounded-full px-6 py-2.5 text-sm font-semibold shadow-lg">
+                <Link href="/withdraw" className="btn-accent rounded-full px-6 py-2.5 text-sm font-semibold shadow-lg">
                   Withdraw
-                </button>
-                <button className="btn-ghost rounded-full px-6 py-2.5 text-sm font-semibold">
+                </Link>
+                <Link href="/deposit" className="btn-ghost rounded-full px-6 py-2.5 text-sm font-semibold">
                   Deposit
-                </button>
+                </Link>
               </div>
             </div>
 

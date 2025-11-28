@@ -146,6 +146,10 @@ const UserSchema = new Schema(
           type: Boolean,
           default: false,
         },
+        date: {
+          type: Date,
+          default: Date.now(),
+        },
       },
     ],
     totalWithdraw: {
@@ -319,6 +323,23 @@ const UserSchema = new Schema(
     city: {
       type: String,
     },
+    earnHistory: [
+      {
+        amount: {
+          type: Number,
+        },
+        plan: {
+          type: String,
+        },
+        depositAmount: {
+          type: Number,
+        },
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
@@ -377,12 +398,12 @@ UserSchema.statics.login = async function (
   password
 ) {
   if (!email || !password) {
-    throw Error("all fields must be filled!");
+    throw Error("All fields must be filled!");
   }
   const user = await this.findOne({ email });
 
   if (!user) {
-    throw Error("no such user!");
+    throw Error("No such user!");
   }
 
   const match = await bcrypt.compare(

@@ -285,6 +285,22 @@ export default function Sidebar({ data }) {
                   </svg>
                   <span>Deposit History</span>
                 </Link>
+                <Link
+                  href="/history/earnings-history"
+                  onClick={onNavigate}
+                  className="flex w-full items-center gap-3 border-l-2 border-accent/40 bg-surface-muted/40 px-3 py-2 text-sm transition-colors hover:text-foreground"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="17px"
+                    fill={iconColor}
+                  >
+                    <path d="M200-440v-80h560v80H200Z" />
+                  </svg>
+                  <span>Earnings History</span>
+                </Link>
               </div>
             )}
           </div>
