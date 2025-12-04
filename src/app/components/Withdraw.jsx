@@ -5,19 +5,38 @@ import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
 
 const Withdrawal = ({ data }) => {
-  const { withdraw, error: erro, isLoading, responseData } = useFetch();
+  const {
+    withdraw,
+    error: erro,
+    isLoading,
+    responseData,
+  } = useFetch();
   const [amount, setAmount] = useState("");
   const [comment, setComment] = useState("");
-  const [selectedCoin, setSelectedCoin] = useState("");
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [selectedCoin, setSelectedCoin] =
+    useState("");
+  const [selectedPlan, setSelectedPlan] =
+    useState("");
+  const [showConfirmation, setShowConfirmation] =
+    useState(false);
+  const [errorMessage, setErrorMessage] =
+    useState("");
 
   const handleNextClick = () => {
     if (!selectedCoin) {
       setErrorMessage("Please select a coin.");
-    } else if (!amount || parseFloat(amount) <= 0) {
-      setErrorMessage("Please enter a valid withdrawal amount.");
-    } else if (parseFloat(amount) > data.balance) {
+    } else if (!selectedPlan) {
+      setErrorMessage("Please select a plan.");
+    } else if (
+      !amount ||
+      parseFloat(amount) <= 0
+    ) {
+      setErrorMessage(
+        "Please enter a valid withdrawal amount."
+      );
+    } else if (
+      parseFloat(amount) > data.balance
+    ) {
       setErrorMessage(
         "Withdrawal amount cannot be greater than available balance."
       );
@@ -29,50 +48,109 @@ const Withdrawal = ({ data }) => {
 
   // Coin list with account IDs
   const coins = [
-    { name: "BITCOIN", id: "bitcoinAccountId", icon: "🪙", method: "BTC" },
-    { name: "ETHEREUM", id: "ethereumAccountId", icon: "💠", method: "ETH" },
-    { name: "LITECOIN", id: "litecoinAccountId", icon: "💳", method: "LTC" },
-    { name: "USDT", id: "usdtAccountId", icon: "💵", method: "USDT" },
-    { name: "DOGE", id: "dogeAccountId", icon: "🐕", method: "DOGE" },
+    {
+      name: "BITCOIN",
+      id: "bitcoinAccountId",
+      icon: "🪙",
+      method: "BTC",
+    },
+    {
+      name: "ETHEREUM",
+      id: "ethereumAccountId",
+      icon: "💠",
+      method: "ETH",
+    },
+    {
+      name: "LITECOIN",
+      id: "litecoinAccountId",
+      icon: "💳",
+      method: "LTC",
+    },
+    {
+      name: "USDT",
+      id: "usdtAccountId",
+      icon: "💵",
+      method: "USDT",
+    },
+    {
+      name: "DOGE",
+      id: "dogeAccountId",
+      icon: "🐕",
+      method: "DOGE",
+    },
   ];
 
   // Filter coins that have been set in the database
-  const availableCoins = coins.filter((coin) => data[coin.id]);
+  const availableCoins = coins.filter(
+    (coin) => data[coin.id]
+  );
 
   // Calculate available and pending deposits for each coin
   const getAvailableAmount = (method) => {
-    return data.deposit
+    const totalDeposits = data.deposit
       .filter(
         (deposit) =>
-          deposit.method.toLowerCase() === method.toLowerCase() &&
+          deposit.method.toLowerCase() ===
+            method.toLowerCase() &&
           deposit.status === "approved"
       )
-      .reduce((sum, deposit) => sum + deposit.amount, 0);
+      .reduce(
+        (sum, deposit) => sum + deposit.amount,
+        0
+      );
+
+    const totalWithdrawals = data.withdraw
+      .filter(
+        (withdrawal) =>
+          withdrawal.method.toLowerCase() ===
+            method.toLowerCase() &&
+          withdrawal.status === "approved"
+      )
+      .reduce(
+        (sum, withdrawal) =>
+          sum + withdrawal.amount,
+        0
+      );
+
+    return totalDeposits - totalWithdrawals;
   };
 
   const getPendingAmount = (method) =>
     data.deposit
       .filter(
-        (deposit) => deposit.method === method && deposit.status === "pending"
+        (deposit) =>
+          deposit.method === method &&
+          deposit.status === "pending"
       )
-      .reduce((sum, deposit) => sum + deposit.amount, 0);
+      .reduce(
+        (sum, deposit) => sum + deposit.amount,
+        0
+      );
 
   const handleConfirmClick = async () => {
     const requestData = {
       coin: selectedCoin,
-      wallet: data[selectedCoin.toLowerCase() + "AccountId"],
+      wallet:
+        data[
+          selectedCoin.toLowerCase() + "AccountId"
+        ],
       amount: parseFloat(amount),
       note: comment,
+      planIndex: parseInt(selectedPlan),
     };
 
     try {
-      console.log("Submitting withdrawal request...", requestData);
+      console.log(
+        "Submitting withdrawal request...",
+        requestData
+      );
       await withdraw(requestData);
       if (!erro && responseData) {
         setShowConfirmation(false);
         setAmount("");
         setComment("");
         setSelectedCoin("");
+        setSelectedPlan("");
       }
     } catch (error) {
       console.log(error);
@@ -92,8 +170,12 @@ const Withdrawal = ({ data }) => {
       <div className="flex flex-col gap-8 text-foreground">
         <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight">Dashboard</h1>
-            <p className="text-sm text-muted">/ Dashboard</p>
+            <h1 className="text-3xl font-semibold tracking-tight">
+              Dashboard
+            </h1>
+            <p className="text-sm text-muted">
+              / Dashboard
+            </p>
           </div>
           <div className="cont-bal flex gap-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between md:gap-8">
             <div className="text-right">
@@ -128,17 +210,27 @@ const Withdrawal = ({ data }) => {
               </div>
               <div className="flex justify-between text-sm text-muted">
                 <p>Pending Withdrawals:</p>
-                <p className="font-medium text-foreground">$0.00</p>
+                <p className="font-medium text-foreground">
+                  $0.00
+                </p>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="min-w-full border-collapse text-left text-sm text-foreground">
                   <thead className="bg-surface-muted text-muted">
                     <tr>
-                      <th className="py-3 px-2 font-semibold">Processing</th>
-                      <th className="py-3 px-2 font-semibold">Available</th>
-                      <th className="py-3 px-2 font-semibold">Pending</th>
-                      <th className="py-3 px-2 font-semibold">Account</th>
+                      <th className="py-3 px-2 font-semibold">
+                        Processing
+                      </th>
+                      <th className="py-3 px-2 font-semibold">
+                        Available
+                      </th>
+                      <th className="py-3 px-2 font-semibold">
+                        Pending
+                      </th>
+                      <th className="py-3 px-2 font-semibold">
+                        Account
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -148,19 +240,29 @@ const Withdrawal = ({ data }) => {
                         className="border-b border-stroke last:border-none"
                       >
                         <td className="py-4 px-2 flex items-center gap-2 text-foreground">
-                          {crypto.icon} {crypto.name}
+                          {crypto.icon}{" "}
+                          {crypto.name}
                         </td>
                         <td className="py-4 px-2 text-sm text-emerald-500">
-                          ${getAvailableAmount(crypto.name)}
+                          $
+                          {getAvailableAmount(
+                            crypto.name
+                          )}
                         </td>
                         <td className="py-4 px-2 text-sm text-rose-500">
-                          ${getPendingAmount(crypto.method).toFixed(2)}
+                          $
+                          {getPendingAmount(
+                            crypto.method
+                          ).toFixed(2)}
                         </td>
                         <td className="py-4 px-2 text-sm text-accent">
                           {data[crypto.id] ? (
                             "Set"
                           ) : (
-                            <Link href="/profile/edit" className="underline">
+                            <Link
+                              href="/profile/edit"
+                              className="underline"
+                            >
                               Not Set
                             </Link>
                           )}
@@ -189,8 +291,10 @@ const Withdrawal = ({ data }) => {
                           <span className="font-semibold text-foreground">
                             Account:
                           </span>{" "}
-                          {data[selectedCoin.toLowerCase() + "AccountId"] ||
-                            "Not Set"}
+                          {data[
+                            selectedCoin.toLowerCase() +
+                              "AccountId"
+                          ] || "Not Set"}
                         </p>
                         <p>
                           <span className="font-semibold text-foreground">
@@ -202,7 +306,8 @@ const Withdrawal = ({ data }) => {
                           <span className="font-semibold text-foreground">
                             Withdrawal Fee:
                           </span>{" "}
-                          We have no fee for this operation.
+                          We have no fee for this
+                          operation.
                         </p>
                         <p>
                           <span className="font-semibold text-foreground">
@@ -214,19 +319,68 @@ const Withdrawal = ({ data }) => {
                           <span className="font-semibold text-foreground">
                             Note:
                           </span>{" "}
-                          {comment || "No comment provided"}
+                          {comment ||
+                            "No comment provided"}
                         </p>
                       </div>
-                      {erro && <p className="mt-4 text-sm text-red-500">{erro}</p>}
+                      {erro && (
+                        <p className="mt-4 text-sm text-red-500">
+                          {erro}
+                        </p>
+                      )}
                       <button
                         className="btn-accent mt-6 w-full rounded-xl py-3 text-sm font-semibold"
-                        onClick={handleConfirmClick}
+                        onClick={
+                          handleConfirmClick
+                        }
                       >
-                        {isLoading ? "Submitting..." : "Confirm"}
+                        {isLoading
+                          ? "Submitting..."
+                          : "Confirm"}
                       </button>
                     </div>
                   ) : (
                     <div className="rounded-2xl border border-stroke bg-surface-muted px-6 py-6 text-left text-foreground">
+                      <div className="mb-4">
+                        <label className="mb-2 block text-sm font-medium text-muted">
+                          Select Plan
+                        </label>
+                        <select
+                          value={selectedPlan}
+                          onChange={(e) =>
+                            setSelectedPlan(
+                              e.target.value
+                            )
+                          }
+                          className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors focus:border-accent focus:outline-none"
+                        >
+                          <option value="">
+                            Select a plan
+                          </option>
+                          {data?.activeDeposit
+                            ?.filter(
+                              (deposit) =>
+                                deposit.amount > 0
+                            )
+                            .map(
+                              (
+                                deposit,
+                                index
+                              ) => (
+                                <option
+                                  key={index}
+                                  value={data.activeDeposit.indexOf(
+                                    deposit
+                                  )}
+                                >
+                                  {deposit.plan} -
+                                  $
+                                  {deposit.amount}
+                                </option>
+                              )
+                            )}
+                        </select>
+                      </div>
                       <div className="mb-4">
                         <label className="mb-2 block text-sm font-medium text-muted">
                           Withdrawal Amount
@@ -234,7 +388,11 @@ const Withdrawal = ({ data }) => {
                         <input
                           type="number"
                           value={amount}
-                          onChange={(e) => setAmount(e.target.value)}
+                          onChange={(e) =>
+                            setAmount(
+                              e.target.value
+                            )
+                          }
                           className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors placeholder:text-muted focus:border-accent focus:outline-none"
                           placeholder="Enter amount"
                         />
@@ -246,7 +404,11 @@ const Withdrawal = ({ data }) => {
                         <input
                           type="text"
                           value={comment}
-                          onChange={(e) => setComment(e.target.value)}
+                          onChange={(e) =>
+                            setComment(
+                              e.target.value
+                            )
+                          }
                           className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors placeholder:text-muted focus:border-accent focus:outline-none"
                           placeholder="Enter a comment"
                         />
@@ -257,19 +419,32 @@ const Withdrawal = ({ data }) => {
                         </label>
                         <select
                           value={selectedCoin}
-                          onChange={(e) => setSelectedCoin(e.target.value)}
+                          onChange={(e) =>
+                            setSelectedCoin(
+                              e.target.value
+                            )
+                          }
                           className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors focus:border-accent focus:outline-none"
                         >
-                          <option value="">Select a coin</option>
-                          {availableCoins.map((coin) => (
-                            <option key={coin.name} value={coin.name}>
-                              {coin.name}
-                            </option>
-                          ))}
+                          <option value="">
+                            Select a coin
+                          </option>
+                          {availableCoins.map(
+                            (coin) => (
+                              <option
+                                key={coin.name}
+                                value={coin.name}
+                              >
+                                {coin.name}
+                              </option>
+                            )
+                          )}
                         </select>
                       </div>
                       {errorMessage && (
-                        <p className="text-sm text-red-500">{errorMessage}</p>
+                        <p className="text-sm text-red-500">
+                          {errorMessage}
+                        </p>
                       )}
 
                       <button
@@ -293,6 +468,6 @@ const Withdrawal = ({ data }) => {
       <ToastContainer />
     </div>
   );
-}
+};
 
 export default Withdrawal;

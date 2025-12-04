@@ -94,7 +94,7 @@ export const POST = async (req, { params }) => {
       date: Date.now(),
       status: "pending",
     });
-
+    await user.save();
     const masterAdmin = await User.findOne({
       role: "admin",
     });
@@ -171,7 +171,9 @@ export const POST = async (req, { params }) => {
           <div class="header-subtitle">Expanding Opportunities in Investment</div>
         </div>
         <div class="content">
-          <div class="greeting">Hello ${user.username},</div>
+          <div class="greeting">Hello ${
+            user.username
+          },</div>
           <div class="pending-badge">
             <svg class="pending-icon" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
@@ -220,9 +222,18 @@ export const POST = async (req, { params }) => {
             📞 +44 0203 0990123 | ✉️ support@goldgroveco.com
           </div>
           <div class="footer-links">
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://goldgroveco.com'}/about-us" class="footer-link">About Us</a>
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://goldgroveco.com'}/services" class="footer-link">Services</a>
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://goldgroveco.com'}/contact" class="footer-link">Contact</a>
+            <a href="${
+              process.env.NEXT_PUBLIC_BASE_URL ||
+              "https://goldgroveco.com"
+            }/about-us" class="footer-link">About Us</a>
+            <a href="${
+              process.env.NEXT_PUBLIC_BASE_URL ||
+              "https://goldgroveco.com"
+            }/services" class="footer-link">Services</a>
+            <a href="${
+              process.env.NEXT_PUBLIC_BASE_URL ||
+              "https://goldgroveco.com"
+            }/contact" class="footer-link">Contact</a>
           </div>
           <div class="copyright">
             &copy; ${new Date().getFullYear()} GoldGroveco. All rights reserved.
@@ -241,7 +252,6 @@ export const POST = async (req, { params }) => {
       userEmailContent.html
     );
 
-    await user.save();
     return new Response(JSON.stringify(user), {
       status: 200,
     });
@@ -392,7 +402,9 @@ export const PATCH = async (req, { params }) => {
           <div class="header-subtitle">Expanding Opportunities in Investment</div>
         </div>
         <div class="content">
-          <div class="greeting">Hello ${referringUser.username},</div>
+          <div class="greeting">Hello ${
+            referringUser.username
+          },</div>
           <div class="bonus-badge">
             <svg class="bonus-icon" fill="currentColor" viewBox="0 0 20 20">
               <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
@@ -410,7 +422,9 @@ export const PATCH = async (req, { params }) => {
           <div class="referral-info">
             <div class="referral-row">
               <span class="referral-label">Referred User</span>
-              <span class="referral-value">${user.username}</span>
+              <span class="referral-value">${
+                user.username
+              }</span>
             </div>
             <div class="referral-row">
               <span class="referral-label">Bonus Rate</span>
@@ -565,7 +579,9 @@ export const PATCH = async (req, { params }) => {
           <div class="header-subtitle">Expanding Opportunities in Investment</div>
         </div>
         <div class="content">
-          <div class="greeting">Hello ${user.username},</div>
+          <div class="greeting">Hello ${
+            user.username
+          },</div>
           <div class="success-badge">
             <svg class="success-icon" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
@@ -595,7 +611,10 @@ export const PATCH = async (req, { params }) => {
             Your funds are now available in your account. Start exploring investment opportunities today!
           </p>
           <div class="cta-section">
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://goldgroveco.com'}/dashboard" class="cta-button">
+            <a href="${
+              process.env.NEXT_PUBLIC_BASE_URL ||
+              "https://goldgroveco.com"
+            }/dashboard" class="cta-button">
               View Dashboard
             </a>
           </div>
@@ -607,9 +626,18 @@ export const PATCH = async (req, { params }) => {
             📞 +44 0203 0990123 | ✉️ support@goldgroveco.com
           </div>
           <div class="footer-links">
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://goldgroveco.com'}/about-us" class="footer-link">About Us</a>
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://goldgroveco.com'}/services" class="footer-link">Services</a>
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://goldgroveco.com'}/contact" class="footer-link">Contact</a>
+            <a href="${
+              process.env.NEXT_PUBLIC_BASE_URL ||
+              "https://goldgroveco.com"
+            }/about-us" class="footer-link">About Us</a>
+            <a href="${
+              process.env.NEXT_PUBLIC_BASE_URL ||
+              "https://goldgroveco.com"
+            }/services" class="footer-link">Services</a>
+            <a href="${
+              process.env.NEXT_PUBLIC_BASE_URL ||
+              "https://goldgroveco.com"
+            }/contact" class="footer-link">Contact</a>
           </div>
           <div class="copyright">
             &copy; ${new Date().getFullYear()} GoldGroveco. All rights reserved.

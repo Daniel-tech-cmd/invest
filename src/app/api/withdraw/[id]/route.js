@@ -23,8 +23,13 @@ export const POST = async (req, { params }) => {
   await connectToDB();
 
   try {
-    const { amount, coin, note, wallet } =
-      await req.json();
+    const {
+      amount,
+      coin,
+      note,
+      wallet,
+      planIndex,
+    } = await req.json();
     const userId = params.id;
 
     const user = await User.findById(userId);
@@ -40,11 +45,15 @@ export const POST = async (req, { params }) => {
       );
     }
 
-    // Check if the user has enough balance
-    if (user.balance < amount) {
+    // Validate planIndex
+    if (
+      planIndex === undefined ||
+      planIndex === null
+    ) {
       return new Response(
         JSON.stringify({
-          error: "Insufficient balance",
+          error:
+            "Please select a plan to withdraw from",
         }),
         {
           status: 400,
@@ -52,10 +61,81 @@ export const POST = async (req, { params }) => {
       );
     }
 
-    // Deduct the amount from user's balance
-    user.balance -= amount;
+    // Check if the selected plan exists
+    if (
+      !user.activeDeposit ||
+      !user.activeDeposit[planIndex]
+    ) {
+      return new Response(
+        JSON.stringify({
+          error: "Selected plan not found",
+        }),
+        {
+          status: 404,
+        }
+      );
+    }
 
-    // Add withdrawal request to the user's withdraw array
+    const selectedPlan =
+      user.activeDeposit[planIndex];
+
+    // Check if the selected plan has enough balance
+    if (selectedPlan.amount < amount) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "Insufficient balance in selected plan",
+        }),
+        {
+          status: 400,
+        }
+      );
+    }
+
+    // Check if user has enough balance in the selected coin/method
+    const totalDepositsForCoin = user.deposit
+      .filter(
+        (deposit) =>
+          deposit.method.toLowerCase() ===
+            coin.toLowerCase() &&
+          deposit.status === "approved"
+      )
+      .reduce(
+        (sum, deposit) => sum + deposit.amount,
+        0
+      );
+
+    const totalWithdrawalsForCoin = user.withdraw
+      .filter(
+        (withdrawal) =>
+          withdrawal.method.toLowerCase() ===
+            coin.toLowerCase() &&
+          withdrawal.status === "approved"
+      )
+      .reduce(
+        (sum, withdrawal) =>
+          sum + withdrawal.amount,
+        0
+      );
+
+    const availableCoinBalance =
+      totalDepositsForCoin -
+      totalWithdrawalsForCoin;
+
+    if (availableCoinBalance < amount) {
+      return new Response(
+        JSON.stringify({
+          error: `Insufficient ${coin} balance. Available: $${availableCoinBalance.toFixed(
+            2
+          )}`,
+        }),
+        {
+          status: 400,
+        }
+      );
+    }
+
+    // Add withdrawal request to the user's withdraw array with planIndex
     user.withdraw.push({
       amount,
       status: "pending",
@@ -63,6 +143,7 @@ export const POST = async (req, { params }) => {
       date: Date.now(),
       wallet,
       note,
+      planIndex: planIndex, // Save plan index for deduction during approval
     });
 
     // Log the transaction
@@ -89,7 +170,7 @@ export const POST = async (req, { params }) => {
       });
       await masterAdmin.save();
     }
-
+    await user.save();
     // Prepare and send the email notifications
     const userEmailContent = {
       url: `Hello ${user.username}
@@ -201,14 +282,22 @@ export const POST = async (req, { params }) => {
 </html>
       `,
     };
-    await sendEmail(
-      user.email,
-      "Withdrawal Request",
-      userEmailContent.url,
-      userEmailContent.html
-    );
+    // Send email notification (don't fail if email fails)
+    try {
+      await sendEmail(
+        user.email,
+        "Withdrawal Request",
+        userEmailContent.url,
+        userEmailContent.html
+      );
+    } catch (emailError) {
+      console.error(
+        "Failed to send withdrawal request email:",
+        emailError.message
+      );
+      // Continue execution even if email fails
+    }
 
-    await user.save();
     return new Response(JSON.stringify(user), {
       status: 200,
     });
@@ -244,6 +333,14 @@ export const PATCH = async (req, { params }) => {
     const { index, amount, userid, id } =
       await req.json();
 
+    console.log(
+      "data:",
+      index,
+      amount,
+      userid,
+      id
+    );
+
     const user = await User.findById(userid);
     if (!user) {
       return new Response(
@@ -278,7 +375,53 @@ export const PATCH = async (req, { params }) => {
       status: "approved",
     });
 
-    // Update user's balance
+    // Get the planIndex from the withdrawal request
+    const planIndex =
+      user.withdraw[index].planIndex;
+
+    // Deduct from the selected plan if planIndex exists
+    if (
+      planIndex !== undefined &&
+      planIndex !== null
+    ) {
+      // Check if the plan still exists
+      if (
+        !user.activeDeposit ||
+        !user.activeDeposit[planIndex]
+      ) {
+        return new Response(
+          JSON.stringify({
+            error:
+              "Selected plan no longer exists",
+          }),
+          {
+            status: 404,
+          }
+        );
+      }
+
+      // Check if the plan has enough balance
+      if (
+        user.activeDeposit[planIndex].amount <
+        amount
+      ) {
+        return new Response(
+          JSON.stringify({
+            error:
+              "Insufficient balance in selected plan",
+          }),
+          {
+            status: 400,
+          }
+        );
+      }
+
+      // Deduct the amount from the selected plan
+      user.activeDeposit[planIndex].amount -=
+        amount;
+    }
+
+    // Deduct from user's balance
     user.balance = Math.max(
       0,
       Number(user.balance) - Number(amount)
@@ -536,7 +679,9 @@ export const PATCH = async (req, { params }) => {
 
         <!-- Content Section -->
         <div class="content">
-          <div class="greeting">Hello ${user.username},</div>
+          <div class="greeting">Hello ${
+            user.username
+          },</div>
           
           <div class="success-badge">
             <svg class="success-icon" fill="currentColor" viewBox="0 0 20 20">
@@ -561,7 +706,9 @@ export const PATCH = async (req, { params }) => {
             
             <div class="transaction-row">
               <span class="transaction-label">Wallet Address</span>
-              <span class="transaction-value">${user.withdraw[index].wallet}</span>
+              <span class="transaction-value">${
+                user.withdraw[index].wallet
+              }</span>
             </div>
             
             <div class="transaction-row">
@@ -587,7 +734,10 @@ export const PATCH = async (req, { params }) => {
 
           <!-- Call to Action -->
           <div class="cta-section">
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://goldgroveco.com'}/dashboard" class="cta-button">
+            <a href="${
+              process.env.NEXT_PUBLIC_BASE_URL ||
+              "https://goldgroveco.com"
+            }/dashboard" class="cta-button">
               View Dashboard
             </a>
           </div>
@@ -602,9 +752,18 @@ export const PATCH = async (req, { params }) => {
           </div>
 
           <div class="footer-links">
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://goldgroveco.com'}/about-us" class="footer-link">About Us</a>
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://goldgroveco.com'}/services" class="footer-link">Services</a>
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://goldgroveco.com'}/contact" class="footer-link">Contact</a>
+            <a href="${
+              process.env.NEXT_PUBLIC_BASE_URL ||
+              "https://goldgroveco.com"
+            }/about-us" class="footer-link">About Us</a>
+            <a href="${
+              process.env.NEXT_PUBLIC_BASE_URL ||
+              "https://goldgroveco.com"
+            }/services" class="footer-link">Services</a>
+            <a href="${
+              process.env.NEXT_PUBLIC_BASE_URL ||
+              "https://goldgroveco.com"
+            }/contact" class="footer-link">Contact</a>
           </div>
 
           <div class="copyright">
@@ -618,12 +777,21 @@ export const PATCH = async (req, { params }) => {
       `,
     };
 
-    await sendEmail(
-      user.email,
-      "Withdrawal Approved",
-      userEmailContent.url,
-      userEmailContent.html
-    );
+    // Send email notification (don't fail if email fails)
+    try {
+      await sendEmail(
+        user.email,
+        "Withdrawal Approved",
+        userEmailContent.url,
+        userEmailContent.html
+      );
+    } catch (emailError) {
+      console.error(
+        "Failed to send withdrawal approval email:",
+        emailError.message
+      );
+      // Continue execution even if email fails
+    }
 
     // Save the user's updated data
     await user.save();
@@ -632,10 +800,23 @@ export const PATCH = async (req, { params }) => {
       status: 200,
     });
   } catch (error) {
-    console.error(error.message);
+    console.error(
+      "=== WITHDRAWAL APPROVAL ERROR ==="
+    );
+    console.error(
+      "Error message:",
+      error.message
+    );
+    console.error("Error stack:", error.stack);
+    console.error("Full error object:", error);
+    console.error(
+      "================================"
+    );
+
     return new Response(
       JSON.stringify({
         error: "Failed to approve withdrawal",
+        details: error.message,
       }),
       {
         status: 500,

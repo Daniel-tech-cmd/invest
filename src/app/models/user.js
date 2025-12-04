@@ -92,6 +92,9 @@ const UserSchema = new Schema(
         transactid: {
           type: String,
         },
+        planIndex: {
+          type: Number,
+        },
       },
     ],
     deposit: [
