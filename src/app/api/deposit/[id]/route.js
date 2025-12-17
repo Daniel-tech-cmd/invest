@@ -457,9 +457,17 @@ export const PATCH = async (req, { params }) => {
       const planName = user.deposit[index].plan;
 
       // Check if the user already has the specified plan
-      const existingPlan = user.plans.find(
+      let existingPlan = user.plans.find(
         (plan) => plan.planName === planName
       );
+
+      // If the plan is stopped, remove it so we can start a new one
+      if (existingPlan && existingPlan.stopped) {
+        user.plans = user.plans.filter(
+          (p) => p !== existingPlan
+        );
+        existingPlan = null;
+      }
 
       if (existingPlan) {
         // Update the amount if the plan exists
