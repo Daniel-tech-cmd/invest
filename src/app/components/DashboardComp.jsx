@@ -55,8 +55,9 @@ const Dashboard = ({ data }) => {
         "resize",
         handleResize
       );
-      if (container.contains(script)) {
-        container.removeChild(script);
+      // Safely clear the container instead of trying to remove specific child
+      if (container) {
+        container.innerHTML = "";
       }
     };
   }, []);
@@ -171,10 +172,16 @@ const Dashboard = ({ data }) => {
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                <Link href="/withdraw" className="btn-accent rounded-full px-6 py-2.5 text-sm font-semibold shadow-lg">
+                <Link
+                  href="/withdraw"
+                  className="btn-accent rounded-full px-6 py-2.5 text-sm font-semibold shadow-lg"
+                >
                   Withdraw
                 </Link>
-                <Link href="/deposit" className="btn-ghost rounded-full px-6 py-2.5 text-sm font-semibold">
+                <Link
+                  href="/deposit"
+                  className="btn-ghost rounded-full px-6 py-2.5 text-sm font-semibold"
+                >
                   Deposit
                 </Link>
               </div>

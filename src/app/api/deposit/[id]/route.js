@@ -313,20 +313,9 @@ export const PATCH = async (req, { params }) => {
     user.totalDeposit =
       Number(user.totalDeposit) + Number(amount);
 
-    // Ensure activeDeposit object exists
+    // Ensure activeDeposit array exists
     if (!user.activeDeposit) {
-      user.activeDeposit = {
-        amount: 0,
-        date: null,
-      };
-    }
-
-    // Update active deposit date for the first deposit
-    if (
-      user.activeDeposit.amount === 0 ||
-      user.activeDeposit.amount == undefined
-    ) {
-      user.activeDeposit.date = Date.now();
+      user.activeDeposit = [];
     }
 
     // Check for referral and first approved deposit conditions
