@@ -456,13 +456,19 @@ export const PATCH = async (req, { params }) => {
     try {
       const planName = user.deposit[index].plan;
 
-      // Check if the user already has the specified plan
+      // Find if there is an active (not stopped) deposit for this plan
+      const activeDep = user.activeDeposit.find(
+        (p) => p.plan === planName && !p.stopped
+      );
+
+      // Check if the user has a plan entry
       let existingPlan = user.plans.find(
         (plan) => plan.planName === planName
       );
 
-      // If the plan is stopped, remove it so we can start a new one
-      if (existingPlan && existingPlan.stopped) {
+      // If there is no active deposit (meaning it's new or the previous one is stopped),
+      // but we have a plan entry, we should clear the old plan entry to start fresh.
+      if (!activeDep && existingPlan) {
         user.plans = user.plans.filter(
           (p) => p !== existingPlan
         );
@@ -482,18 +488,14 @@ export const PATCH = async (req, { params }) => {
         });
       }
 
-      const existactivedepo =
-        user.activeDeposit.find(
-          (plan) => plan.plan === planName
-        );
-      if (existactivedepo) {
-        existactivedepo.amount += Number(amount);
-        existactivedepo.date = Date.now();
+      if (activeDep) {
+        activeDep.amount += Number(amount);
+        activeDep.date = Date.now();
       } else {
         user.activeDeposit.push({
           date: Date.now(),
-          amount: user.deposit[index].amount,
-          plan: user.deposit[index].plan,
+          amount: Number(amount),
+          plan: planName,
         });
       }
     } catch (error) {
