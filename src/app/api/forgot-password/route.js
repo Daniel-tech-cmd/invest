@@ -59,7 +59,7 @@ export const POST = async (request) => {
     });
 
     // Create reset URL (use the unhashed token in the URL)
-    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/reset-password?token=${resetToken}&id=${user._id}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "https://goldgroveco.com"}/reset-password?token=${resetToken}&id=${user._id}`;
 
     const html = `<!DOCTYPE html>
 <html lang="en">
