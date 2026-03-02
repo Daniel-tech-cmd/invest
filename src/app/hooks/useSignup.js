@@ -31,85 +31,63 @@ const useSignup = () => {
     setshowsuccess(false);
 
     try {
-      try {
-        const response = await axios.post(
-          `/api/signup`,
-          data
+      const response = await axios.post(
+        `/api/signup`,
+        data,
+      );
+
+      if (
+        response.status === 200 ||
+        response.status === 201
+      ) {
+        setResponseData(response.data);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(response.data),
         );
-
-        if (error?.response?.data.error) {
-          setIsLoading(false);
-
-          setError(error.response.data.error);
-        }
-
-        if (response.status === 201) {
-          try {
-            setResponseData(response.data);
-            localStorage.setItem(
-              "user",
-              JSON.stringify(response.data)
-            );
-            dispatch({
-              type: "LOGIN",
-              payload: response.data,
-            });
-            Cookies.set(
-              "user",
-              JSON.stringify(response.data)
-            );
-            setIsLoading(false);
-            router.push(`/dashboard`);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-        if (response.status === 200) {
-          try {
-            setResponseData(response.data);
-            localStorage.setItem(
-              "user",
-              JSON.stringify(response.data)
-            );
-            dispatch({
-              type: "LOGIN",
-              payload: response.data,
-            });
-            Cookies.set(
-              "user",
-              JSON.stringify(response.data)
-            );
-            setIsLoading(false);
-            router.push(`/dashboard`);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-      } catch (error) {
-        if (error?.message) {
-          if (
-            error.message.includes("ENOTFOUND")
-          ) {
-            setError("Network error");
-          } else {
-            setError(error.message);
-          }
-        }
-        if (error?.response?.data.error) {
-          if (
-            error.response?.data.error.includes(
-              "ENOTFOUND"
-            )
-          ) {
-            setError("Network error");
-          } else {
-            setError(error.response.data.error);
-          }
-        }
+        dispatch({
+          type: "LOGIN",
+          payload: response.data,
+        });
+        Cookies.set(
+          "user",
+          JSON.stringify(response.data),
+        );
+        setIsLoading(false);
+        router.push(`/dashboard`);
       }
     } catch (error) {
-      if (error?.message) {
-        setError(error.message);
+      console.log("Signup error:", error);
+
+      // Handle axios error response
+      if (error?.response?.data?.error) {
+        const errorMsg =
+          error.response.data.error;
+        if (errorMsg.includes("ENOTFOUND")) {
+          setError(
+            "Network error. Please check your connection.",
+          );
+        } else {
+          setError(errorMsg);
+        }
+      } else if (error?.message) {
+        if (error.message.includes("ENOTFOUND")) {
+          setError(
+            "Network error. Please check your connection.",
+          );
+        } else if (
+          error.message.includes("Network Error")
+        ) {
+          setError(
+            "Network error. Please check your connection.",
+          );
+        } else {
+          setError(error.message);
+        }
+      } else {
+        setError(
+          "An unexpected error occurred. Please try again.",
+        );
       }
     } finally {
       setIsLoading(false);
@@ -124,14 +102,14 @@ const useSignup = () => {
     try {
       const response = await axios.post(
         `/api/login`,
-        data
+        data,
       );
 
       if (response.status === 200) {
         setResponseData(response.data);
         localStorage.setItem(
           "user",
-          JSON.stringify(response.data)
+          JSON.stringify(response.data),
         );
         dispatch({
           type: "LOGIN",
@@ -139,7 +117,7 @@ const useSignup = () => {
         });
         Cookies.set(
           "user",
-          JSON.stringify(response.data)
+          JSON.stringify(response.data),
         );
         setIsLoading(false);
         setloginsucess(true);
@@ -149,7 +127,7 @@ const useSignup = () => {
         setResponseData(response.data);
         localStorage.setItem(
           "user",
-          JSON.stringify(response.data)
+          JSON.stringify(response.data),
         );
         dispatch({
           type: "LOGIN",
@@ -157,7 +135,7 @@ const useSignup = () => {
         });
         Cookies.set(
           "user",
-          JSON.stringify(response.data)
+          JSON.stringify(response.data),
         );
         setIsLoading(false);
         setloginsucess(true);
@@ -174,7 +152,7 @@ const useSignup = () => {
       if (error?.response?.data.error) {
         if (
           error.response?.data.error.includes(
-            "ENOTFOUND"
+            "ENOTFOUND",
           )
         ) {
           setError("Network error");
