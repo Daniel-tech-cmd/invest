@@ -4,28 +4,51 @@ import AccountSuspension from "../components/Suspended";
 import TopNav from "../components/Topnav";
 import { NavProvider } from "../contexts/navcon";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
 async function getdatabyId(id) {
-  const res = await fetch(`${process.env.URI}/api/user/${id}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    return notFound();
+  try {
+    const res = await fetch(
+      `${process.env.URI}/api/user/${id}`,
+      {
+        cache: "no-store",
+      },
+    );
+    if (!res.ok) {
+      return null;
+    }
+    const data = await res.json();
+    return data;
+  } catch {
+    return null;
   }
-
-  const data = await res.json();
-
-  return data;
 }
-export default async function RootLayout({ children }) {
+
+export default async function RootLayout({
+  children,
+}) {
   const cookiestore = cookies();
   const userjson = cookiestore.get("user");
 
-  const user = JSON?.parse(userjson?.value);
+  let user = null;
+  try {
+    user = userjson?.value
+      ? JSON.parse(userjson.value)
+      : null;
+  } catch {
+    user = null;
+  }
 
-  const data = getdatabyId(user._id);
-  const [dat] = await Promise.all([data]);
+  if (!user?._id) {
+    redirect("/login");
+  }
+
+  const dat = await getdatabyId(user._id);
+
+  if (!dat) {
+    redirect("/login");
+  }
+
   return (
     <html lang="en" className="min-h-full">
       <body className="antialiased min-h-full bg-background text-foreground transition-colors duration-300">

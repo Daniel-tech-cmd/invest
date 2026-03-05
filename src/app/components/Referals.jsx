@@ -2,8 +2,10 @@ import React from "react";
 
 const ReferralHistory = ({ data }) => {
   // Filter referrals to include only those with verified set to true
-  const referrals = [...data?.referals].filter(
-    (referral) => referral.verified === true
+  const referrals = [
+    ...(data?.referals ?? []),
+  ].filter(
+    (referral) => referral.verified === true,
   );
 
   const totalReferrals = referrals.length;
@@ -34,26 +36,43 @@ const ReferralHistory = ({ data }) => {
           >
             Dashboard
           </h1>
-          <p className="text-gray-400">/ Referral</p>
+          <p className="text-gray-400">
+            / Referral
+          </p>
         </div>
       </div>
 
       {/* Summary Card */}
       <div className="bg-[#232a35] text-white rounded-lg p-4 shadow-lg mb-6">
-        <h2 className="text-xl font-bold text-center mb-4">Your Referrals</h2>
+        <h2 className="text-xl font-bold text-center mb-4">
+          Your Referrals
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
           <div>
-            <p className="text-gray-400 text-sm">Referrals</p>
-            <h2 className="text-2xl font-bold">{totalReferrals}</h2>
-          </div>
-          <div>
-            <p className="text-gray-400 text-sm">Active Referrals</p>
-            <h2 className="text-2xl font-bold">{data.activereferrals}</h2>
-          </div>
-          <div>
-            <p className="text-gray-400 text-sm">Total Referral Commission</p>
+            <p className="text-gray-400 text-sm">
+              Referrals
+            </p>
             <h2 className="text-2xl font-bold">
-              ${data.referralBonus.toFixed(2)}
+              {totalReferrals}
+            </h2>
+          </div>
+          <div>
+            <p className="text-gray-400 text-sm">
+              Active Referrals
+            </p>
+            <h2 className="text-2xl font-bold">
+              {data.activereferrals}
+            </h2>
+          </div>
+          <div>
+            <p className="text-gray-400 text-sm">
+              Total Referral Commission
+            </p>
+            <h2 className="text-2xl font-bold">
+              $
+              {Number(
+                data.referralBonus || 0,
+              ).toFixed(2)}
             </h2>
           </div>
           {/* <div>
@@ -76,7 +95,9 @@ const ReferralHistory = ({ data }) => {
           <table className="min-w-full bg-[#232a35] rounded-lg overflow-hidden shadow-lg">
             <thead className="bg-[#323a47] text-gray-400">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold">#</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold">
+                  #
+                </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold">
                   Name
                 </th>
@@ -86,16 +107,24 @@ const ReferralHistory = ({ data }) => {
               </tr>
             </thead>
             <tbody className="text-white">
-              {referrals.map((referral, index) => (
-                <tr
-                  key={referral.id}
-                  className="border-b border-gray-600 hover:bg-[#2b3240]"
-                >
-                  <td className="px-6 py-4 text-sm">{index + 1}</td>
-                  <td className="px-6 py-4 text-sm">{referral.name}</td>
-                  <td className="px-6 py-4 text-sm">{referral.id}</td>
-                </tr>
-              ))}
+              {referrals.map(
+                (referral, index) => (
+                  <tr
+                    key={referral.id}
+                    className="border-b border-gray-600 hover:bg-[#2b3240]"
+                  >
+                    <td className="px-6 py-4 text-sm">
+                      {index + 1}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      {referral.name}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      {referral.id}
+                    </td>
+                  </tr>
+                ),
+              )}
             </tbody>
           </table>
         </div>

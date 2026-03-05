@@ -9,13 +9,13 @@ const generateRandomString = () => {
     "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   const randomBuffer = crypto.getRandomValues(
-    new Uint8Array(6)
+    new Uint8Array(6),
   );
 
   const generatedString = Array.from(randomBuffer)
     .map(
       (byte) =>
-        characters[byte % characters.length]
+        characters[byte % characters.length],
     )
     .join("");
 
@@ -43,7 +43,7 @@ export const POST = async (req, { params }) => {
         }),
         {
           status: 404,
-        }
+        },
       );
     }
 
@@ -57,7 +57,7 @@ export const POST = async (req, { params }) => {
               folder: "images",
               width: "auto",
               crop: "fit",
-            }
+            },
           );
         if (photo) {
           receipt = {
@@ -73,7 +73,7 @@ export const POST = async (req, { params }) => {
           }),
           {
             status: 500,
-          }
+          },
         );
       }
     }
@@ -249,7 +249,7 @@ export const POST = async (req, { params }) => {
       user.email,
       "Deposit Request",
       userEmailContent.url,
-      userEmailContent.html
+      userEmailContent.html,
     );
 
     return new Response(JSON.stringify(user), {
@@ -261,7 +261,7 @@ export const POST = async (req, { params }) => {
       JSON.stringify({ error: error.message }),
       {
         status: 500,
-      }
+      },
     );
   }
 };
@@ -281,7 +281,7 @@ export const PATCH = async (req, { params }) => {
         }),
         {
           status: 404,
-        }
+        },
       );
     }
 
@@ -294,7 +294,7 @@ export const PATCH = async (req, { params }) => {
         JSON.stringify({
           error: `Request already ${user.deposit[index].status}`,
         }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -322,7 +322,7 @@ export const PATCH = async (req, { params }) => {
     if (
       user.referredby &&
       user.deposit.filter(
-        (dep) => dep.status === "approved"
+        (dep) => dep.status === "approved",
       ).length === 1
     ) {
       const referringUser = await User.findOne({
@@ -340,8 +340,18 @@ export const PATCH = async (req, { params }) => {
           referralBonus;
         referringUser.activereferrals =
           (Number(
-            referringUser.activereferrals
+            referringUser.activereferrals,
           ) || 0) + 1;
+
+        // Mark the referred user as verified in the referrer's referals list
+        const referalEntry =
+          referringUser.referals.find(
+            (r) => r.name === user.username,
+          );
+        if (referalEntry) {
+          referalEntry.verified = true;
+        }
+
         await referringUser.save();
         const htm = `<!DOCTYPE html>
 <html lang="en">
@@ -443,12 +453,22 @@ export const PATCH = async (req, { params }) => {
   </body>
 </html>
 `;
-        await sendEmail(
-          referringUser.email,
-          "Referral Bonus",
-          `email error`,
-          htm
-        );
+        // Send bonus email — wrapped in its own try/catch so a mail failure
+        // never aborts or corrupts the deposit approval transaction.
+        try {
+          await sendEmail(
+            referringUser.email,
+            "Referral Bonus — Goldgroveco",
+            `You have earned a $${referralBonus} referral bonus from ${user.username}'s deposit!`,
+            htm,
+          );
+        } catch (emailErr) {
+          console.error(
+            "Referral bonus email failed:",
+            emailErr.message,
+          );
+          // Non-fatal: bonus is already saved, only the email failed.
+        }
       }
     }
 
@@ -458,19 +478,19 @@ export const PATCH = async (req, { params }) => {
 
       // Find if there is an active (not stopped) deposit for this plan
       const activeDep = user.activeDeposit.find(
-        (p) => p.plan === planName && !p.stopped
+        (p) => p.plan === planName && !p.stopped,
       );
 
       // Check if the user has a plan entry
       let existingPlan = user.plans.find(
-        (plan) => plan.planName === planName
+        (plan) => plan.planName === planName,
       );
 
       // If there is no active deposit (meaning it's new or the previous one is stopped),
       // but we have a plan entry, we should clear the old plan entry to start fresh.
       if (!activeDep && existingPlan) {
         user.plans = user.plans.filter(
-          (p) => p !== existingPlan
+          (p) => p !== existingPlan,
         );
         existingPlan = null;
       }
@@ -504,7 +524,7 @@ export const PATCH = async (req, { params }) => {
         JSON.stringify({ error: error.message }),
         {
           status: 500,
-        }
+        },
       );
     }
 
@@ -515,7 +535,8 @@ export const PATCH = async (req, { params }) => {
     if (admin) {
       admin.notifications =
         admin.notifications.filter(
-          (notification) => notification.id !== id
+          (notification) =>
+            notification.id !== id,
         );
       await admin.save();
     }
@@ -653,7 +674,7 @@ export const PATCH = async (req, { params }) => {
       user.email,
       "Deposit Approved",
       userEmailContent.url,
-      userEmailContent.html
+      userEmailContent.html,
     );
 
     // Save the user's updated data
@@ -670,7 +691,7 @@ export const PATCH = async (req, { params }) => {
       }),
       {
         status: 500,
-      }
+      },
     );
   }
 };

@@ -1,28 +1,45 @@
 import Withdrawal from "@/app/components/Withdraw";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
 async function getdatabyId(id) {
-  const res = await fetch(`${process.env.URI}/api/user/${id}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    return notFound();
+  try {
+    const res = await fetch(
+      `${process.env.URI}/api/user/${id}`,
+      {
+        cache: "no-store",
+      },
+    );
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
   }
-
-  const data = await res.json();
-
-  return data;
 }
 
 const page = async () => {
   const cookiestore = cookies();
   const userjson = cookiestore.get("user");
 
-  const user = JSON?.parse(userjson?.value);
+  let user = null;
+  try {
+    user = userjson?.value
+      ? JSON.parse(userjson.value)
+      : null;
+  } catch {
+    user = null;
+  }
 
-  const data = getdatabyId(user._id);
-  const [dat] = await Promise.all([data]);
+  if (!user?._id) {
+    redirect("/login");
+  }
+
+  const dat = await getdatabyId(user._id);
+
+  if (!dat) {
+    redirect("/login");
+  }
+
   return <Withdrawal data={dat} />;
 };
 
