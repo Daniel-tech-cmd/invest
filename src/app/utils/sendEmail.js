@@ -14,13 +14,13 @@ const sendEmail = async (
           Number(process.env.EMAIL_PORT) || 587,
         secure: process.env.SECURE === "true",
         auth: {
-          user: process.env.USER,
-          pass: process.env.EMAIL_PASS,
+          user: "support@goldgroveco.com",
+          pass: "Daniel650##",
         },
       });
 
     await transporter.sendMail({
-      from: process.env.USER,
+      from: "support@goldgroveco.com",
       to: email,
       subject: subject,
       text: text,

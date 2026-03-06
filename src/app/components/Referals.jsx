@@ -1,21 +1,11 @@
 import React from "react";
 
 const ReferralHistory = ({ data }) => {
-  // Filter referrals to include only those with verified set to true
-  const referrals = [
-    ...(data?.referals ?? []),
-  ].filter(
-    (referral) => referral.verified === true,
-  );
-
-  const totalReferrals = referrals.length;
-  // const activeReferrals = referrals.filter((ref) => ref.active === true).length;
-  // const totalCommission = referrals.reduce(
-  //   (sum, ref) => sum + (ref.commission || 0),
-  //   0
-  // );
-
-  const upline = data?.upline || "N/A";
+  // Show ALL referrals immediately on signup — status column shows deposit state
+  const referrals = [...(data?.referals ?? [])];
+  const verifiedCount = referrals.filter(
+    (r) => r.verified === true,
+  ).length;
 
   return (
     <div
@@ -47,21 +37,21 @@ const ReferralHistory = ({ data }) => {
         <h2 className="text-xl font-bold text-center mb-4">
           Your Referrals
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
           <div>
             <p className="text-gray-400 text-sm">
-              Referrals
+              Total Referrals
             </p>
             <h2 className="text-2xl font-bold">
-              {totalReferrals}
+              {referrals.length}
             </h2>
           </div>
           <div>
             <p className="text-gray-400 text-sm">
-              Active Referrals
+              Active (Deposited)
             </p>
             <h2 className="text-2xl font-bold">
-              {data.activereferrals}
+              {verifiedCount}
             </h2>
           </div>
           <div>
@@ -75,10 +65,6 @@ const ReferralHistory = ({ data }) => {
               ).toFixed(2)}
             </h2>
           </div>
-          {/* <div>
-            <p className="text-gray-400 text-sm">Your Upline</p>
-            <h2 className="text-xl font-bold">{upline}</h2>
-          </div> */}
         </div>
       </div>
 
@@ -88,7 +74,8 @@ const ReferralHistory = ({ data }) => {
       </h2>
       {referrals.length === 0 ? (
         <div className="flex items-center justify-center w-full h-full text-gray-400 text-lg font-semibold">
-          No referrals found.
+          No referrals yet. Share your referral
+          link to get started!
         </div>
       ) : (
         <div className="overflow-x-auto w-full max-w-5xl">
@@ -103,6 +90,9 @@ const ReferralHistory = ({ data }) => {
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold">
                   Referral ID
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold">
+                  Status
                 </th>
               </tr>
             </thead>
@@ -121,6 +111,17 @@ const ReferralHistory = ({ data }) => {
                     </td>
                     <td className="px-6 py-4 text-sm">
                       {referral.id}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      {referral.verified ? (
+                        <span className="inline-block px-2 py-1 rounded-full text-xs font-semibold bg-green-900/40 text-green-400">
+                          Deposited ✓
+                        </span>
+                      ) : (
+                        <span className="inline-block px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900/40 text-yellow-400">
+                          Pending Deposit
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ),
