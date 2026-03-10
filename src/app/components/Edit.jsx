@@ -5,34 +5,74 @@ import { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import Image from "next/image";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
+import {
+  ToastContainer,
+  toast,
+} from "react-toastify";
 
 const Edit = ({ data }) => {
   const router = useSearchParams();
   const query = router.get("query");
 
   const [res, setRes] = useState("");
-  const [username, setUsername] = useState(res.username || "");
-  const [email, setEmail] = useState(res.email || "");
-  const [role, setRole] = useState(res.role || "");
+  const [username, setUsername] = useState(
+    res.username || "",
+  );
+  const [email, setEmail] = useState(
+    res.email || "",
+  );
+  const [role, setRole] = useState(
+    res.role || "",
+  );
   const [plan, setPlan] = useState("");
-  const [card, setCard] = useState(res.card || "");
-  const [balance, setBalance] = useState(res.balance || "");
-  const [prevBalance, setPrevBalance] = useState(res.balance || "");
-  const [number, setNumber] = useState(res.number || "");
-  const [country, setCountry] = useState(res.country || "");
-  const [profit, setProfit] = useState(res.profit || "");
-  const [verified, setVerified] = useState(res.verified || "");
-  const [minimumWithdrawal, setMinWith] = useState(res.minimumWithdrawal || "");
-  const [isLoading, setIsLoading] = useState(false);
+  const [card, setCard] = useState(
+    res.card || "",
+  );
+  const [balance, setBalance] = useState(
+    res.balance || "",
+  );
+  const [prevBalance, setPrevBalance] = useState(
+    res.balance || "",
+  );
+  const [number, setNumber] = useState(
+    res.number || "",
+  );
+  const [country, setCountry] = useState(
+    res.country || "",
+  );
+  const [profit, setProfit] = useState(
+    res.profit || "",
+  );
+  const [verified, setVerified] = useState(
+    res.verified || "",
+  );
+  const [minimumWithdrawal, setMinWith] =
+    useState(res.minimumWithdrawal || "");
+  const [promoBonus, setPromoBonus] =
+    useState("");
+  const [isAddingPromo, setIsAddingPromo] =
+    useState(false);
+  const [isLoading, setIsLoading] =
+    useState(false);
   const [error, setError] = useState(null);
-  const [suspended, setsuspended] = useState(res.suspended || "");
+  const [suspended, setsuspended] = useState(
+    res.suspended || "",
+  );
   // Crypto account ID states
-  const [bitcoinAccountId, setBitcoinAccountId] = useState(res.bitcoinAccountId || "");
-  const [ethereumAccountId, setEthereumAccountId] = useState(res.ethereumAccountId || "");
-  const [dogeAccountId, setDogeAccountId] = useState(res.dogeAccountId || "");
-  const [litecoinAccountId, setLitecoinAccountId] = useState(res.litecoinAccountId || "");
-  const [usdtAccountId, setUsdtAccountId] = useState(res.usdtAccountId || "");
+  const [bitcoinAccountId, setBitcoinAccountId] =
+    useState(res.bitcoinAccountId || "");
+  const [
+    ethereumAccountId,
+    setEthereumAccountId,
+  ] = useState(res.ethereumAccountId || "");
+  const [dogeAccountId, setDogeAccountId] =
+    useState(res.dogeAccountId || "");
+  const [
+    litecoinAccountId,
+    setLitecoinAccountId,
+  ] = useState(res.litecoinAccountId || "");
+  const [usdtAccountId, setUsdtAccountId] =
+    useState(res.usdtAccountId || "");
 
   const [plans] = useState([
     {
@@ -80,8 +120,12 @@ const Edit = ({ data }) => {
 
   const handleFetch = async (searchKeyword) => {
     try {
-      const encodedQuery = encodeURIComponent(searchKeyword.trim());
-      const response = await fetch(`/api/user/${encodedQuery}`);
+      const encodedQuery = encodeURIComponent(
+        searchKeyword.trim(),
+      );
+      const response = await fetch(
+        `/api/user/${encodedQuery}`,
+      );
       const data = await response.json();
       setRes(data);
       setUsername(data.username);
@@ -96,12 +140,19 @@ const Edit = ({ data }) => {
       setProfit(data.profit);
       setVerified(data.verified);
       setMinWith(data.minimumWithdrawal);
+      setPromoBonus("");
       setsuspended(data.suspended);
       // Set crypto account IDs
-      setBitcoinAccountId(data.bitcoinAccountId || "");
-      setEthereumAccountId(data.ethereumAccountId || "");
+      setBitcoinAccountId(
+        data.bitcoinAccountId || "",
+      );
+      setEthereumAccountId(
+        data.ethereumAccountId || "",
+      );
       setDogeAccountId(data.dogeAccountId || "");
-      setLitecoinAccountId(data.litecoinAccountId || "");
+      setLitecoinAccountId(
+        data.litecoinAccountId || "",
+      );
       setUsdtAccountId(data.usdtAccountId || "");
     } catch (err) {
       console.error(err);
@@ -109,6 +160,62 @@ const Edit = ({ data }) => {
   };
 
   const { updatePost } = useFetch();
+
+  const handleAddPromoBonus = async () => {
+    if (
+      !promoBonus ||
+      parseFloat(promoBonus) <= 0
+    ) {
+      toast.error(
+        "Please enter a valid promo bonus amount",
+      );
+      return;
+    }
+
+    if (!res?._id) {
+      toast.error("User ID is missing");
+      return;
+    }
+
+    try {
+      setIsAddingPromo(true);
+      const response = await fetch(
+        `/api/user/promo-bonus/${data._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: res._id,
+            amount: parseFloat(promoBonus),
+          }),
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.error ||
+            "Failed to add promo bonus",
+        );
+      }
+
+      toast.success(
+        `Promo bonus of $${promoBonus} added successfully! Email sent to user.`,
+      );
+      setPromoBonus("");
+
+      // Refresh user data
+      await handleFetch(query);
+    } catch (err) {
+      toast.error(err.message);
+      console.error(err);
+    } finally {
+      setIsAddingPromo(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,8 +242,12 @@ const Edit = ({ data }) => {
       return;
     }
     if (balance !== prevBalance && !plan) {
-      setError("Please select a plan before submitting.");
-      toast.error("Please select a plan before submitting.");
+      setError(
+        "Please select a plan before submitting.",
+      );
+      toast.error(
+        "Please select a plan before submitting.",
+      );
       return;
     }
 
@@ -153,9 +264,11 @@ const Edit = ({ data }) => {
       suspended,
       plan,
       bitcoinAccountId: bitcoinAccountId?.trim(),
-      ethereumAccountId: ethereumAccountId?.trim(),
+      ethereumAccountId:
+        ethereumAccountId?.trim(),
       dogeAccountId: dogeAccountId?.trim(),
-      litecoinAccountId: litecoinAccountId?.trim(),
+      litecoinAccountId:
+        litecoinAccountId?.trim(),
       usdtAccountId: usdtAccountId?.trim(),
     };
 
@@ -200,15 +313,22 @@ const Edit = ({ data }) => {
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <div className="rounded-2xl border border-stroke bg-surface-elevated px-5 py-3">
-              <p className="text-xs uppercase tracking-wide text-muted">Balance</p>
+              <p className="text-xs uppercase tracking-wide text-muted">
+                Balance
+              </p>
               <p className="mt-1 text-lg font-semibold text-foreground">
                 ${formatCurrency(data?.balance)}
               </p>
             </div>
             <div className="rounded-2xl border border-stroke bg-surface-elevated px-5 py-3">
-              <p className="text-xs uppercase tracking-wide text-muted">Total Withdraw</p>
+              <p className="text-xs uppercase tracking-wide text-muted">
+                Total Withdraw
+              </p>
               <p className="mt-1 text-lg font-semibold text-foreground">
-                ${formatCurrency(data?.totalWithdraw || 0)}
+                $
+                {formatCurrency(
+                  data?.totalWithdraw || 0,
+                )}
               </p>
             </div>
           </div>
@@ -228,11 +348,16 @@ const Edit = ({ data }) => {
                 <h2 className="text-2xl font-semibold text-foreground">
                   {res?.username || "Loading..."}
                 </h2>
-                <p className="mt-1 text-sm text-muted">{res?.email}</p>
+                <p className="mt-1 text-sm text-muted">
+                  {res?.email}
+                </p>
               </div>
             </div>
 
-            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+            <form
+              className="mt-8 space-y-6"
+              onSubmit={handleSubmit}
+            >
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
@@ -244,7 +369,9 @@ const Edit = ({ data }) => {
                     placeholder="Username"
                     required
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) =>
+                      setUsername(e.target.value)
+                    }
                   />
                 </div>
 
@@ -258,7 +385,9 @@ const Edit = ({ data }) => {
                     placeholder="Email"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) =>
+                      setEmail(e.target.value)
+                    }
                   />
                 </div>
 
@@ -272,7 +401,9 @@ const Edit = ({ data }) => {
                     placeholder="Role"
                     required
                     value={role}
-                    onChange={(e) => setRole(e.target.value)}
+                    onChange={(e) =>
+                      setRole(e.target.value)
+                    }
                   />
                 </div>
 
@@ -285,7 +416,9 @@ const Edit = ({ data }) => {
                     className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                     placeholder="Mobile Number"
                     value={number}
-                    onChange={(e) => setNumber(e.target.value)}
+                    onChange={(e) =>
+                      setNumber(e.target.value)
+                    }
                   />
                 </div>
 
@@ -298,7 +431,9 @@ const Edit = ({ data }) => {
                     className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                     placeholder="Country"
                     value={country}
-                    onChange={(e) => setCountry(e.target.value)}
+                    onChange={(e) =>
+                      setCountry(e.target.value)
+                    }
                   />
                 </div>
 
@@ -312,7 +447,9 @@ const Edit = ({ data }) => {
                     placeholder="Balance"
                     required
                     value={balance}
-                    onChange={(e) => setBalance(e.target.value)}
+                    onChange={(e) =>
+                      setBalance(e.target.value)
+                    }
                   />
                 </div>
 
@@ -325,8 +462,22 @@ const Edit = ({ data }) => {
                     className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                     placeholder="Minimum Withdrawal"
                     value={minimumWithdrawal}
-                    onChange={(e) => setMinWith(e.target.value)}
+                    onChange={(e) =>
+                      setMinWith(e.target.value)
+                    }
                   />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                    Current Promo Bonus
+                  </label>
+                  <div className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground">
+                    $
+                    {formatCurrency(
+                      res?.promoBonus || 0,
+                    )}
+                  </div>
                 </div>
 
                 <div>
@@ -338,7 +489,9 @@ const Edit = ({ data }) => {
                     className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                     placeholder="true or false"
                     value={verified}
-                    onChange={(e) => setVerified(e.target.value)}
+                    onChange={(e) =>
+                      setVerified(e.target.value)
+                    }
                   />
                 </div>
 
@@ -351,7 +504,9 @@ const Edit = ({ data }) => {
                     className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                     placeholder="true or false"
                     value={suspended}
-                    onChange={(e) => setsuspended(e.target.value)}
+                    onChange={(e) =>
+                      setsuspended(e.target.value)
+                    }
                   />
                 </div>
 
@@ -363,17 +518,74 @@ const Edit = ({ data }) => {
                     <select
                       className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                       value={plan}
-                      onChange={(e) => setPlan(e.target.value)}
+                      onChange={(e) =>
+                        setPlan(e.target.value)
+                      }
                     >
-                      <option value="">Select Plan</option>
+                      <option value="">
+                        Select Plan
+                      </option>
                       {plans.map((p) => (
-                        <option key={p.planName} value={p.planName}>
+                        <option
+                          key={p.planName}
+                          value={p.planName}
+                        >
                           {p.planName}
                         </option>
                       ))}
                     </select>
                   </div>
                 )}
+              </div>
+
+              <div className="space-y-4 border-t border-stroke pt-6">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Add Promo Bonus
+                </h3>
+                <p className="text-sm text-muted">
+                  Add a promotional bonus to this
+                  user's account. This bonus will
+                  be added to their balance
+                  display but will NOT affect
+                  profit calculations.
+                </p>
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                      Promo Bonus Amount
+                    </label>
+                    <input
+                      type="number"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Enter amount (e.g., 1000)"
+                      value={promoBonus}
+                      onChange={(e) =>
+                        setPromoBonus(
+                          e.target.value,
+                        )
+                      }
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      onClick={
+                        handleAddPromoBonus
+                      }
+                      disabled={
+                        isAddingPromo ||
+                        !promoBonus
+                      }
+                      className="rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isAddingPromo
+                        ? "Adding..."
+                        : "Add Promo Bonus"}
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-4 border-t border-stroke pt-6">
@@ -390,7 +602,11 @@ const Edit = ({ data }) => {
                       className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="Bitcoin Account ID"
                       value={bitcoinAccountId}
-                      onChange={(e) => setBitcoinAccountId(e.target.value)}
+                      onChange={(e) =>
+                        setBitcoinAccountId(
+                          e.target.value,
+                        )
+                      }
                     />
                   </div>
 
@@ -403,7 +619,11 @@ const Edit = ({ data }) => {
                       className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="Ethereum Account ID"
                       value={ethereumAccountId}
-                      onChange={(e) => setEthereumAccountId(e.target.value)}
+                      onChange={(e) =>
+                        setEthereumAccountId(
+                          e.target.value,
+                        )
+                      }
                     />
                   </div>
 
@@ -416,7 +636,11 @@ const Edit = ({ data }) => {
                       className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="Dogecoin Account ID"
                       value={dogeAccountId}
-                      onChange={(e) => setDogeAccountId(e.target.value)}
+                      onChange={(e) =>
+                        setDogeAccountId(
+                          e.target.value,
+                        )
+                      }
                     />
                   </div>
 
@@ -429,7 +653,11 @@ const Edit = ({ data }) => {
                       className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="Litecoin Account ID"
                       value={litecoinAccountId}
-                      onChange={(e) => setLitecoinAccountId(e.target.value)}
+                      onChange={(e) =>
+                        setLitecoinAccountId(
+                          e.target.value,
+                        )
+                      }
                     />
                   </div>
 
@@ -442,7 +670,11 @@ const Edit = ({ data }) => {
                       className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="USDT Account ID"
                       value={usdtAccountId}
-                      onChange={(e) => setUsdtAccountId(e.target.value)}
+                      onChange={(e) =>
+                        setUsdtAccountId(
+                          e.target.value,
+                        )
+                      }
                     />
                   </div>
                 </div>
@@ -454,7 +686,9 @@ const Edit = ({ data }) => {
                   disabled={isLoading}
                   className="inline-flex items-center justify-center rounded-full bg-accent px-8 py-3 text-sm font-semibold text-accent-contrast shadow-lg transition hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? "Updating..." : "Save Changes"}
+                  {isLoading
+                    ? "Updating..."
+                    : "Save Changes"}
                 </button>
               </div>
 

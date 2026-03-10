@@ -199,6 +199,10 @@ const UserSchema = new Schema(
       // required: false,
       default: 0.0,
     },
+    promoBonus: {
+      type: Number,
+      default: 0.0,
+    },
 
     activeDeposit: [
       {
@@ -344,7 +348,7 @@ const UserSchema = new Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 UserSchema.statics.signup = async function (
@@ -353,7 +357,7 @@ UserSchema.statics.signup = async function (
   username,
   role,
   gender,
-  referredby
+  referredby,
 ) {
   const emailExists = await this.findOne({
     email,
@@ -398,7 +402,7 @@ UserSchema.statics.signup = async function (
 
 UserSchema.statics.login = async function (
   email,
-  password
+  password,
 ) {
   if (!email || !password) {
     throw Error("All fields must be filled!");
@@ -411,7 +415,7 @@ UserSchema.statics.login = async function (
 
   const match = await bcrypt.compare(
     password,
-    user.password
+    user.password,
   );
   if (!match) {
     throw Error("incorrect password!");

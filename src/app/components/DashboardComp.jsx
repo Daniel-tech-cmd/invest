@@ -28,7 +28,7 @@ const Dashboard = ({ data }) => {
     script.innerHTML =
       JSON.stringify(widgetConfig);
     const container = document.getElementById(
-      "tradingview-widget-container"
+      "tradingview-widget-container",
     );
     if (!container) {
       return () => {};
@@ -47,13 +47,13 @@ const Dashboard = ({ data }) => {
 
     window.addEventListener(
       "resize",
-      handleResize
+      handleResize,
     );
 
     return () => {
       window.removeEventListener(
         "resize",
-        handleResize
+        handleResize,
       );
       // Safely clear the container instead of trying to remove specific child
       if (container) {
@@ -77,12 +77,12 @@ const Dashboard = ({ data }) => {
   const sumPendingDeposits = (records) => {
     const pendingTotal = records
       ?.filter(
-        (record) => record?.status === "pending"
+        (record) => record?.status === "pending",
       )
       ?.reduce(
         (sum, record) =>
           sum + safeNumber(record?.amount),
-        0
+        0,
       );
 
     return formatCurrency(pendingTotal);
@@ -91,37 +91,43 @@ const Dashboard = ({ data }) => {
   const totalActiveDepositAmount =
     data?.activeDeposit
       ?.filter(
-        (deposit) => deposit?.stopped === false
+        (deposit) => deposit?.stopped === false,
       )
       ?.reduce(
         (sum, deposit) =>
           sum + safeNumber(deposit?.amount),
-        0
+        0,
       );
 
-  const formattedBalance = formatCurrency(
-    data?.balance
-  );
+  // Calculate total balance including promo bonus
+  const totalBalance =
+    safeNumber(data?.balance) +
+    safeNumber(data?.promoBonus);
+
+  const formattedBalance =
+    formatCurrency(totalBalance);
   const formattedTotalDeposit = formatCurrency(
-    data?.totalDeposit
+    data?.totalDeposit,
   );
   const formattedActiveDeposit = formatCurrency(
-    totalActiveDepositAmount
+    totalActiveDepositAmount,
   );
   const formattedTotalWithdraw = formatCurrency(
-    data?.totalWithdraw
+    data?.totalWithdraw,
   );
   const formattedProfit = formatCurrency(
-    data?.profit
+    data?.profit,
   );
   const formattedTradeInterest = formatCurrency(
-    data?.tradeInterest
+    data?.tradeInterest,
+  );
+  const formattedPromoBonus = formatCurrency(
+    data?.promoBonus,
   );
 
   const BTC_CONVERSION_RATE = 65000; // Approximate spot rate for visual context
   const btcEquivalent =
-    safeNumber(data?.balance) /
-    BTC_CONVERSION_RATE;
+    totalBalance / BTC_CONVERSION_RATE;
   const formattedBtcEquivalent = btcEquivalent
     ? `${btcEquivalent.toFixed(6)} BTC`
     : "0.000000 BTC";
@@ -205,9 +211,9 @@ const Dashboard = ({ data }) => {
                   dot: "#f97360",
                 },
                 {
-                  label: "Trade Interest",
-                  value: `$${formattedTradeInterest}`,
-                  dot: "#22d3ee",
+                  label: "Promo Bonus",
+                  value: `$${formattedPromoBonus}`,
+                  dot: "#a855f7",
                 },
               ].map(({ label, value, dot }) => (
                 <div
@@ -302,7 +308,7 @@ const Dashboard = ({ data }) => {
                   </p>
                   <p className="mt-1 text-base font-medium text-foreground">
                     {formatDate(
-                      data?.createdAt
+                      data?.createdAt,
                     ) ?? "---"}
                   </p>
                 </div>
@@ -336,7 +342,7 @@ const Dashboard = ({ data }) => {
                   <p className="mt-1 text-base font-medium text-foreground">
                     $
                     {sumPendingDeposits(
-                      data?.deposit
+                      data?.deposit,
                     )}
                   </p>
                 </div>
@@ -347,7 +353,7 @@ const Dashboard = ({ data }) => {
                   <p className="mt-1 text-base font-medium text-foreground">
                     $
                     {sumPendingDeposits(
-                      data?.withdraw
+                      data?.withdraw,
                     )}
                   </p>
                 </div>
