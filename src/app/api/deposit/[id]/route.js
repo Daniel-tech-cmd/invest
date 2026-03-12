@@ -511,11 +511,18 @@ export const PATCH = async (req, { params }) => {
       if (activeDep) {
         activeDep.amount += Number(amount);
         activeDep.date = Date.now();
+        // Update method if it exists in the deposit
+        if (user.deposit[index].method) {
+          activeDep.method =
+            user.deposit[index].method;
+        }
       } else {
         user.activeDeposit.push({
           date: Date.now(),
           amount: Number(amount),
           plan: planName,
+          method:
+            user.deposit[index].method || "USDT",
         });
       }
     } catch (error) {

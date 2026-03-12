@@ -88,13 +88,16 @@ const Withdrawal = ({ data }) => {
   // Calculate available amount from stopped activeDeposits that haven't been withdrawn
   const getAvailableAmount = (method) => {
     // Get total from stopped deposits (amount + profit) that haven't been withdrawn
+    // Filter by cryptocurrency method
     const availableFromDeposits = (
       data.activeDeposit || []
     )
       .filter(
         (deposit) =>
           deposit.stopped === true &&
-          deposit.withdrawn !== true,
+          deposit.withdrawn !== true &&
+          deposit.method?.toUpperCase() ===
+            method.toUpperCase(),
       )
       .reduce(
         (sum, deposit) =>

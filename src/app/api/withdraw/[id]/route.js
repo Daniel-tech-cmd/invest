@@ -96,49 +96,6 @@ export const POST = async (req, { params }) => {
       );
     }
 
-    // Check if user has enough balance in the selected coin/method
-    const totalDepositsForCoin = user.deposit
-      .filter(
-        (deposit) =>
-          deposit.method.toLowerCase() ===
-            coin.toLowerCase() &&
-          deposit.status === "approved",
-      )
-      .reduce(
-        (sum, deposit) => sum + deposit.amount,
-        0,
-      );
-
-    const totalWithdrawalsForCoin = user.withdraw
-      .filter(
-        (withdrawal) =>
-          withdrawal.method.toLowerCase() ===
-            coin.toLowerCase() &&
-          withdrawal.status === "approved",
-      )
-      .reduce(
-        (sum, withdrawal) =>
-          sum + withdrawal.amount,
-        0,
-      );
-
-    const availableCoinBalance =
-      totalDepositsForCoin -
-      totalWithdrawalsForCoin;
-
-    if (availableCoinBalance < amount) {
-      return new Response(
-        JSON.stringify({
-          error: `Insufficient ${coin} balance. Available: $${availableCoinBalance.toFixed(
-            2,
-          )}`,
-        }),
-        {
-          status: 400,
-        },
-      );
-    }
-
     // Add withdrawal request to the user's withdraw array with planIndex
     user.withdraw.push({
       amount,

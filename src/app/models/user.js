@@ -219,6 +219,7 @@ const UserSchema = new Schema(
         },
         method: {
           type: String,
+          default: "USDT",
         },
         date: {
           type: Date,
