@@ -32,13 +32,13 @@ const Withdrawal = ({ data }) => {
       parseFloat(amount) <= 0
     ) {
       setErrorMessage(
-        "Please enter a valid withdrawal amount."
+        "Please enter a valid withdrawal amount.",
       );
     } else if (
       parseFloat(amount) > data.balance
     ) {
       setErrorMessage(
-        "Withdrawal amount cannot be greater than available balance."
+        "Withdrawal amount cannot be greater than available balance.",
       );
     } else {
       setErrorMessage("");
@@ -82,37 +82,29 @@ const Withdrawal = ({ data }) => {
 
   // Filter coins that have been set in the database
   const availableCoins = coins.filter(
-    (coin) => data[coin.id]
+    (coin) => data[coin.id],
   );
 
-  // Calculate available and pending deposits for each coin
+  // Calculate available amount from stopped activeDeposits that haven't been withdrawn
   const getAvailableAmount = (method) => {
-    const totalDeposits = data.deposit
+    // Get total from stopped deposits (amount + profit) that haven't been withdrawn
+    const availableFromDeposits = (
+      data.activeDeposit || []
+    )
       .filter(
         (deposit) =>
-          deposit.method.toLowerCase() ===
-            method.toLowerCase() &&
-          deposit.status === "approved"
+          deposit.stopped === true &&
+          deposit.withdrawn !== true,
       )
       .reduce(
-        (sum, deposit) => sum + deposit.amount,
-        0
+        (sum, deposit) =>
+          sum +
+          (deposit.amount || 0) +
+          (deposit.profit || 0),
+        0,
       );
 
-    const totalWithdrawals = data.withdraw
-      .filter(
-        (withdrawal) =>
-          withdrawal.method.toLowerCase() ===
-            method.toLowerCase() &&
-          withdrawal.status === "approved"
-      )
-      .reduce(
-        (sum, withdrawal) =>
-          sum + withdrawal.amount,
-        0
-      );
-
-    return totalDeposits - totalWithdrawals;
+    return availableFromDeposits;
   };
 
   const getPendingAmount = (method) =>
@@ -120,11 +112,11 @@ const Withdrawal = ({ data }) => {
       .filter(
         (deposit) =>
           deposit.method === method &&
-          deposit.status === "pending"
+          deposit.status === "pending",
       )
       .reduce(
         (sum, deposit) => sum + deposit.amount,
-        0
+        0,
       );
 
   const handleConfirmClick = async () => {
@@ -142,7 +134,7 @@ const Withdrawal = ({ data }) => {
     try {
       console.log(
         "Submitting withdrawal request...",
-        requestData
+        requestData,
       );
       await withdraw(requestData);
       if (!erro && responseData) {
@@ -246,13 +238,13 @@ const Withdrawal = ({ data }) => {
                         <td className="py-4 px-2 text-sm text-emerald-500">
                           $
                           {getAvailableAmount(
-                            crypto.name
+                            crypto.name,
                           )}
                         </td>
                         <td className="py-4 px-2 text-sm text-rose-500">
                           $
                           {getPendingAmount(
-                            crypto.method
+                            crypto.method,
                           ).toFixed(2)}
                         </td>
                         <td className="py-4 px-2 text-sm text-accent">
@@ -345,11 +337,20 @@ const Withdrawal = ({ data }) => {
                         <label className="mb-2 block text-sm font-medium text-muted">
                           Select Plan
                         </label>
+                        <div className="mb-2 rounded-lg bg-blue-500/10 border border-blue-500/30 px-3 py-2 text-xs text-blue-600">
+                          ℹ️ Only completed plans
+                          (stopped) that haven't
+                          been withdrawn are
+                          available. The amount
+                          shown includes your
+                          initial deposit +
+                          accumulated profit.
+                        </div>
                         <select
                           value={selectedPlan}
                           onChange={(e) =>
                             setSelectedPlan(
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors focus:border-accent focus:outline-none"
@@ -360,24 +361,55 @@ const Withdrawal = ({ data }) => {
                           {data?.activeDeposit
                             ?.filter(
                               (deposit) =>
-                                deposit.amount > 0
+                                deposit.stopped ===
+                                  true &&
+                                deposit.withdrawn !==
+                                  true &&
+                                deposit.amount +
+                                  (deposit.profit ||
+                                    0) >
+                                  0,
                             )
                             .map(
                               (
                                 deposit,
-                                index
-                              ) => (
-                                <option
-                                  key={index}
-                                  value={data.activeDeposit.indexOf(
-                                    deposit
-                                  )}
-                                >
-                                  {deposit.plan} -
-                                  $
-                                  {deposit.amount}
-                                </option>
-                              )
+                                index,
+                              ) => {
+                                const totalAvailable =
+                                  deposit.amount +
+                                  (deposit.profit ||
+                                    0);
+                                const actualIndex =
+                                  data.activeDeposit.indexOf(
+                                    deposit,
+                                  );
+                                return (
+                                  <option
+                                    key={
+                                      actualIndex
+                                    }
+                                    value={
+                                      actualIndex
+                                    }
+                                  >
+                                    {deposit.plan}{" "}
+                                    - $
+                                    {totalAvailable.toFixed(
+                                      2,
+                                    )}{" "}
+                                    (Deposit: $
+                                    {deposit.amount.toFixed(
+                                      2,
+                                    )}{" "}
+                                    + Profit: $
+                                    {(
+                                      deposit.profit ||
+                                      0
+                                    ).toFixed(2)}
+                                    )
+                                  </option>
+                                );
+                              },
                             )}
                         </select>
                       </div>
@@ -390,7 +422,7 @@ const Withdrawal = ({ data }) => {
                           value={amount}
                           onChange={(e) =>
                             setAmount(
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors placeholder:text-muted focus:border-accent focus:outline-none"
@@ -406,7 +438,7 @@ const Withdrawal = ({ data }) => {
                           value={comment}
                           onChange={(e) =>
                             setComment(
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors placeholder:text-muted focus:border-accent focus:outline-none"
@@ -421,7 +453,7 @@ const Withdrawal = ({ data }) => {
                           value={selectedCoin}
                           onChange={(e) =>
                             setSelectedCoin(
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors focus:border-accent focus:outline-none"
@@ -437,7 +469,7 @@ const Withdrawal = ({ data }) => {
                               >
                                 {coin.name}
                               </option>
-                            )
+                            ),
                           )}
                         </select>
                       </div>

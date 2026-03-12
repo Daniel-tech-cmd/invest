@@ -240,6 +240,10 @@ const UserSchema = new Schema(
           type: Boolean,
           default: false,
         },
+        withdrawn: {
+          type: Boolean,
+          default: false,
+        },
       },
     ],
     referals: [

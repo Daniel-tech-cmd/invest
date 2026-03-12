@@ -439,6 +439,16 @@ export const PATCH = async (req, { params }) => {
         user.activeDeposit[planIndex].amount -=
           remainingToDeduct;
       }
+
+      // Mark as withdrawn if the entire balance (amount + profit) has been withdrawn
+      const remainingBalance =
+        user.activeDeposit[planIndex].amount +
+        (user.activeDeposit[planIndex].profit ||
+          0);
+      if (remainingBalance <= 0) {
+        user.activeDeposit[planIndex].withdrawn =
+          true;
+      }
     }
 
     // Deduct from user's balance
