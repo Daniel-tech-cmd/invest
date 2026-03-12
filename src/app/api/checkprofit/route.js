@@ -65,7 +65,9 @@ const calculateProfit = (planName, amount) => {
     },
   ];
 
-  const plan = plans.find((p) => p.planName === planName);
+  const plan = plans.find(
+    (p) => p.planName === planName,
+  );
   if (!plan) return 0;
 
   const hourlyProfitPercent = plan.hourlyProfit;
@@ -96,7 +98,9 @@ const getPlanDuration = (planName) => {
     },
   ];
 
-  const plan = plans.find((p) => p.planName === planName);
+  const plan = plans.find(
+    (p) => p.planName === planName,
+  );
   return plan ? plan.duration : 7; // Default to 7 days if plan not found
 };
 
@@ -109,23 +113,39 @@ export const GET = async (request) => {
       let totalProfit = 0;
       const earnHistoryEntries = [];
 
-      if (user.activeDeposit && user.activeDeposit.length > 0) {
+      if (
+        user.activeDeposit &&
+        user.activeDeposit.length > 0
+      ) {
         for (const deposit of user.activeDeposit) {
-          const { plan, amount, date, stopped } = deposit;
-          
-          // Get the plan's specific duration
-          const planDuration = getPlanDuration(plan);
-          const planDurationInMillis = planDuration * 24 * 60 * 60 * 1000;
-          
-          const depositAge = Date.now() - new Date(date).getTime();
+          const { plan, amount, date, stopped } =
+            deposit;
 
-          if (depositAge >= planDurationInMillis) {
+          // Get the plan's specific duration
+          const planDuration =
+            getPlanDuration(plan);
+          const planDurationInMillis =
+            planDuration * 24 * 60 * 60 * 1000;
+
+          const depositAge =
+            Date.now() - new Date(date).getTime();
+
+          if (
+            depositAge >= planDurationInMillis
+          ) {
             // Mark deposits older than the plan's duration as stopped
             deposit.stopped = true;
           } else if (!stopped) {
             // Calculate profit only for active deposits within the plan's duration
-            const profit = calculateProfit(plan, amount);
+            const profit = calculateProfit(
+              plan,
+              amount,
+            );
             totalProfit += profit;
+
+            // Add profit to this specific deposit's profit field
+            deposit.profit =
+              (deposit.profit || 0) + profit;
 
             // Add entry to earning history
             earnHistoryEntries.push({
@@ -140,28 +160,41 @@ export const GET = async (request) => {
         // Only update if there's profit to add
         if (totalProfit > 0) {
           // Update the user's profit and balance in the database
-          user.profit = (user.profit || 0) + totalProfit;
-          user.balance = (user.balance || 0) + totalProfit;
+          user.profit =
+            (user.profit || 0) + totalProfit;
+          user.balance =
+            (user.balance || 0) + totalProfit;
 
           // Add earning history entries
           if (!user.earnHistory) {
             user.earnHistory = [];
           }
-          user.earnHistory.push(...earnHistoryEntries);
+          user.earnHistory.push(
+            ...earnHistoryEntries,
+          );
 
           // Persist updated user data
           await user.save();
-        } else if (user.activeDeposit.some(d => d.stopped)) {
+        } else if (
+          user.activeDeposit.some(
+            (d) => d.stopped,
+          )
+        ) {
           // Save if any deposits were stopped (even if no profit)
           await user.save();
         }
       }
     }
-    return new Response(JSON.stringify(users), { status: 200 });
+    return new Response(JSON.stringify(users), {
+      status: 200,
+    });
   } catch (error) {
     console.log(error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-    });
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      {
+        status: 500,
+      },
+    );
   }
 };

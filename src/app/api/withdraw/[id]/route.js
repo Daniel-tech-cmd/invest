@@ -6,13 +6,13 @@ const generateRandomString = () => {
   const characters =
     "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const randomBuffer = crypto.getRandomValues(
-    new Uint8Array(6)
+    new Uint8Array(6),
   );
 
   const generatedString = Array.from(randomBuffer)
     .map(
       (byte) =>
-        characters[byte % characters.length]
+        characters[byte % characters.length],
     )
     .join("");
 
@@ -41,7 +41,7 @@ export const POST = async (req, { params }) => {
         }),
         {
           status: 404,
-        }
+        },
       );
     }
 
@@ -57,7 +57,7 @@ export const POST = async (req, { params }) => {
         }),
         {
           status: 400,
-        }
+        },
       );
     }
 
@@ -72,23 +72,27 @@ export const POST = async (req, { params }) => {
         }),
         {
           status: 404,
-        }
+        },
       );
     }
 
     const selectedPlan =
       user.activeDeposit[planIndex];
 
+    // Calculate total available balance in the plan (initial deposit + accumulated profit)
+    const planTotalBalance =
+      selectedPlan.amount +
+      (selectedPlan.profit || 0);
+
     // Check if the selected plan has enough balance
-    if (selectedPlan.amount < amount) {
+    if (planTotalBalance < amount) {
       return new Response(
         JSON.stringify({
-          error:
-            "Insufficient balance in selected plan",
+          error: `Insufficient balance in selected plan. Available: $${planTotalBalance.toFixed(2)}`,
         }),
         {
           status: 400,
-        }
+        },
       );
     }
 
@@ -98,11 +102,11 @@ export const POST = async (req, { params }) => {
         (deposit) =>
           deposit.method.toLowerCase() ===
             coin.toLowerCase() &&
-          deposit.status === "approved"
+          deposit.status === "approved",
       )
       .reduce(
         (sum, deposit) => sum + deposit.amount,
-        0
+        0,
       );
 
     const totalWithdrawalsForCoin = user.withdraw
@@ -110,12 +114,12 @@ export const POST = async (req, { params }) => {
         (withdrawal) =>
           withdrawal.method.toLowerCase() ===
             coin.toLowerCase() &&
-          withdrawal.status === "approved"
+          withdrawal.status === "approved",
       )
       .reduce(
         (sum, withdrawal) =>
           sum + withdrawal.amount,
-        0
+        0,
       );
 
     const availableCoinBalance =
@@ -126,12 +130,12 @@ export const POST = async (req, { params }) => {
       return new Response(
         JSON.stringify({
           error: `Insufficient ${coin} balance. Available: $${availableCoinBalance.toFixed(
-            2
+            2,
           )}`,
         }),
         {
           status: 400,
-        }
+        },
       );
     }
 
@@ -288,12 +292,12 @@ export const POST = async (req, { params }) => {
         user.email,
         "Withdrawal Request",
         userEmailContent.url,
-        userEmailContent.html
+        userEmailContent.html,
       );
     } catch (emailError) {
       console.error(
         "Failed to send withdrawal request email:",
-        emailError.message
+        emailError.message,
       );
       // Continue execution even if email fails
     }
@@ -307,7 +311,7 @@ export const POST = async (req, { params }) => {
       JSON.stringify({ error: error.message }),
       {
         status: 500,
-      }
+      },
     );
   }
 };
@@ -317,7 +321,7 @@ export const PATCH = async (req, { params }) => {
 
   try {
     const isadmin = await User.findById(
-      params.id
+      params.id,
     );
 
     if (isadmin.role !== "admin") {
@@ -327,7 +331,7 @@ export const PATCH = async (req, { params }) => {
         }),
         {
           status: 401,
-        }
+        },
       );
     }
     const { index, amount, userid, id } =
@@ -338,7 +342,7 @@ export const PATCH = async (req, { params }) => {
       index,
       amount,
       userid,
-      id
+      id,
     );
 
     const user = await User.findById(userid);
@@ -349,7 +353,7 @@ export const PATCH = async (req, { params }) => {
         }),
         {
           status: 404,
-        }
+        },
       );
     }
 
@@ -362,7 +366,7 @@ export const PATCH = async (req, { params }) => {
         JSON.stringify({
           error: `Request already ${user.withdraw[index].status}`,
         }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -396,35 +400,51 @@ export const PATCH = async (req, { params }) => {
           }),
           {
             status: 404,
-          }
+          },
         );
       }
 
+      // Calculate total available balance in the plan
+      const planTotalBalance =
+        user.activeDeposit[planIndex].amount +
+        (user.activeDeposit[planIndex].profit ||
+          0);
+
       // Check if the plan has enough balance
-      if (
-        user.activeDeposit[planIndex].amount <
-        amount
-      ) {
+      if (planTotalBalance < amount) {
         return new Response(
           JSON.stringify({
-            error:
-              "Insufficient balance in selected plan",
+            error: `Insufficient balance in selected plan. Available: $${planTotalBalance.toFixed(2)}`,
           }),
           {
             status: 400,
-          }
+          },
         );
       }
 
       // Deduct the amount from the selected plan
-      user.activeDeposit[planIndex].amount -=
-        amount;
+      // First deduct from profit, then from principal if needed
+      const currentProfit =
+        user.activeDeposit[planIndex].profit || 0;
+
+      if (currentProfit >= amount) {
+        // Withdrawal amount is less than or equal to profit - deduct only from profit
+        user.activeDeposit[planIndex].profit -=
+          amount;
+      } else {
+        // Withdrawal amount exceeds profit - deduct all profit and remaining from principal
+        const remainingToDeduct =
+          amount - currentProfit;
+        user.activeDeposit[planIndex].profit = 0;
+        user.activeDeposit[planIndex].amount -=
+          remainingToDeduct;
+      }
     }
 
     // Deduct from user's balance
     user.balance = Math.max(
       0,
-      Number(user.balance) - Number(amount)
+      Number(user.balance) - Number(amount),
     );
     user.totalWithdraw =
       (user.totalWithdraw || 0) + Number(amount);
@@ -436,7 +456,8 @@ export const PATCH = async (req, { params }) => {
     if (admin) {
       admin.notifications =
         admin.notifications.filter(
-          (notification) => notification.id !== id
+          (notification) =>
+            notification.id !== id,
         );
       await admin.save();
     }
@@ -783,12 +804,12 @@ export const PATCH = async (req, { params }) => {
         user.email,
         "Withdrawal Approved",
         userEmailContent.url,
-        userEmailContent.html
+        userEmailContent.html,
       );
     } catch (emailError) {
       console.error(
         "Failed to send withdrawal approval email:",
-        emailError.message
+        emailError.message,
       );
       // Continue execution even if email fails
     }
@@ -801,16 +822,16 @@ export const PATCH = async (req, { params }) => {
     });
   } catch (error) {
     console.error(
-      "=== WITHDRAWAL APPROVAL ERROR ==="
+      "=== WITHDRAWAL APPROVAL ERROR ===",
     );
     console.error(
       "Error message:",
-      error.message
+      error.message,
     );
     console.error("Error stack:", error.stack);
     console.error("Full error object:", error);
     console.error(
-      "================================"
+      "================================",
     );
 
     return new Response(
@@ -820,7 +841,7 @@ export const PATCH = async (req, { params }) => {
       }),
       {
         status: 500,
-      }
+      },
     );
   }
 };

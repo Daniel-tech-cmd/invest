@@ -209,6 +209,10 @@ const UserSchema = new Schema(
         amount: {
           type: Number,
         },
+        profit: {
+          type: Number,
+          default: 0.0,
+        },
         status: {
           type: String,
           default: "approved",
