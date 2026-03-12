@@ -52,6 +52,8 @@ const Edit = ({ data }) => {
     useState("");
   const [isAddingPromo, setIsAddingPromo] =
     useState(false);
+  const [isImpersonating, setIsImpersonating] =
+    useState(false);
   const [isLoading, setIsLoading] =
     useState(false);
   const [error, setError] = useState(null);
@@ -217,6 +219,65 @@ const Edit = ({ data }) => {
     }
   };
 
+  const handleImpersonate = async () => {
+    if (!res?._id) {
+      toast.error("User ID is missing");
+      return;
+    }
+
+    if (
+      window.confirm(
+        `Are you sure you want to login as ${res.username}? This action will be logged.`,
+      )
+    ) {
+      try {
+        setIsImpersonating(true);
+        const response = await fetch(
+          `/api/admin/impersonate/${data._id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              targetUserId: res._id,
+            }),
+          },
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.error ||
+              "Failed to impersonate user",
+          );
+        }
+
+        // Store user data and token
+        localStorage.setItem(
+          "user",
+          JSON.stringify(result.user),
+        );
+        document.cookie = `user=${JSON.stringify(result.user)}; path=/; max-age=${2 * 60 * 60}`;
+        document.cookie = `token=${result.token}; path=/; max-age=${2 * 60 * 60}`;
+
+        toast.success(
+          `Now logged in as ${res.username}. Redirecting to dashboard...`,
+        );
+
+        // Redirect to dashboard after short delay
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 1500);
+      } catch (err) {
+        toast.error(err.message);
+        console.error(err);
+        setIsImpersonating(false);
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -331,6 +392,15 @@ const Edit = ({ data }) => {
                 )}
               </p>
             </div>
+            <button
+              onClick={handleImpersonate}
+              disabled={isImpersonating}
+              className="rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isImpersonating
+                ? "Logging in..."
+                : "🔐 Login as User"}
+            </button>
           </div>
         </header>
 
