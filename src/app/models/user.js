@@ -279,6 +279,7 @@ const UserSchema = new Schema(
             "pending",
             "approved",
             "declined",
+            "logged",
           ],
         },
         method: {
