@@ -203,6 +203,13 @@ const UserSchema = new Schema(
       type: Number,
       default: 0.0,
     },
+    promoWithdrawDate: {
+      type: Date,
+    },
+    promoWithdrawAmount: {
+      type: Number,
+      default: 0,
+    },
 
     activeDeposit: [
       {

@@ -75,6 +75,10 @@ const Edit = ({ data }) => {
   ] = useState(res.litecoinAccountId || "");
   const [usdtAccountId, setUsdtAccountId] =
     useState(res.usdtAccountId || "");
+  const [promoWithdrawDate, setPromoWithdrawDate] =
+    useState("");
+  const [promoWithdrawAmount, setPromoWithdrawAmount] =
+    useState("");
 
   const [plans] = useState([
     {
@@ -156,6 +160,16 @@ const Edit = ({ data }) => {
         data.litecoinAccountId || "",
       );
       setUsdtAccountId(data.usdtAccountId || "");
+      setPromoWithdrawDate(
+        data.promoWithdrawDate
+          ? new Date(data.promoWithdrawDate)
+              .toISOString()
+              .split("T")[0]
+          : "",
+      );
+      setPromoWithdrawAmount(
+        data.promoWithdrawAmount || "",
+      );
     } catch (err) {
       console.error(err);
     }
@@ -331,6 +345,8 @@ const Edit = ({ data }) => {
       litecoinAccountId:
         litecoinAccountId?.trim(),
       usdtAccountId: usdtAccountId?.trim(),
+      promoWithdrawDate: promoWithdrawDate || null,
+      promoWithdrawAmount: promoWithdrawAmount || 0,
     };
 
     try {
@@ -654,6 +670,39 @@ const Edit = ({ data }) => {
                         ? "Adding..."
                         : "Add Promo Bonus"}
                     </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                      Promo Withdrawal Date
+                    </label>
+                    <input
+                      type="date"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      value={promoWithdrawDate}
+                      onChange={(e) =>
+                        setPromoWithdrawDate(
+                          e.target.value,
+                        )
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-muted">
+                      Allowed Promo Withdrawal Amount
+                    </label>
+                    <input
+                      type="number"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="e.g., 500"
+                      value={promoWithdrawAmount}
+                      onChange={(e) =>
+                        setPromoWithdrawAmount(
+                          e.target.value,
+                        )
+                      }
+                    />
                   </div>
                 </div>
               </div>

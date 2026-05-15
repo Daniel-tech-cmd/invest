@@ -21,22 +21,43 @@ const Withdrawal = ({ data }) => {
     useState(false);
   const [errorMessage, setErrorMessage] =
     useState("");
+  const [isPromoWithdraw, setIsPromoWithdraw] =
+    useState(false);
 
   const handleNextClick = () => {
     if (!selectedCoin) {
       setErrorMessage("Please select a coin.");
-    } else if (!selectedPlan) {
+    } else if (!isPromoWithdraw && !selectedPlan) {
       setErrorMessage("Please select a plan.");
-    } else if (
-      !amount ||
-      parseFloat(amount) <= 0
-    ) {
+    } else if (!amount || parseFloat(amount) <= 0) {
       setErrorMessage(
         "Please enter a valid withdrawal amount.",
       );
-    } else if (
-      parseFloat(amount) > data.balance
-    ) {
+    } else if (isPromoWithdraw) {
+      // Promo specific validation
+      if (parseFloat(amount) > data.promoBonus) {
+        setErrorMessage(
+          `Insufficient promo balance. Available: $${(data.promoBonus || 0).toFixed(2)}`,
+        );
+      } else if (
+        data.promoWithdrawDate &&
+        new Date() < new Date(data.promoWithdrawDate)
+      ) {
+        setErrorMessage(
+          `Promo withdrawal is not allowed until ${new Date(data.promoWithdrawDate).toLocaleDateString()}`,
+        );
+      } else if (
+        data.promoWithdrawAmount > 0 &&
+        parseFloat(amount) > data.promoWithdrawAmount
+      ) {
+        setErrorMessage(
+          `Your maximum allowed promo withdrawal is currently $${data.promoWithdrawAmount.toFixed(2)}`,
+        );
+      } else {
+        setErrorMessage("");
+        setShowConfirmation(true);
+      }
+    } else if (parseFloat(amount) > data.balance) {
       setErrorMessage(
         "Withdrawal amount cannot be greater than available balance.",
       );
@@ -85,6 +106,16 @@ const Withdrawal = ({ data }) => {
     (coin) => data[coin.id],
   );
 
+  // Coins used in previous approved deposits
+  const depositedCoins = availableCoins.filter((coin) =>
+    data.deposit?.some(
+      (d) =>
+        d.status === "approved" &&
+        d.method?.toUpperCase() ===
+          coin.method.toUpperCase(),
+    ),
+  );
+
   // Calculate available amount from stopped activeDeposits that haven't been withdrawn
   const getAvailableAmount = (method) => {
     // Get total from stopped deposits (amount + profit) that haven't been withdrawn
@@ -131,7 +162,9 @@ const Withdrawal = ({ data }) => {
         ],
       amount: parseFloat(amount),
       note: comment,
-      planIndex: parseInt(selectedPlan),
+      planIndex: isPromoWithdraw
+        ? "promo"
+        : parseInt(selectedPlan),
     };
 
     try {
@@ -196,11 +229,52 @@ const Withdrawal = ({ data }) => {
               </h2>
             </div>
 
+            {data?.promoBonus > 0 && (
+              <div className="flex gap-4">
+                <button
+                  onClick={() => {
+                    setIsPromoWithdraw(false);
+                    setShowConfirmation(false);
+                    setErrorMessage("");
+                  }}
+                  className={`flex-1 rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                    !isPromoWithdraw
+                      ? "border-accent bg-accent/10 text-accent"
+                      : "border-stroke bg-surface text-muted hover:border-accent/50"
+                  }`}
+                >
+                  Standard Withdrawal
+                </button>
+                <button
+                  onClick={() => {
+                    setIsPromoWithdraw(true);
+                    setShowConfirmation(false);
+                    setErrorMessage("");
+                    setSelectedPlan("");
+                  }}
+                  className={`flex-1 rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                    isPromoWithdraw
+                      ? "border-purple-500 bg-purple-500/10 text-purple-500"
+                      : "border-stroke bg-surface text-muted hover:border-purple-500/50"
+                  }`}
+                >
+                  Promo Withdrawal
+                </button>
+              </div>
+            )}
+
             <div className="grid gap-6 rounded-2xl border border-stroke bg-surface p-6">
               <div className="flex justify-between text-sm text-muted">
-                <p>Account Balance:</p>
+                <p>
+                  {isPromoWithdraw
+                    ? "Promo Balance:"
+                    : "Account Balance:"}
+                </p>
                 <p className="font-medium text-foreground">
-                  ${data?.balance.toFixed(2)}
+                  $
+                  {isPromoWithdraw
+                    ? (data?.promoBonus || 0).toFixed(2)
+                    : data?.balance.toFixed(2)}
                 </p>
               </div>
               <div className="flex justify-between text-sm text-muted">
@@ -336,86 +410,107 @@ const Withdrawal = ({ data }) => {
                     </div>
                   ) : (
                     <div className="rounded-2xl border border-stroke bg-surface-muted px-6 py-6 text-left text-foreground">
-                      <div className="mb-4">
-                        <label className="mb-2 block text-sm font-medium text-muted">
-                          Select Plan
-                        </label>
-                        <div className="mb-2 rounded-lg bg-blue-500/10 border border-blue-500/30 px-3 py-2 text-xs text-blue-600">
-                          ℹ️ Only completed plans
-                          (stopped) that haven't
-                          been withdrawn are
-                          available. The amount
-                          shown includes your
-                          initial deposit +
-                          accumulated profit.
+                      {isPromoWithdraw ? (
+                        <div className="mb-4">
+                          <label className="mb-2 block text-sm font-medium text-muted">
+                            Promo Withdrawal Date
+                          </label>
+                          <div className="rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground">
+                            {data.promoWithdrawDate
+                              ? new Date(
+                                  data.promoWithdrawDate,
+                                ).toLocaleDateString()
+                              : "No date set (Available now)"}
+                          </div>
+                          <div className="mt-2 rounded-lg bg-purple-500/10 border border-purple-500/30 px-3 py-2 text-xs text-purple-600">
+                            ℹ️ You can only withdraw
+                            using coins you have
+                            previously deposited
+                            with.
+                          </div>
                         </div>
-                        <select
-                          value={selectedPlan}
-                          onChange={(e) =>
-                            setSelectedPlan(
-                              e.target.value,
-                            )
-                          }
-                          className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors focus:border-accent focus:outline-none"
-                        >
-                          <option value="">
-                            Select a plan
-                          </option>
-                          {data?.activeDeposit
-                            ?.filter(
-                              (deposit) =>
-                                deposit.stopped ===
-                                  true &&
-                                deposit.withdrawn !==
-                                  true &&
-                                deposit.amount +
-                                  (deposit.profit ||
-                                    0) >
-                                  0,
-                            )
-                            .map(
-                              (
-                                deposit,
-                                index,
-                              ) => {
-                                const totalAvailable =
+                      ) : (
+                        <div className="mb-4">
+                          <label className="mb-2 block text-sm font-medium text-muted">
+                            Select Plan
+                          </label>
+                          <div className="mb-2 rounded-lg bg-blue-500/10 border border-blue-500/30 px-3 py-2 text-xs text-blue-600">
+                            ℹ️ Only completed plans
+                            (stopped) that haven't
+                            been withdrawn are
+                            available. The amount
+                            shown includes your
+                            initial deposit +
+                            accumulated profit.
+                          </div>
+                          <select
+                            value={selectedPlan}
+                            onChange={(e) =>
+                              setSelectedPlan(
+                                e.target.value,
+                              )
+                            }
+                            className="w-full rounded-xl border border-stroke bg-surface px-3 py-3 text-sm text-foreground transition-colors focus:border-accent focus:outline-none"
+                          >
+                            <option value="">
+                              Select a plan
+                            </option>
+                            {data?.activeDeposit
+                              ?.filter(
+                                (deposit) =>
+                                  deposit.stopped ===
+                                    true &&
+                                  deposit.withdrawn !==
+                                    true &&
                                   deposit.amount +
-                                  (deposit.profit ||
-                                    0);
-                                const actualIndex =
-                                  data.activeDeposit.indexOf(
-                                    deposit,
+                                    (deposit.profit ||
+                                      0) >
+                                    0,
+                              )
+                              .map(
+                                (
+                                  deposit,
+                                  index,
+                                ) => {
+                                  const totalAvailable =
+                                    deposit.amount +
+                                    (deposit.profit ||
+                                      0);
+                                  const actualIndex =
+                                    data.activeDeposit.indexOf(
+                                      deposit,
+                                    );
+                                  return (
+                                    <option
+                                      key={
+                                        actualIndex
+                                      }
+                                      value={
+                                        actualIndex
+                                      }
+                                    >
+                                      {deposit.plan}{" "}
+                                      - $
+                                      {totalAvailable.toFixed(
+                                        2,
+                                      )}{" "}
+                                      (Deposit: $
+                                      {deposit.amount.toFixed(
+                                        2,
+                                      )}{" "}
+                                      + Profit: $
+                                      {(
+                                        deposit.profit ||
+                                        0
+                                      ).toFixed(2)}
+                                      )
+                                    </option>
                                   );
-                                return (
-                                  <option
-                                    key={
-                                      actualIndex
-                                    }
-                                    value={
-                                      actualIndex
-                                    }
-                                  >
-                                    {deposit.plan}{" "}
-                                    - $
-                                    {totalAvailable.toFixed(
-                                      2,
-                                    )}{" "}
-                                    (Deposit: $
-                                    {deposit.amount.toFixed(
-                                      2,
-                                    )}{" "}
-                                    + Profit: $
-                                    {(
-                                      deposit.profit ||
-                                      0
-                                    ).toFixed(2)}
-                                    )
-                                  </option>
-                                );
-                              },
-                            )}
-                        </select>
-                      </div>
+                                },
+                              )}
+                          </select>
+                        </div>
+                      )}
                       <div className="mb-4">
                         <label className="mb-2 block text-sm font-medium text-muted">
                           Withdrawal Amount
@@ -464,16 +559,17 @@ const Withdrawal = ({ data }) => {
                           <option value="">
                             Select a coin
                           </option>
-                          {availableCoins.map(
-                            (coin) => (
-                              <option
-                                key={coin.name}
-                                value={coin.name}
-                              >
-                                {coin.name}
-                              </option>
-                            ),
-                          )}
+                          {(isPromoWithdraw
+                            ? depositedCoins
+                            : availableCoins
+                          ).map((coin) => (
+                            <option
+                              key={coin.name}
+                              value={coin.name}
+                            >
+                              {coin.name}
+                            </option>
+                          ))}
                         </select>
                       </div>
                       {errorMessage && (
@@ -490,6 +586,12 @@ const Withdrawal = ({ data }) => {
                       </button>
                     </div>
                   )
+                ) : isPromoWithdraw &&
+                  data?.promoBonus > 0 ? (
+                  <p className="inline-block rounded-xl border border-purple-500 bg-purple-500/10 px-4 py-3 text-sm font-semibold text-purple-500">
+                    USE THE FORM ABOVE TO WITHDRAW
+                    YOUR PROMO BONUS.
+                  </p>
                 ) : (
                   <p className="inline-block rounded-xl border border-red-500 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-500">
                     YOU HAVE NO FUNDS TO WITHDRAW.

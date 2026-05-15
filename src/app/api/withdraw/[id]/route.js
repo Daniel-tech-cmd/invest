@@ -46,54 +46,86 @@ export const POST = async (req, { params }) => {
     }
 
     // Validate planIndex
-    if (
-      planIndex === undefined ||
-      planIndex === null
-    ) {
-      return new Response(
-        JSON.stringify({
-          error:
-            "Please select a plan to withdraw from",
-        }),
-        {
-          status: 400,
-        },
-      );
-    }
+    if (planIndex === "promo") {
+      // Promo withdrawal logic
+      if (!user.promoBonus || user.promoBonus < amount) {
+        return new Response(
+          JSON.stringify({
+            error: `Insufficient promo balance. Available: $${(user.promoBonus || 0).toFixed(2)}`,
+          }),
+          { status: 400 },
+        );
+      }
 
-    // Check if the selected plan exists
-    if (
-      !user.activeDeposit ||
-      !user.activeDeposit[planIndex]
-    ) {
-      return new Response(
-        JSON.stringify({
-          error: "Selected plan not found",
-        }),
-        {
-          status: 404,
-        },
-      );
-    }
+      // Check withdrawal date
+      if (
+        user.promoWithdrawDate &&
+        new Date() < new Date(user.promoWithdrawDate)
+      ) {
+        return new Response(
+          JSON.stringify({
+            error: `Promo withdrawal is not allowed until ${new Date(user.promoWithdrawDate).toLocaleDateString()}`,
+          }),
+          { status: 400 },
+        );
+      }
 
-    const selectedPlan =
-      user.activeDeposit[planIndex];
+      // Check allowed withdrawal amount
+      if (
+        user.promoWithdrawAmount !== undefined &&
+        user.promoWithdrawAmount !== null &&
+        user.promoWithdrawAmount > 0 &&
+        amount > user.promoWithdrawAmount
+      ) {
+        return new Response(
+          JSON.stringify({
+            error: `Your maximum allowed promo withdrawal is currently $${user.promoWithdrawAmount.toFixed(2)}`,
+          }),
+          { status: 400 },
+        );
+      }
+    } else {
+      // Standard plan withdrawal logic
+      if (planIndex === undefined || planIndex === null) {
+        return new Response(
+          JSON.stringify({
+            error: "Please select a plan to withdraw from",
+          }),
+          {
+            status: 400,
+          },
+        );
+      }
 
-    // Calculate total available balance in the plan (initial deposit + accumulated profit)
-    const planTotalBalance =
-      selectedPlan.amount +
-      (selectedPlan.profit || 0);
+      // Check if the selected plan exists
+      if (!user.activeDeposit || !user.activeDeposit[planIndex]) {
+        return new Response(
+          JSON.stringify({
+            error: "Selected plan not found",
+          }),
+          {
+            status: 404,
+          },
+        );
+      }
 
-    // Check if the selected plan has enough balance
-    if (planTotalBalance < amount) {
-      return new Response(
-        JSON.stringify({
-          error: `Insufficient balance in selected plan. Available: $${planTotalBalance.toFixed(2)}`,
-        }),
-        {
-          status: 400,
-        },
-      );
+      const selectedPlan = user.activeDeposit[planIndex];
+
+      // Calculate total available balance in the plan (initial deposit + accumulated profit)
+      const planTotalBalance =
+        selectedPlan.amount + (selectedPlan.profit || 0);
+
+      // Check if the selected plan has enough balance
+      if (planTotalBalance < amount) {
+        return new Response(
+          JSON.stringify({
+            error: `Insufficient balance in selected plan. Available: $${planTotalBalance.toFixed(2)}`,
+          }),
+          {
+            status: 400,
+          },
+        );
+      }
     }
 
     // Add withdrawal request to the user's withdraw array with planIndex
@@ -341,19 +373,23 @@ export const PATCH = async (req, { params }) => {
       user.withdraw[index].planIndex;
 
     // Deduct from the selected plan if planIndex exists
-    if (
-      planIndex !== undefined &&
-      planIndex !== null
-    ) {
-      // Check if the plan still exists
-      if (
-        !user.activeDeposit ||
-        !user.activeDeposit[planIndex]
-      ) {
+    if (planIndex === "promo") {
+      // Deduct from promo bonus
+      if ((user.promoBonus || 0) < amount) {
         return new Response(
           JSON.stringify({
-            error:
-              "Selected plan no longer exists",
+            error: `Insufficient promo balance. Available: $${(user.promoBonus || 0).toFixed(2)}`,
+          }),
+          { status: 400 },
+        );
+      }
+      user.promoBonus -= amount;
+    } else if (planIndex !== undefined && planIndex !== null) {
+      // Check if the plan still exists
+      if (!user.activeDeposit || !user.activeDeposit[planIndex]) {
+        return new Response(
+          JSON.stringify({
+            error: "Selected plan no longer exists",
           }),
           {
             status: 404,
@@ -364,8 +400,7 @@ export const PATCH = async (req, { params }) => {
       // Calculate total available balance in the plan
       const planTotalBalance =
         user.activeDeposit[planIndex].amount +
-        (user.activeDeposit[planIndex].profit ||
-          0);
+        (user.activeDeposit[planIndex].profit || 0);
 
       // Check if the plan has enough balance
       if (planTotalBalance < amount) {
@@ -381,40 +416,31 @@ export const PATCH = async (req, { params }) => {
 
       // Deduct the amount from the selected plan
       // First deduct from profit, then from principal if needed
-      const currentProfit =
-        user.activeDeposit[planIndex].profit || 0;
+      const currentProfit = user.activeDeposit[planIndex].profit || 0;
 
       if (currentProfit >= amount) {
         // Withdrawal amount is less than or equal to profit - deduct only from profit
-        user.activeDeposit[planIndex].profit -=
-          amount;
+        user.activeDeposit[planIndex].profit -= amount;
       } else {
         // Withdrawal amount exceeds profit - deduct all profit and remaining from principal
-        const remainingToDeduct =
-          amount - currentProfit;
+        const remainingToDeduct = amount - currentProfit;
         user.activeDeposit[planIndex].profit = 0;
-        user.activeDeposit[planIndex].amount -=
-          remainingToDeduct;
+        user.activeDeposit[planIndex].amount -= remainingToDeduct;
       }
 
       // Mark as withdrawn if the entire balance (amount + profit) has been withdrawn
       const remainingBalance =
         user.activeDeposit[planIndex].amount +
-        (user.activeDeposit[planIndex].profit ||
-          0);
+        (user.activeDeposit[planIndex].profit || 0);
       if (remainingBalance <= 0) {
-        user.activeDeposit[planIndex].withdrawn =
-          true;
+        user.activeDeposit[planIndex].withdrawn = true;
       }
+
+      // Also deduct from user's main balance (this is how the standard withdrawal works in this app)
+      user.balance = Math.max(0, Number(user.balance) - Number(amount));
     }
 
-    // Deduct from user's balance
-    user.balance = Math.max(
-      0,
-      Number(user.balance) - Number(amount),
-    );
-    user.totalWithdraw =
-      (user.totalWithdraw || 0) + Number(amount);
+    user.totalWithdraw = (user.totalWithdraw || 0) + Number(amount);
 
     // Remove notification from admin
     const admin = await User.findOne({
