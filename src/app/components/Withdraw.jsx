@@ -106,14 +106,27 @@ const Withdrawal = ({ data }) => {
     (coin) => data[coin.id],
   );
 
-  // Coins used in previous approved deposits
-  const depositedCoins = availableCoins.filter((coin) =>
+  // Coins used in previous approved deposits (ignoring wallet set status for now)
+  const potentialPromoCoins = coins.filter((coin) =>
     data.deposit?.some(
       (d) =>
         d.status === "approved" &&
-        d.method?.toUpperCase() ===
-          coin.method.toUpperCase(),
+        (d.method?.toUpperCase() ===
+          coin.method.toUpperCase() ||
+          d.method?.toUpperCase() ===
+            coin.name.toUpperCase() ||
+          d.method
+            ?.toUpperCase()
+            .includes(coin.method.toUpperCase()) ||
+          coin.name
+            .toUpperCase()
+            .includes(d.method?.toUpperCase())),
     ),
+  );
+
+  // Coins used in deposits that ALSO have a wallet address set
+  const depositedCoins = potentialPromoCoins.filter(
+    (coin) => data[coin.id],
   );
 
   // Calculate available amount from stopped activeDeposits that haven't been withdrawn
@@ -422,12 +435,41 @@ const Withdrawal = ({ data }) => {
                                 ).toLocaleDateString()
                               : "No date set (Available now)"}
                           </div>
-                          <div className="mt-2 rounded-lg bg-purple-500/10 border border-purple-500/30 px-3 py-2 text-xs text-purple-600">
-                            ℹ️ You can only withdraw
-                            using coins you have
-                            previously deposited
-                            with.
-                          </div>
+                          {depositedCoins.length >
+                            0 && (
+                            <div className="mt-2 rounded-lg bg-purple-500/10 border border-purple-500/30 px-3 py-2 text-xs text-purple-600">
+                              ℹ️ You can only withdraw
+                              using coins you have
+                              previously deposited
+                              with.
+                            </div>
+                          )}
+                          {potentialPromoCoins.length >
+                            0 &&
+                            depositedCoins.length ===
+                              0 && (
+                              <div className="mt-2 rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-2 text-xs text-rose-600">
+                                ⚠️ You have deposited
+                                with{" "}
+                                {potentialPromoCoins
+                                  .map(
+                                    (c) => c.name,
+                                  )
+                                  .join(", ")}{" "}
+                                but you haven't set
+                                their wallet addresses
+                                in your profile yet.
+                                Please{" "}
+                                <Link
+                                  href="/profile/edit"
+                                  className="underline font-bold"
+                                >
+                                  set your wallet
+                                  addresses
+                                </Link>{" "}
+                                to withdraw.
+                              </div>
+                            )}
                         </div>
                       ) : (
                         <div className="mb-4">
