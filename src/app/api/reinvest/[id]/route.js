@@ -192,6 +192,138 @@ export const POST = async (req, { params }) => {
         userEmailContent.html
       );
 
+      // Check for referral bonus on reinvestment
+      if (user.referredby) {
+        const referringUser = await User.findOne({
+          username: user.referredby,
+        });
+
+        if (referringUser) {
+          const referralBonus = amount * 0.1; // 10% commission
+
+          referringUser.referralBonus =
+            (referringUser.referralBonus || 0) + referralBonus;
+          referringUser.balance =
+            (referringUser.balance || 0) + referralBonus;
+
+          await referringUser.save();
+
+          const htm = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reinvestment Referral Bonus Received - GoldGroveco</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: 'Rubik', Arial, sans-serif; background-color: #f3f4f6; margin: 0; padding: 0; line-height: 1.6; }
+      .email-wrapper { width: 100%; background-color: #f3f4f6; padding: 40px 20px; }
+      .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); overflow: hidden; }
+      .header { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 40px 30px; text-align: center; }
+      .logo { font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 10px; letter-spacing: -0.5px; }
+      .header-subtitle { color: #ffffff; font-size: 16px; font-weight: 400; opacity: 0.95; }
+      .content { padding: 40px 30px; text-align: center; }
+      .greeting { font-size: 20px; font-weight: 600; color: #111827; margin-bottom: 20px; }
+      .message { font-size: 16px; color: #4b5563; margin-bottom: 30px; line-height: 1.7; }
+      .bonus-badge { display: inline-flex; align-items: center; background-color: #d1fae5; color: #065f46; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-bottom: 25px; }
+      .bonus-icon { width: 18px; height: 18px; margin-right: 8px; }
+      .amount-box { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-radius: 12px; padding: 30px; margin: 25px 0; text-align: center; }
+      .amount-label { color: #ffffff; font-size: 14px; font-weight: 500; margin-bottom: 10px; opacity: 0.9; }
+      .amount-value { color: #ffffff; font-size: 36px; font-weight: 700; }
+      .referral-info { background-color: #f9fafb; border-radius: 8px; padding: 20px; margin: 25px 0; text-align: left; }
+      .referral-row { display: flex; justify-content: space-between; padding: 10px 0; }
+      .referral-label { font-size: 14px; color: #6b7280; font-weight: 500; }
+      .referral-value { font-size: 14px; color: #111827; font-weight: 600; }
+      .footer { background-color: #111827; padding: 30px; text-align: center; }
+      .footer-content { color: #9ca3af; font-size: 14px; margin-bottom: 15px; }
+      .copyright { color: #6b7280; font-size: 12px; margin-top: 20px; }
+      @media only screen and (max-width: 600px) {
+        .email-wrapper { padding: 20px 10px; }
+        .content { padding: 30px 20px; }
+        .header { padding: 30px 20px; }
+        .amount-value { font-size: 28px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-wrapper">
+      <div class="email-container">
+        <div class="header">
+          <div class="logo">GoldGroveco.</div>
+          <div class="header-subtitle">Expanding Opportunities in Investment</div>
+        </div>
+        <div class="content">
+          <div class="greeting">Hello ${
+            referringUser.username
+          },</div>
+          <div class="bonus-badge">
+            <svg class="bonus-icon" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+            </svg>
+            Reinvestment Referral Bonus Received
+          </div>
+          <p class="message">
+            Congratulations! You've earned a referral bonus from your network's reinvestment.
+          </p>
+          <div class="amount-box">
+            <div class="amount-label">Bonus Amount</div>
+            <div class="amount-value">$${referralBonus} USD</div>
+          </div>
+          <div class="referral-info">
+            <div class="referral-row">
+              <span class="referral-label">Referred User</span>
+              <span class="referral-value">${
+                user.username
+              }</span>
+            </div>
+            <div class="referral-row">
+              <span class="referral-label">Bonus Rate</span>
+              <span class="referral-value">10%</span>
+            </div>
+            <div class="referral-row">
+              <span class="referral-label">Status</span>
+              <span class="referral-value" style="color: #22c55e;">Credited</span>
+            </div>
+          </div>
+          <p class="message">
+            The bonus has been automatically added to your account balance. Keep referring friends to earn more rewards!
+          </p>
+        </div>
+        <div class="footer">
+          <div class="footer-content">
+            <strong style="color: #ffffff;">GoldGroveco</strong><br />
+            20 Audley St. London, W1K 6WE, United Kingdom<br />
+            📞 +44 0203 0990123 | ✉️ support@goldgroveco.com
+          </div>
+          <div class="copyright">
+            &copy; ${new Date().getFullYear()} GoldGroveco. All rights reserved.
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+`;
+          try {
+            await sendEmail(
+              referringUser.email,
+              "Referral Bonus — Goldgroveco",
+              `You have earned a $${referralBonus} referral bonus from ${user.username}'s reinvestment!`,
+              htm,
+            );
+          } catch (emailErr) {
+            console.error(
+              "Referral bonus email failed:",
+              emailErr.message,
+            );
+          }
+        }
+      }
+
       await user.save();
       return new Response(JSON.stringify(user), { status: 200 });
     } else {
