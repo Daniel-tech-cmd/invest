@@ -11,10 +11,15 @@ const EditProfile = ({ data }) => {
     fullName: data.fullName || "",
     username: data.username || "",
     bitcoinAccountId: data.bitcoinAccountId || "",
+    bitcoinNetwork: data.bitcoinNetwork || "",
     ethereumAccountId: data.ethereumAccountId || "",
+    ethereumNetwork: data.ethereumNetwork || "",
     litecoinAccountId: data.litecoinAccountId || "",
+    litecoinNetwork: data.litecoinNetwork || "",
     usdtAccountId: data.usdtAccountId || "",
+    usdtNetwork: data.usdtNetwork || "",
     dogeAccountId: data.dogeAccountId || "",
+    dogeNetwork: data.dogeNetwork || "",
     email: data.email || "",
   });
 
@@ -177,6 +182,14 @@ const EditProfile = ({ data }) => {
                       className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="Bitcoin wallet address"
                     />
+                    <input
+                      type="text"
+                      name="bitcoinNetwork"
+                      value={formData.bitcoinNetwork}
+                      onChange={handleChange}
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Bitcoin network (e.g., BTC)"
+                    />
                   </div>
 
                   <div>
@@ -190,6 +203,14 @@ const EditProfile = ({ data }) => {
                       onChange={handleChange}
                       className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="Ethereum wallet address"
+                    />
+                    <input
+                      type="text"
+                      name="ethereumNetwork"
+                      value={formData.ethereumNetwork}
+                      onChange={handleChange}
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Ethereum network (e.g., ERC20)"
                     />
                   </div>
 
@@ -205,6 +226,14 @@ const EditProfile = ({ data }) => {
                       className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="Litecoin wallet address"
                     />
+                    <input
+                      type="text"
+                      name="litecoinNetwork"
+                      value={formData.litecoinNetwork}
+                      onChange={handleChange}
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Litecoin network (e.g., LTC)"
+                    />
                   </div>
 
                   <div>
@@ -219,6 +248,14 @@ const EditProfile = ({ data }) => {
                       className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="Dogecoin wallet address"
                     />
+                    <input
+                      type="text"
+                      name="dogeNetwork"
+                      value={formData.dogeNetwork}
+                      onChange={handleChange}
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Dogecoin network (e.g., DOGE)"
+                    />
                   </div>
 
                   <div className="md:col-span-2">
@@ -232,6 +269,14 @@ const EditProfile = ({ data }) => {
                       onChange={handleChange}
                       className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="USDT wallet address"
+                    />
+                    <input
+                      type="text"
+                      name="usdtNetwork"
+                      value={formData.usdtNetwork}
+                      onChange={handleChange}
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="USDT network (e.g., TRC20)"
                     />
                   </div>
                 </div>

@@ -14,6 +14,9 @@ const walletSchema = new Schema(
     address: {
       type: String,
     },
+    network: {
+      type: String,
+    },
     image: {
       url: String,
       public_id: String,

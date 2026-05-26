@@ -13,6 +13,7 @@ export default function Addwallet() {
 
   const [name, setname] = useState("");
   const [address, setaddress] = useState("");
+  const [network, setnetwork] = useState("");
   const [id, setid] = useState("");
   const [image, setimage] = useState("");
   const [ico, setico] = useState("");
@@ -53,6 +54,7 @@ export default function Addwallet() {
 
     const data = {
       address: address.trim(),
+      network: network.trim(),
       name: name.trim(),
       ico,
       image,
@@ -127,6 +129,22 @@ export default function Addwallet() {
             placeholder="Wallet Address"
             className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={(e) => setaddress(e.target.value)}
+          />
+        </div>
+        <div>
+          <label
+            className="block text-sm font-medium text-gray-700"
+            style={{ color: "#fff" }}
+          >
+            Network
+          </label>
+          <input
+            type="text"
+            value={network}
+            style={{ color: "#000" }}
+            placeholder="Network (e.g., ERC20, TRC20, BEP20)"
+            className="mt-1 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={(e) => setnetwork(e.target.value)}
           />
         </div>
         <div className="flex flex-col items-center space-y-2">

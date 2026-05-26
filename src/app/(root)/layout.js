@@ -52,14 +52,27 @@ export default async function RootLayout({
   return (
     <html lang="en" className="min-h-full">
       <body className="antialiased min-h-full bg-background text-foreground transition-colors duration-300">
-        {dat?.suspended && <AccountSuspension />}
-        {!dat?.suspended && (
+        {dat?.restricted ? (
+          <div className="flex h-screen w-full items-center justify-center bg-surface p-4">
+            <div className="max-w-md rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center shadow-xl">
+              <h1 className="mb-4 text-2xl font-bold text-red-500">
+                Account Restricted
+              </h1>
+              <p className="text-foreground">
+                {dat.restrictionMessage ||
+                  "Your account has been temporarily restricted. Please contact support for more information."}
+              </p>
+            </div>
+          </div>
+        ) : dat?.suspended ? (
+          <AccountSuspension />
+        ) : (
           <NavProvider>
             <TopNav />
             <Dashboardnav data={dat} />
             <div className="min-h-screen bg-canvas lg:pl-64">
               <NotificationPopup />
-              <main className="min-h-screen bg-surface text-foreground transition-colors duration-300 pt-20 lg:pt-24">
+              <main className="min-h-screen bg-surface pt-20 text-foreground transition-colors duration-300 lg:pt-24">
                 {children}
               </main>
             </div>

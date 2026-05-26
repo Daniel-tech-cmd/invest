@@ -339,7 +339,11 @@ const Withdrawal = ({ data }) => {
                         </td>
                         <td className="py-4 px-2 text-sm text-accent">
                           {data[crypto.id] ? (
-                            "Set"
+                            <span>
+                              Set{" "}
+                              {data[crypto.id.replace("AccountId", "Network")] &&
+                                `(${data[crypto.id.replace("AccountId", "Network")]})`}
+                            </span>
                           ) : (
                             <Link
                               href="/profile/edit"
@@ -377,6 +381,16 @@ const Withdrawal = ({ data }) => {
                             selectedCoin.toLowerCase() +
                               "AccountId"
                           ] || "Not Set"}
+                          {data[
+                            selectedCoin.toLowerCase() +
+                              "Network"
+                          ] &&
+                            ` (${
+                              data[
+                                selectedCoin.toLowerCase() +
+                                  "Network"
+                              ]
+                            })`}
                         </p>
                         <p>
                           <span className="font-semibold text-foreground">

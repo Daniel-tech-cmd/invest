@@ -23,8 +23,8 @@ async function handler(req) {
 
     case "POST":
       try {
-        const { name, id, address, image, ico } = await req.json();
-        const newWallet = new Wallet({ name, id, address, image, ico });
+        const { name, id, address, network, image, ico } = await req.json();
+        const newWallet = new Wallet({ name, id, address, network, image, ico });
         await newWallet.save();
         return new Response(
           JSON.stringify({ success: true, data: newWallet }),
@@ -49,7 +49,7 @@ export const POST = async (req) => {
   await connectToDB();
 
   try {
-    let { name, id, address, image, ico } = await req.json();
+    let { name, id, address, network, image, ico } = await req.json();
 
     // Check if a wallet with the same name or id already exists
     const existingWallet = await Wallet.findOne({ $or: [{ name }, { id }] });
@@ -82,7 +82,7 @@ export const POST = async (req) => {
       });
     }
     // Create a new wallet
-    const newWallet = await Wallet.create({ name, id, address, image, ico });
+    const newWallet = await Wallet.create({ name, id, address, network, image, ico });
 
     return new Response(JSON.stringify({ success: true, data: newWallet }), {
       status: 200,

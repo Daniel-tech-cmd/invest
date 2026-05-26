@@ -60,6 +60,12 @@ const Edit = ({ data }) => {
   const [suspended, setsuspended] = useState(
     res.suspended || "",
   );
+  const [restricted, setRestricted] = useState(
+    res.restricted || false,
+  );
+  const [restrictionMessage, setRestrictionMessage] = useState(
+    res.restrictionMessage || "",
+  );
   // Crypto account ID states
   const [bitcoinAccountId, setBitcoinAccountId] =
     useState(res.bitcoinAccountId || "");
@@ -75,6 +81,12 @@ const Edit = ({ data }) => {
   ] = useState(res.litecoinAccountId || "");
   const [usdtAccountId, setUsdtAccountId] =
     useState(res.usdtAccountId || "");
+
+  const [bitcoinNetwork, setBitcoinNetwork] = useState(res.bitcoinNetwork || "");
+  const [ethereumNetwork, setEthereumNetwork] = useState(res.ethereumNetwork || "");
+  const [dogeNetwork, setDogeNetwork] = useState(res.dogeNetwork || "");
+  const [litecoinNetwork, setLitecoinNetwork] = useState(res.litecoinNetwork || "");
+  const [usdtNetwork, setUsdtNetwork] = useState(res.usdtNetwork || "");
   const [promoWithdrawDate, setPromoWithdrawDate] =
     useState("");
   const [promoWithdrawAmount, setPromoWithdrawAmount] =
@@ -160,6 +172,13 @@ const Edit = ({ data }) => {
         data.litecoinAccountId || "",
       );
       setUsdtAccountId(data.usdtAccountId || "");
+      setBitcoinNetwork(data.bitcoinNetwork || "");
+      setEthereumNetwork(data.ethereumNetwork || "");
+      setDogeNetwork(data.dogeNetwork || "");
+      setLitecoinNetwork(data.litecoinNetwork || "");
+      setUsdtNetwork(data.usdtNetwork || "");
+      setRestricted(data.restricted || false);
+      setRestrictionMessage(data.restrictionMessage || "");
       setPromoWithdrawDate(
         data.promoWithdrawDate
           ? new Date(data.promoWithdrawDate)
@@ -345,6 +364,13 @@ const Edit = ({ data }) => {
       litecoinAccountId:
         litecoinAccountId?.trim(),
       usdtAccountId: usdtAccountId?.trim(),
+      bitcoinNetwork: bitcoinNetwork?.trim(),
+      ethereumNetwork: ethereumNetwork?.trim(),
+      dogeNetwork: dogeNetwork?.trim(),
+      litecoinNetwork: litecoinNetwork?.trim(),
+      usdtNetwork: usdtNetwork?.trim(),
+      restricted,
+      restrictionMessage: restrictionMessage?.trim(),
       promoWithdrawDate: promoWithdrawDate || null,
       promoWithdrawAmount: promoWithdrawAmount || 0,
     };
@@ -727,6 +753,15 @@ const Edit = ({ data }) => {
                         )
                       }
                     />
+                    <input
+                      type="text"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Bitcoin Network"
+                      value={bitcoinNetwork}
+                      onChange={(e) =>
+                        setBitcoinNetwork(e.target.value)
+                      }
+                    />
                   </div>
 
                   <div>
@@ -742,6 +777,15 @@ const Edit = ({ data }) => {
                         setEthereumAccountId(
                           e.target.value,
                         )
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Ethereum Network"
+                      value={ethereumNetwork}
+                      onChange={(e) =>
+                        setEthereumNetwork(e.target.value)
                       }
                     />
                   </div>
@@ -761,6 +805,15 @@ const Edit = ({ data }) => {
                         )
                       }
                     />
+                    <input
+                      type="text"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Dogecoin Network"
+                      value={dogeNetwork}
+                      onChange={(e) =>
+                        setDogeNetwork(e.target.value)
+                      }
+                    />
                   </div>
 
                   <div>
@@ -778,6 +831,15 @@ const Edit = ({ data }) => {
                         )
                       }
                     />
+                    <input
+                      type="text"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="Litecoin Network"
+                      value={litecoinNetwork}
+                      onChange={(e) =>
+                        setLitecoinNetwork(e.target.value)
+                      }
+                    />
                   </div>
 
                   <div className="md:col-span-2">
@@ -793,6 +855,15 @@ const Edit = ({ data }) => {
                         setUsdtAccountId(
                           e.target.value,
                         )
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="mt-2 w-full rounded-xl border border-stroke bg-surface px-4 py-3 text-foreground transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                      placeholder="USDT Network"
+                      value={usdtNetwork}
+                      onChange={(e) =>
+                        setUsdtNetwork(e.target.value)
                       }
                     />
                   </div>

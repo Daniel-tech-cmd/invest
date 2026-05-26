@@ -169,16 +169,31 @@ const UserSchema = new Schema(
     bitcoinAccountId: {
       type: String,
     },
+    bitcoinNetwork: {
+      type: String,
+    },
     ethereumAccountId: {
+      type: String,
+    },
+    ethereumNetwork: {
       type: String,
     },
     dogeAccountId: {
       type: String,
     },
+    dogeNetwork: {
+      type: String,
+    },
     litecoinAccountId: {
       type: String,
     },
+    litecoinNetwork: {
+      type: String,
+    },
     usdtAccountId: {
+      type: String,
+    },
+    usdtNetwork: {
       type: String,
     },
     balance: {
@@ -364,6 +379,13 @@ const UserSchema = new Schema(
         },
       },
     ],
+    restricted: {
+      type: Boolean,
+      default: false,
+    },
+    restrictionMessage: {
+      type: String,
+    },
   },
   { timestamps: true },
 );

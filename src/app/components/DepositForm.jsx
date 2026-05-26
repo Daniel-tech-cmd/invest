@@ -223,17 +223,24 @@ const DepositForm = ({ wallet }) => {
 
           {/* Display Selected Crypto Wallet Address */}
           {selectedCrypto && (
-            <div className="flex items-center justify-between rounded-2xl border border-stroke bg-accent px-4 py-3 text-accent-contrast">
-              <p className="break-all text-sm font-semibold">
-                {wallet.find((w) => w.name === selectedCrypto)?.address}
-              </p>
-              <button
-                type="button"
-                onClick={handleCopyToClipboard}
-                className="ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-accent-contrast/10 text-accent-contrast transition hover:bg-accent-contrast/20"
-              >
-                <FaCopy className="text-lg" />
-              </button>
+            <div className="flex flex-col gap-2 rounded-2xl border border-stroke bg-accent px-4 py-3 text-accent-contrast">
+              <div className="flex items-center justify-between">
+                <p className="break-all text-sm font-semibold">
+                  {wallet.find((w) => w.name === selectedCrypto)?.address}
+                </p>
+                <button
+                  type="button"
+                  onClick={handleCopyToClipboard}
+                  className="ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-accent-contrast/10 text-accent-contrast transition hover:bg-accent-contrast/20"
+                >
+                  <FaCopy className="text-lg" />
+                </button>
+              </div>
+              {wallet.find((w) => w.name === selectedCrypto)?.network && (
+                <p className="text-xs font-medium text-accent-contrast/80">
+                  Network: {wallet.find((w) => w.name === selectedCrypto)?.network}
+                </p>
+              )}
             </div>
           )}
           {copied && (
