@@ -27,7 +27,7 @@ async function fetchAdmin(id) {
 }
 
 const ManagementPage = async () => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const userCookie = cookieStore.get("user");
   const adminUser = JSON?.parse(userCookie?.value || "{}");
 

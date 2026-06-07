@@ -17,7 +17,7 @@ async function getdatabyId(id) {
 }
 
 const page = async () => {
-  const cookiestore = cookies();
+  const cookiestore = await cookies();
   const userjson = cookiestore.get("user");
 
   const user = JSON?.parse(userjson?.value);

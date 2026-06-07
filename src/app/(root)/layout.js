@@ -27,7 +27,7 @@ async function getdatabyId(id) {
 export default async function RootLayout({
   children,
 }) {
-  const cookiestore = cookies();
+  const cookiestore = await cookies();
   const userjson = cookiestore.get("user");
 
   let user = null;
