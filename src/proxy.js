@@ -1,79 +1,80 @@
 import { NextResponse } from "next/server";
 
+const PROTECTED_PATHS = [
+  "/dashboard",
+  "/deposit",
+  "/withdraw",
+  "/history",
+  "/profile",
+  "/reinvest",
+  "/referrals",
+  "/admin",
+];
+
 export default function proxy(req) {
+  const { pathname } = req.nextUrl;
   const verifyuser = req.cookies.get("user");
-  let userValue;
-  if (verifyuser) {
+
+  let userValue = null;
+  if (verifyuser?.value) {
     try {
-      userValue = JSON.parse(verifyuser.value);
+      userValue = JSON.parse(
+        decodeURIComponent(verifyuser.value),
+      );
     } catch {
-      // Malformed cookie — treat as unauthenticated
       userValue = null;
     }
   }
-  const url = req.url;
-  if (!verifyuser && url.includes("/admin")) {
-    return NextResponse.redirect(
-      "https://www.goldgroveco.com/not-found",
+
+  const isProtected = PROTECTED_PATHS.some((p) =>
+    pathname.startsWith(p),
+  );
+
+  if (isProtected && !userValue) {
+    console.log(
+      "User not authenticated, redirecting to login.",
     );
-  }
-  if (
-    !verifyuser &&
-    url.includes(
-      "https://www.goldgroveco.com/dashboard",
-    )
-  ) {
     return NextResponse.redirect(
-      "https://www.goldgroveco.com/login",
-    );
-  }
-  if (
-    !verifyuser &&
-    url.includes(
-      "https://www.goldgroveco.com/deposit",
-    )
-  ) {
-    return NextResponse.redirect(
-      "https://www.goldgroveco.com/login",
-    );
-  }
-  if (!verifyuser && url.includes("/history")) {
-    return NextResponse.redirect(
-      "https://www.goldgroveco.com/login",
-    );
-  }
-  if (!verifyuser && url.includes("/withdraw")) {
-    return NextResponse.redirect(
-      "https://www.goldgroveco.com/login",
-    );
-  }
-  if (!verifyuser && url.includes("/profile")) {
-    return NextResponse.redirect(
-      "https://www.goldgroveco.com/login",
+      new URL("/login", req.url),
     );
   }
 
-  if (url.includes("/ref?r")) {
-    return NextResponse.redirect(
-      "https://www.goldgroveco.com/signup",
-    );
-  }
-
-  if (verifyuser && url.includes("/admin")) {
-    try {
-      if (userValue.role === "admin") {
-        return NextResponse.next();
-      } else {
-        return NextResponse.redirect(
-          "https://www.goldgroveco.com/not-found",
-        );
-      }
-    } catch (error) {
+  if (
+    pathname.startsWith("/admin") &&
+    userValue
+  ) {
+    if (
+      userValue.role !== "admin" &&
+      userValue.role !== "master admin"
+    ) {
       return NextResponse.redirect(
-        "https://www.goldgroveco.com/not-found",
+        new URL("/not-found", req.url),
       );
     }
   }
 
+  if (
+    pathname.startsWith("/ref") &&
+    req.nextUrl.searchParams.has("r")
+  ) {
+    return NextResponse.redirect(
+      new URL("/signup", req.url),
+    );
+  }
+
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: [
+    "/dashboard/:path*",
+    "/deposit/:path*",
+    "/withdraw/:path*",
+    "/history/:path*",
+    "/profile/:path*",
+    "/reinvest/:path*",
+    "/referrals/:path*",
+    "/admin/:path*",
+    "/ref",
+  ],
+};

@@ -33,7 +33,9 @@ export default async function RootLayout({
   let user = null;
   try {
     user = userjson?.value
-      ? JSON.parse(decodeURIComponent(userjson.value))
+      ? JSON.parse(
+          decodeURIComponent(userjson.value),
+        )
       : null;
   } catch {
     user = null;
@@ -43,42 +45,42 @@ export default async function RootLayout({
     redirect("/login");
   }
 
-  const dat = await getdatabyId(user._id);
+  const dat = await getdatabyId(user?._id);
 
   if (!dat) {
     redirect("/login");
   }
 
+  if (dat?.restricted) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-surface p-4">
+        <div className="max-w-md rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center shadow-xl">
+          <h1 className="mb-4 text-2xl font-bold text-red-500">
+            Account Restricted
+          </h1>
+          <p className="text-foreground">
+            {dat.restrictionMessage ||
+              "Your account has been temporarily restricted. Please contact support for more information."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (dat?.suspended) {
+    return <AccountSuspension />;
+  }
+
   return (
-    <html lang="en" className="min-h-full">
-      <body className="antialiased min-h-full bg-background text-foreground transition-colors duration-300">
-        {dat?.restricted ? (
-          <div className="flex h-screen w-full items-center justify-center bg-surface p-4">
-            <div className="max-w-md rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center shadow-xl">
-              <h1 className="mb-4 text-2xl font-bold text-red-500">
-                Account Restricted
-              </h1>
-              <p className="text-foreground">
-                {dat.restrictionMessage ||
-                  "Your account has been temporarily restricted. Please contact support for more information."}
-              </p>
-            </div>
-          </div>
-        ) : dat?.suspended ? (
-          <AccountSuspension />
-        ) : (
-          <NavProvider>
-            <TopNav />
-            <Dashboardnav data={dat} />
-            <div className="min-h-screen bg-canvas lg:pl-64">
-              <NotificationPopup />
-              <main className="min-h-screen bg-surface pt-20 text-foreground transition-colors duration-300 lg:pt-24">
-                {children}
-              </main>
-            </div>
-          </NavProvider>
-        )}
-      </body>
-    </html>
+    <NavProvider>
+      <TopNav />
+      <Dashboardnav data={dat} />
+      <div className="min-h-screen bg-canvas lg:pl-64">
+        <NotificationPopup />
+        <main className="min-h-screen bg-surface pt-20 text-foreground transition-colors duration-300 lg:pt-24">
+          {children}
+        </main>
+      </div>
+    </NavProvider>
   );
 }

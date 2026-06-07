@@ -32,7 +32,7 @@ export const POST = async (req, { params }) => {
       reciept: receiptData,
       plan,
     } = await req.json();
-    const userId = params.id;
+    const { id: userId } = await params;
 
     const user = await User.findById(userId);
 

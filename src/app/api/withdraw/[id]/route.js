@@ -30,7 +30,7 @@ export const POST = async (req, { params }) => {
       wallet,
       planIndex,
     } = await req.json();
-    const userId = params.id;
+    const { id: userId } = await params;
 
     const user = await User.findById(userId);
 
@@ -307,11 +307,10 @@ export const POST = async (req, { params }) => {
 
 export const PATCH = async (req, { params }) => {
   await connectToDB();
+  const { id: adminId } = await params;
 
   try {
-    const isadmin = await User.findById(
-      params.id,
-    );
+    const isadmin = await User.findById(adminId);
 
     if (isadmin.role !== "admin") {
       return new Response(

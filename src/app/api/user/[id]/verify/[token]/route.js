@@ -11,7 +11,7 @@ const createToken = (_id) => {
 };
 
 export const GET = async (request, { params }) => {
-  const { id, token } = params; // Extract id and token from params
+  const { id, token } = await params; // Extract id and token from params
 
   await connectToDB(); // Connect to your database
 

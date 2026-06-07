@@ -3,7 +3,7 @@ import { connectToDB } from "@/app/utils/database";
 import jwt from "jsonwebtoken";
 
 export const POST = async (request, { params }) => {
-  const { id } = params;
+  const { id } = await params;
   const { targetUserId } = await request.json();
 
   if (!targetUserId) {

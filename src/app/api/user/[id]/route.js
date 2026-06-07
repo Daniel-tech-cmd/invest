@@ -3,7 +3,7 @@ import { connectToDB } from "@/app/utils/database";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 export const GET = async (request, { params }) => {
-  const id = params.id;
+  const { id } = await params;
   try {
     await connectToDB();
     const user = await User.findById(id);
@@ -26,7 +26,7 @@ export const GET = async (request, { params }) => {
 export const PATCH = async (request, { params }) => {
   const data = await request.json();
   const { balance, plan } = data; // Extract balance and plan from the request
-  const id = params.id;
+  const { id } = await params;
 
   try {
     await connectToDB();

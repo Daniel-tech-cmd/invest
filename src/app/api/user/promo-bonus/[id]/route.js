@@ -3,7 +3,7 @@ import { connectToDB } from "@/app/utils/database";
 import sendEmail from "../../../../utils/sendEmail";
 
 export const PATCH = async (request, { params }) => {
-  const { id } = params;
+  const { id } = await params;
   const { userId, amount } = await request.json();
 
   if (!userId || !amount || amount <= 0) {

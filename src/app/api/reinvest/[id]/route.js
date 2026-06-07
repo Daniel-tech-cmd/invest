@@ -7,7 +7,7 @@ export const POST = async (req, { params }) => {
   await connectToDB();
   try {
     const { _id, amount } = await req.json();
-    const userId = params.id;
+    const { id: userId } = await params;
 
     const user = await User.findById(userId);
 
