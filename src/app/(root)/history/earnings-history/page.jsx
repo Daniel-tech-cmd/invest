@@ -24,7 +24,7 @@ const page = async () => {
   let user = null;
   try {
     user = userjson?.value
-      ? JSON.parse(userjson.value)
+      ? JSON.parse(decodeURIComponent(userjson.value))
       : null;
   } catch {
     user = null;

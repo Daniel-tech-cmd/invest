@@ -18,7 +18,7 @@ const page = async () => {
   const cookiestore = await cookies();
   const userjson = cookiestore.get("user");
 
-  const user = JSON?.parse(userjson?.value);
+  const user = userjson?.value ? JSON.parse(decodeURIComponent(userjson.value)) : null;
 
   const data = getdatabyId(user._id);
   const [dat] = await Promise.all([data]);

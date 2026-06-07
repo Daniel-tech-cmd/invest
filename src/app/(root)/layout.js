@@ -33,7 +33,7 @@ export default async function RootLayout({
   let user = null;
   try {
     user = userjson?.value
-      ? JSON.parse(userjson.value)
+      ? JSON.parse(decodeURIComponent(userjson.value))
       : null;
   } catch {
     user = null;
