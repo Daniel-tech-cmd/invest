@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export default function middleware(req) {
+export default function proxy(req) {
   const verifyuser = req.cookies.get("user");
   let userValue;
   if (verifyuser) {
@@ -12,7 +12,6 @@ export default function middleware(req) {
     }
   }
   const url = req.url;
-  const secret = process.env.SECRET;
   if (!verifyuser && url.includes("/admin")) {
     return NextResponse.redirect(
       "https://www.goldgroveco.com/not-found",
@@ -62,13 +61,8 @@ export default function middleware(req) {
 
   if (verifyuser && url.includes("/admin")) {
     try {
-      const verifiedToken = true;
       if (userValue.role === "admin") {
         return NextResponse.next();
-      } else if (userValue.role !== "admin") {
-        return NextResponse.redirect(
-          "https://www.goldgroveco.com/not-found",
-        );
       } else {
         return NextResponse.redirect(
           "https://www.goldgroveco.com/not-found",
