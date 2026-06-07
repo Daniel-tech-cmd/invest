@@ -1,29 +1,28 @@
 import AdminManagement from "@/app/components/AdminManagement";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import User from "@/app/models/user";
+import { connectToDB } from "@/app/utils/database";
 
 async function fetchAllUsers() {
-  const response = await fetch(`${process.env.URI}/api/user`, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    return notFound();
+  try {
+    await connectToDB();
+    const users = await User.find({}).lean();
+    return JSON.parse(JSON.stringify(users));
+  } catch {
+    return [];
   }
-
-  return response.json();
 }
 
 async function fetchAdmin(id) {
-  const response = await fetch(`${process.env.URI}/api/user/${id}`, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
+  try {
+    await connectToDB();
+    const user = await User.findById(id).lean();
+    if (!user) return notFound();
+    return JSON.parse(JSON.stringify(user));
+  } catch {
     return notFound();
   }
-
-  return response.json();
 }
 
 const ManagementPage = async () => {

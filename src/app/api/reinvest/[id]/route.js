@@ -29,6 +29,16 @@ export const POST = async (req, { params }) => {
     }
 
     // Check if the current activeDeposit.amount + profit >= requested amount
+    // Also prevent reinvesting less than the current deposit amount (would silently downgrade it)
+    if (amount < activeDeposit.amount) {
+      return new Response(
+        JSON.stringify({
+          error: `Reinvestment amount must be at least $${activeDeposit.amount} (your current deposit amount).`,
+        }),
+        { status: 400 }
+      );
+    }
+
     if (activeDeposit.amount + user.profit >= amount) {
       // Update active deposit fields
       activeDeposit.stopped = false;

@@ -176,7 +176,7 @@ const ReinvestForm = ({ data: dat }) => {
           <button
             type="submit"
             className="btn-accent w-full rounded-xl py-3 text-sm font-semibold"
-            disabled={plans.length === 0} // Disable if no plans
+            disabled={plans.length === 0 || isLoading}
           >
             {isLoading ? "Reinvesting..." : "Submit Reinvestment"}
           </button>

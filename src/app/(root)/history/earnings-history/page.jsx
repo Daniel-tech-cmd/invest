@@ -1,17 +1,15 @@
 import EarningsHistory from "@/app/components/EarningsHistory";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import User from "@/app/models/user";
+import { connectToDB } from "@/app/utils/database";
 
 async function getdatabyId(id) {
   try {
-    const res = await fetch(
-      `${process.env.URI}/api/user/${id}`,
-      {
-        cache: "no-store",
-      },
-    );
-    if (!res.ok) return null;
-    return await res.json();
+    await connectToDB();
+    const user = await User.findById(id).lean();
+    if (!user) return null;
+    return JSON.parse(JSON.stringify(user));
   } catch {
     return null;
   }

@@ -1,30 +1,27 @@
 import AdminComp from "@/app/components/Admin";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import User from "@/app/models/user";
+import { connectToDB } from "@/app/utils/database";
 
 async function getdataby() {
-  const res = await fetch(`${process.env.URI}/api/user`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    return notFound();
+  try {
+    await connectToDB();
+    const users = await User.find({}).lean();
+    return JSON.parse(JSON.stringify(users));
+  } catch {
+    return [];
   }
-
-  const data = await res.json();
-
-  return data;
 }
+
 async function getdatabyId(id) {
-  const res = await fetch(`${process.env.URI}/api/user/${id}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    return notFound();
+  try {
+    await connectToDB();
+    const user = await User.findById(id).lean();
+    if (!user) return null;
+    return JSON.parse(JSON.stringify(user));
+  } catch {
+    return null;
   }
-
-  const data = await res.json();
-
-  return data;
 }
 const page = async () => {
   const cookiestore = await cookies();

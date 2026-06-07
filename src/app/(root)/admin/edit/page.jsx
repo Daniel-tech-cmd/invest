@@ -2,18 +2,18 @@ import Edit from "@/app/components/Edit";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import User from "@/app/models/user";
+import { connectToDB } from "@/app/utils/database";
 
 async function getdatabyId(id) {
-  const res = await fetch(`${process.env.URI}/api/user/${id}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
+  try {
+    await connectToDB();
+    const user = await User.findById(id).lean();
+    if (!user) return notFound();
+    return JSON.parse(JSON.stringify(user));
+  } catch {
     return notFound();
   }
-
-  const data = await res.json();
-
-  return data;
 }
 const page = async () => {
   const cookiestore = await cookies();

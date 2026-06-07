@@ -1,19 +1,17 @@
-import Dashboard from "@/app/components/DashboardComp";
 import ReinvestForm from "@/app/components/ReinvestForm";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import User from "@/app/models/user";
+import { connectToDB } from "@/app/utils/database";
 
 async function getdatabyId(id) {
-  const res = await fetch(`${process.env.URI}/api/user/${id}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    return notFound();
+  try {
+    await connectToDB();
+    const user = await User.findById(id).lean();
+    if (!user) return null;
+    return JSON.parse(JSON.stringify(user));
+  } catch {
+    return null;
   }
-
-  const data = await res.json();
-
-  return data;
 }
 
 const page = async () => {
