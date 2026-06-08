@@ -9,6 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 
 const AdminComp = ({ data = [], data2 = {} }) => {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { user } = useAuthContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [processingId, setProcessingId] = useState("");
@@ -172,8 +173,36 @@ const AdminComp = ({ data = [], data2 = {} }) => {
             </p>
           </div>
 
+          <div className="mt-4 relative">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by username or email..."
+              className="w-full rounded-xl border border-stroke bg-surface-muted py-2.5 pl-9 pr-4 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-none"
+            />
+          </div>
+
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {data.map((userItem) => (
+            {data
+              .filter((u) => {
+                const q = searchQuery.toLowerCase();
+                return (
+                  !q ||
+                  u?.username?.toLowerCase().includes(q) ||
+                  u?.email?.toLowerCase().includes(q)
+                );
+              })
+              .map((userItem) => (
               <Link
                 key={userItem?._id}
                 href={`/admin/edit?query=${userItem?._id}`}
@@ -253,6 +282,7 @@ const AdminComp = ({ data = [], data2 = {} }) => {
             ))}
           </div>
         </section>
+
       </div>
 
       {showNotifications && (
