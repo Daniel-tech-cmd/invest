@@ -677,15 +677,19 @@ export const PATCH = async (req, { params }) => {
       `,
     };
 
-    await sendEmail(
-      user.email,
-      "Deposit Approved",
-      userEmailContent.url,
-      userEmailContent.html,
-    );
-
-    // Save the user's updated data
+    // Save first so approval is persisted even if email fails
     await user.save();
+
+    try {
+      await sendEmail(
+        user.email,
+        "Deposit Approved",
+        userEmailContent.url,
+        userEmailContent.html,
+      );
+    } catch (emailErr) {
+      console.error("Deposit approval email failed:", emailErr.message);
+    }
 
     return new Response(JSON.stringify(user), {
       status: 200,

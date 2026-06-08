@@ -163,15 +163,19 @@ export const PATCH = async (req, { params }) => {
       `,
     };
 
-    await sendEmail(
-      user.email,
-      "Withdrawal Declined",
-      userEmailContent.url,
-      userEmailContent.html
-    );
-
-    // Save the user's updated data
+    // Save first so decline is persisted even if email fails
     await user.save();
+
+    try {
+      await sendEmail(
+        user.email,
+        "Withdrawal Declined",
+        userEmailContent.url,
+        userEmailContent.html
+      );
+    } catch (emailErr) {
+      console.error("Withdrawal decline email failed:", emailErr.message);
+    }
 
     return new Response(JSON.stringify(user), { status: 200 });
   } catch (error) {

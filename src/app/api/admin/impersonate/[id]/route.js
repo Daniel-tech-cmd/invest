@@ -54,23 +54,7 @@ export const POST = async (request, { params }) => {
       { expiresIn: "2h" } // Limited session time
     );
 
-    // Log the impersonation action
-    const impersonationLog = {
-      text: `Admin ${admin.username} (${admin.email}) impersonated this account`,
-      type: "admin_impersonation",
-      date: new Date(),
-      status: "logged",
-      id: `imp_${Date.now()}`,
-    };
-
-    // Add notification to target user's account
-    await User.findByIdAndUpdate(targetUserId, {
-      $push: {
-        notifications: impersonationLog,
-      },
-    });
-
-    // Also log in admin's account
+    // Log in admin's account only
     await User.findByIdAndUpdate(id, {
       $push: {
         notifications: {
