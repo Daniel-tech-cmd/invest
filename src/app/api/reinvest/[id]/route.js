@@ -195,12 +195,18 @@ export const POST = async (req, { params }) => {
         `,
       };
 
-      await sendEmail(
-        user.email,
-        "Re-investment Successful",
-        userEmailContent.url,
-        userEmailContent.html
-      );
+      await user.save();
+
+      try {
+        await sendEmail(
+          user.email,
+          "Re-investment Successful",
+          userEmailContent.url,
+          userEmailContent.html
+        );
+      } catch (emailErr) {
+        console.error("Reinvestment confirmation email failed:", emailErr.message);
+      }
 
       // Check for referral bonus on reinvestment
       if (user.referredby) {
@@ -334,7 +340,6 @@ export const POST = async (req, { params }) => {
         }
       }
 
-      await user.save();
       return new Response(JSON.stringify(user), { status: 200 });
     } else {
       return new Response(
