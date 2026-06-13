@@ -1,40 +1,25 @@
-import nodemailer from "nodemailer";
+const sendEmail = async (to, subject, text, html) => {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "GoldGroveco <support@goldgroveco.com>",
+      to,
+      subject,
+      text,
+      html,
+    }),
+  });
 
-const transporter = nodemailer.createTransport({
-  host: process.env.HOST,
-  port: Number(process.env.EMAIL_PORT) || 587,
-  secure: process.env.SECURE === "true",
-  auth: {
-    user: "support@goldgroveco.com",
-    pass: "Daniel650##",
-  },
-});
-
-const sendEmail = async (email, subject, text, html, maxAttempts = 3) => {
-  let lastError;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      await transporter.sendMail({
-        from: "support@goldgroveco.com",
-        to: email,
-        subject,
-        text,
-        html,
-      });
-      return true;
-    } catch (error) {
-      lastError = error;
-      console.log(`Email attempt ${attempt}/${maxAttempts} failed:`, error.message);
-
-      if (attempt < maxAttempts) {
-        // wait 1s before attempt 2, 2s before attempt 3
-        await new Promise((r) => setTimeout(r, 1000 * attempt));
-      }
-    }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `Resend error ${res.status}`);
   }
 
-  throw new Error(`Failed to send email after ${maxAttempts} attempts: ${lastError.message}`);
+  return true;
 };
 
 export default sendEmail;

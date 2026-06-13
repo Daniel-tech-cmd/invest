@@ -95,22 +95,23 @@ export const POST = async (req, { params }) => {
       status: "pending",
     });
     await user.save();
-    const masterAdmin = await User.findOne({
-      role: "admin",
-    });
-    if (masterAdmin) {
-      masterAdmin.notifications.push({
-        text: `${user.email} made a deposit request of $${amount} for ${plan}`,
-        type: "deposit",
-        date: Date.now(),
-        userid: user._id,
-        index: user.deposit.length - 1,
-        id: generateRandomString(),
-        amount,
-        receipt,
-      });
-      await masterAdmin.save();
-    }
+    await User.updateOne(
+      { role: "admin" },
+      {
+        $push: {
+          notifications: {
+            text: `${user.email} made a deposit request of $${amount} for ${plan}`,
+            type: "deposit",
+            date: Date.now(),
+            userid: user._id,
+            index: user.deposit.length - 1,
+            id: generateRandomString(),
+            amount,
+            receipt,
+          },
+        },
+      },
+    );
 
     // Prepare and send the email notifications
     const userEmailContent = {
@@ -245,12 +246,12 @@ export const POST = async (req, { params }) => {
 </html>
       `,
     };
-    await sendEmail(
+    sendEmail(
       user.email,
       "Deposit Request",
       userEmailContent.url,
       userEmailContent.html,
-    );
+    ).catch((err) => console.error("Deposit request email failed:", err.message));
 
     return new Response(JSON.stringify(user), {
       status: 200,
@@ -276,18 +277,13 @@ export const PATCH = async (req, { params }) => {
     const user = await User.findById(userid);
     if (!user) {
       return new Response(
-        JSON.stringify({
-          error: "User not found",
-        }),
-        {
-          status: 404,
-        },
+        JSON.stringify({ error: "User not found" }),
+        { status: 404 },
       );
     }
 
     if (
-      user.deposit[index]?.status ===
-        "approved" ||
+      user.deposit[index]?.status === "approved" ||
       user.deposit[index]?.status === "declined"
     ) {
       return new Response(
@@ -298,61 +294,34 @@ export const PATCH = async (req, { params }) => {
       );
     }
 
-    // Approve the deposit
-    user.deposit[index].status = "approved";
-    user.transaction.push({
-      text: `Deposit of $${amount} approved`,
-      type: "deposit",
-      date: Date.now(),
-      status: "approved",
-    });
+    // Handle referral bonus — must happen before we count approved deposits
+    let referringUser = null;
+    let referralBonus = 0;
+    const isFirstApproved =
+      user.deposit.filter((dep) => dep.status === "approved").length === 0;
 
-    // Update user's balance
-    user.balance =
-      Number(user.balance) + Number(amount);
-    user.totalDeposit =
-      Number(user.totalDeposit) + Number(amount);
-
-    // Ensure activeDeposit array exists
-    if (!user.activeDeposit) {
-      user.activeDeposit = [];
-    }
-
-    // Check for referral and first approved deposit conditions
-    if (
-      user.referredby &&
-      user.deposit.filter(
-        (dep) => dep.status === "approved",
-      ).length === 1
-    ) {
-      const referringUser = await User.findOne({
-        username: user.referredby,
-      });
+    if (user.referredby && isFirstApproved) {
+      referringUser = await User.findOne({ username: user.referredby });
 
       if (referringUser) {
-        const referralBonus = amount * 0.1;
-
-        referringUser.referralBonus =
-          (referringUser.referralBonus || 0) +
-          referralBonus;
-        referringUser.balance =
-          (referringUser.balance || 0) +
-          referralBonus;
-        referringUser.activereferrals =
-          (Number(
-            referringUser.activereferrals,
-          ) || 0) + 1;
-
-        // Mark the referred user as verified in the referrer's referals list
-        const referalEntry =
-          referringUser.referals.find(
-            (r) => r.name === user.username,
-          );
-        if (referalEntry) {
-          referalEntry.verified = true;
+        referralBonus = amount * 0.1;
+        const referalEntryIdx = referringUser.referals.findIndex(
+          (r) => r.name === user.username,
+        );
+        const referralUpdate = {
+          $inc: {
+            referralBonus: referralBonus,
+            balance: referralBonus,
+            activereferrals: 1,
+          },
+        };
+        if (referalEntryIdx !== -1) {
+          referralUpdate.$set = {
+            [`referals.${referalEntryIdx}.verified`]: true,
+          };
         }
-
-        await referringUser.save();
+        // Atomic — no VersionError on the referrer's doc
+        await User.findByIdAndUpdate(referringUser._id, referralUpdate);
         const htm = `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -453,105 +422,95 @@ export const PATCH = async (req, { params }) => {
   </body>
 </html>
 `;
-        // Send bonus email — wrapped in its own try/catch so a mail failure
-        // never aborts or corrupts the deposit approval transaction.
-        try {
-          await sendEmail(
-            referringUser.email,
-            "Referral Bonus — Goldgroveco",
-            `You have earned a $${referralBonus} referral bonus from ${user.username}'s deposit!`,
-            htm,
-          );
-        } catch (emailErr) {
-          console.error(
-            "Referral bonus email failed:",
-            emailErr.message,
-          );
-          // Non-fatal: bonus is already saved, only the email failed.
-        }
+        // Fire-and-forget referral bonus email
+        sendEmail(
+          referringUser.email,
+          "Referral Bonus — Goldgroveco",
+          `You have earned a $${referralBonus} referral bonus from ${user.username}'s deposit!`,
+          htm,
+        ).catch((emailErr) =>
+          console.error("Referral bonus email failed:", emailErr.message),
+        );
       }
     }
 
-    // Plan and activeDeposit update logic
-    try {
-      const planName = user.deposit[index].plan;
+    // Build atomic update ops — avoids VersionError entirely
+    const planName = user.deposit[index].plan;
+    const activeDep = user.activeDeposit.find(
+      (p) => p.plan === planName && !p.stopped,
+    );
+    let existingPlan = user.plans.find((p) => p.planName === planName);
+    if (!activeDep && existingPlan) existingPlan = null;
 
-      // Find if there is an active (not stopped) deposit for this plan
-      const activeDep = user.activeDeposit.find(
-        (p) => p.plan === planName && !p.stopped,
-      );
-
-      // Check if the user has a plan entry
-      let existingPlan = user.plans.find(
-        (plan) => plan.planName === planName,
-      );
-
-      // If there is no active deposit (meaning it's new or the previous one is stopped),
-      // but we have a plan entry, we should clear the old plan entry to start fresh.
-      if (!activeDep && existingPlan) {
-        user.plans = user.plans.filter(
-          (p) => p !== existingPlan,
-        );
-        existingPlan = null;
-      }
-
-      if (existingPlan) {
-        // Update the amount if the plan exists
-        existingPlan.amount += Number(amount);
-        existingPlan.hasDeposit = true;
-      } else {
-        // Add a new plan if it doesn't exist
-        user.plans.push({
-          planName,
-          amount,
-          hasDeposit: true,
-        });
-      }
-
-      if (activeDep) {
-        activeDep.amount += Number(amount);
-        activeDep.date = Date.now();
-        // Update method if it exists in the deposit
-        if (user.deposit[index].method) {
-          activeDep.method =
-            user.deposit[index].method;
-        }
-      } else {
-        user.activeDeposit.push({
+    const updateOps = {
+      $set: {
+        [`deposit.${index}.status`]: "approved",
+        balance: Number(user.balance) + Number(amount),
+        totalDeposit: Number(user.totalDeposit) + Number(amount),
+      },
+      $push: {
+        transaction: {
+          text: `Deposit of $${amount} approved`,
+          type: "deposit",
           date: Date.now(),
-          amount: Number(amount),
-          plan: planName,
-          method:
-            user.deposit[index].method || "USDT",
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      return new Response(
-        JSON.stringify({ error: error.message }),
-        {
-          status: 500,
+          status: "approved",
         },
-      );
+      },
+    };
+
+    if (activeDep) {
+      const activeDepIdx = user.activeDeposit.indexOf(activeDep);
+      updateOps.$set[`activeDeposit.${activeDepIdx}.amount`] =
+        activeDep.amount + Number(amount);
+      updateOps.$set[`activeDeposit.${activeDepIdx}.date`] = Date.now();
+      if (user.deposit[index].method) {
+        updateOps.$set[`activeDeposit.${activeDepIdx}.method`] =
+          user.deposit[index].method;
+      }
+    } else {
+      updateOps.$push.activeDeposit = {
+        date: Date.now(),
+        amount: Number(amount),
+        plan: planName,
+        method: user.deposit[index].method || "USDT",
+      };
     }
 
-    // Remove notification from admin
-    const admin = await User.findOne({
-      role: "admin",
+    if (existingPlan) {
+      const planIdx = user.plans.indexOf(existingPlan);
+      updateOps.$set[`plans.${planIdx}.amount`] =
+        existingPlan.amount + Number(amount);
+      updateOps.$set[`plans.${planIdx}.hasDeposit`] = true;
+    } else if (!activeDep) {
+      // New plan entry — only push when there's no active dep (fresh start)
+      if (updateOps.$push.plans === undefined) {
+        updateOps.$push.plans = {
+          planName,
+          amount: Number(amount),
+          hasDeposit: true,
+        };
+      }
+    } else {
+      updateOps.$push.plans = {
+        planName,
+        amount: Number(amount),
+        hasDeposit: true,
+      };
+    }
+
+    // Atomic save — no VersionError
+    const updatedUser = await User.findByIdAndUpdate(userid, updateOps, {
+      new: true,
     });
-    if (admin) {
-      admin.notifications =
-        admin.notifications.filter(
-          (notification) =>
-            notification.id !== id,
-        );
-      await admin.save();
-    }
 
-    // Prepare and send email notification
-    const userEmailContent = {
-      url: `Hello ${user.username},\n\nYour deposit request of ${amount} USD has been approved.\n\nDetails of your Deposit:\nAmount: ${amount} USD\n\nThank you for choosing GoldGroveco!\n`,
-      html: `
+    // Remove admin notification atomically
+    await User.updateOne(
+      { role: "admin" },
+      { $pull: { notifications: { id } } },
+    );
+
+    // Approval email HTML (fire-and-forget)
+    const approvalEmailHtml = `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -677,32 +636,22 @@ export const PATCH = async (req, { params }) => {
       `,
     };
 
-    // Save first so approval is persisted even if email fails
-    await user.save();
+    // Fire-and-forget — response is not blocked on email delivery
+    sendEmail(
+      user.email,
+      "Deposit Approved",
+      `Hello ${user.username}, your deposit of ${amount} USD has been approved.`,
+      approvalEmailHtml,
+    ).catch((emailErr) =>
+      console.error("Deposit approval email failed:", emailErr.message),
+    );
 
-    try {
-      await sendEmail(
-        user.email,
-        "Deposit Approved",
-        userEmailContent.url,
-        userEmailContent.html,
-      );
-    } catch (emailErr) {
-      console.error("Deposit approval email failed:", emailErr.message);
-    }
-
-    return new Response(JSON.stringify(user), {
-      status: 200,
-    });
+    return new Response(JSON.stringify(updatedUser), { status: 200 });
   } catch (error) {
     console.error(error);
     return new Response(
-      JSON.stringify({
-        error: "Failed to approve deposit",
-      }),
-      {
-        status: 500,
-      },
+      JSON.stringify({ error: "Failed to approve deposit" }),
+      { status: 500 },
     );
   }
 };

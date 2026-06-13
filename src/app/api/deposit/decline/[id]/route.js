@@ -41,27 +41,27 @@ export const PATCH = async (req, { params }) => {
       );
     }
 
-    // Approve the deposit
-    user.deposit[index].status = "declined";
-    user.transaction.push({
-      text: `Deposit of $${amount} declined`,
-      type: "deposit",
-      date: Date.now(),
-      status: "declined",
-    });
+    // Build atomic update — avoids VersionError
+    const updateOps = {
+      $set: { [`deposit.${index}.status`]: "declined" },
+      $push: {
+        transaction: {
+          text: `Deposit of $${amount} declined`,
+          type: "deposit",
+          date: Date.now(),
+          status: "declined",
+        },
+      },
+    };
 
-    // Update user's balance
+    // Remove admin notification atomically
+    await User.updateOne(
+      { role: "admin" },
+      { $pull: { notifications: { id } } }
+    );
 
-    // Remove notification from admin
-    const admin = await User.findOne({ role: "admin" });
-    if (admin) {
-      admin.notifications = admin.notifications.filter(
-        (notification) => notification.id !== id
-      );
-      await admin.save();
-    }
+    const updatedUser = await User.findByIdAndUpdate(userid, updateOps, { new: true });
 
-    // Prepare and send email notification
     const userEmailContent = {
       url: `Hello ${user.username},\n\nYour deposit request of ${amount} USD was declined.\n\nIf you believe this is an error, please contact our support team.\n\nThank you for choosing GoldGroveco.\n`,
       html: `
@@ -177,21 +177,16 @@ export const PATCH = async (req, { params }) => {
       `,
     };
 
-    // Save first so decline is persisted even if email fails
-    await user.save();
+    sendEmail(
+      user.email,
+      "Deposit Declined",
+      userEmailContent.url,
+      userEmailContent.html
+    ).catch((emailErr) =>
+      console.error("Deposit decline email failed:", emailErr.message)
+    );
 
-    try {
-      await sendEmail(
-        user.email,
-        "Deposit Declined",
-        userEmailContent.url,
-        userEmailContent.html
-      );
-    } catch (emailErr) {
-      console.error("Deposit decline email failed:", emailErr.message);
-    }
-
-    return new Response(JSON.stringify(user), { status: 200 });
+    return new Response(JSON.stringify(updatedUser), { status: 200 });
   } catch (error) {
     console.error(error);
     return new Response(

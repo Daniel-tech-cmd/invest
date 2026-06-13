@@ -29,25 +29,27 @@ export const PATCH = async (req, { params }) => {
       );
     }
 
-    // Set withdraw status to "declined"
-    user.withdraw[index].status = "declined";
-    user.transaction.push({
-      text: `Withdrawal of $${amount} declined`,
-      type: "withdrawal",
-      date: Date.now(),
-      status: "declined",
-    });
+    // Atomic update — avoids VersionError
+    const updateOps = {
+      $set: { [`withdraw.${index}.status`]: "declined" },
+      $push: {
+        transaction: {
+          text: `Withdrawal of $${amount} declined`,
+          type: "withdrawal",
+          date: Date.now(),
+          status: "declined",
+        },
+      },
+    };
 
-    // Remove notification from admin
-    const admin = await User.findOne({ role: "admin" });
-    if (admin) {
-      admin.notifications = admin.notifications.filter(
-        (notification) => notification.id !== id
-      );
-      await admin.save();
-    }
+    // Remove admin notification atomically
+    await User.updateOne(
+      { role: "admin" },
+      { $pull: { notifications: { id } } }
+    );
 
-    // Prepare and send email notification
+    const updatedUser = await User.findByIdAndUpdate(userid, updateOps, { new: true });
+
     const userEmailContent = {
       url: `Hello ${user.username},\n\nYour withdrawal request of ${amount} USD was declined.\n\nIf you believe this is an error, please contact our support team.\n\nThank you for choosing GoldGroveco.\n`,
       html: `
@@ -163,21 +165,16 @@ export const PATCH = async (req, { params }) => {
       `,
     };
 
-    // Save first so decline is persisted even if email fails
-    await user.save();
+    sendEmail(
+      user.email,
+      "Withdrawal Declined",
+      userEmailContent.url,
+      userEmailContent.html
+    ).catch((emailErr) =>
+      console.error("Withdrawal decline email failed:", emailErr.message)
+    );
 
-    try {
-      await sendEmail(
-        user.email,
-        "Withdrawal Declined",
-        userEmailContent.url,
-        userEmailContent.html
-      );
-    } catch (emailErr) {
-      console.error("Withdrawal decline email failed:", emailErr.message);
-    }
-
-    return new Response(JSON.stringify(user), { status: 200 });
+    return new Response(JSON.stringify(updatedUser), { status: 200 });
   } catch (error) {
     console.error(error);
     return new Response(
