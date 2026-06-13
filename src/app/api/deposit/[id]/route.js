@@ -633,8 +633,7 @@ export const PATCH = async (req, { params }) => {
     </div>
   </body>
 </html>
-      `,
-    };
+      `;
 
     // Fire-and-forget — response is not blocked on email delivery
     sendEmail(
