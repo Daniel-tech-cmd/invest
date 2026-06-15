@@ -24,17 +24,20 @@ const Withdrawal = ({ data }) => {
   const [isPromoWithdraw, setIsPromoWithdraw] =
     useState(false);
 
+  const getSelectedPlanBalance = () => {
+    if (!selectedPlan) return 0;
+    const plan = data?.activeDeposit?.[parseInt(selectedPlan)];
+    return plan ? (plan.amount || 0) + (plan.profit || 0) : 0;
+  };
+
   const handleNextClick = () => {
     if (!selectedCoin) {
       setErrorMessage("Please select a coin.");
     } else if (!isPromoWithdraw && !selectedPlan) {
       setErrorMessage("Please select a plan.");
     } else if (!amount || parseFloat(amount) <= 0) {
-      setErrorMessage(
-        "Please enter a valid withdrawal amount.",
-      );
+      setErrorMessage("Please enter a valid withdrawal amount.");
     } else if (isPromoWithdraw) {
-      // Promo specific validation
       if (parseFloat(amount) > data.promoBonus) {
         setErrorMessage(
           `Insufficient promo balance. Available: $${(data.promoBonus || 0).toFixed(2)}`,
@@ -57,13 +60,16 @@ const Withdrawal = ({ data }) => {
         setErrorMessage("");
         setShowConfirmation(true);
       }
-    } else if (parseFloat(amount) > data.balance) {
-      setErrorMessage(
-        "Withdrawal amount cannot be greater than available balance.",
-      );
     } else {
-      setErrorMessage("");
-      setShowConfirmation(true);
+      const planMax = getSelectedPlanBalance();
+      if (parseFloat(amount) > planMax) {
+        setErrorMessage(
+          `Amount exceeds plan balance. Available: $${planMax.toFixed(2)}`,
+        );
+      } else {
+        setErrorMessage("");
+        setShowConfirmation(true);
+      }
     }
   };
 
@@ -129,30 +135,12 @@ const Withdrawal = ({ data }) => {
     (coin) => data[coin.id],
   );
 
-  // Calculate available amount from stopped activeDeposits that haven't been withdrawn
-  const getAvailableAmount = (method) => {
-    // Get total from stopped deposits (amount + profit) that haven't been withdrawn
-    // Filter by cryptocurrency method
-    const availableFromDeposits = (
-      data.activeDeposit || []
-    )
-      .filter(
-        (deposit) =>
-          deposit.stopped === true &&
-          deposit.withdrawn !== true &&
-          deposit.method?.toUpperCase() ===
-            method.toUpperCase(),
-      )
-      .reduce(
-        (sum, deposit) =>
-          sum +
-          (deposit.amount || 0) +
-          (deposit.profit || 0),
-        0,
-      );
+  // Total withdrawable across all stopped plans (shown once, not per-coin)
+  const totalWithdrawable = (data.activeDeposit || [])
+    .filter((d) => d.stopped && !d.withdrawn && (d.amount + (d.profit || 0)) > 0)
+    .reduce((sum, d) => sum + (d.amount || 0) + (d.profit || 0), 0);
 
-    return availableFromDeposits;
-  };
+  const getAvailableAmount = () => totalWithdrawable;
 
   const getPendingAmount = (method) =>
     data.deposit
@@ -326,10 +314,7 @@ const Withdrawal = ({ data }) => {
                           {crypto.name}
                         </td>
                         <td className="py-4 px-2 text-sm text-emerald-500">
-                          $
-                          {getAvailableAmount(
-                            crypto.name,
-                          )}
+                          ${getAvailableAmount().toFixed(2)}
                         </td>
                         <td className="py-4 px-2 text-sm text-rose-500">
                           $
@@ -360,7 +345,12 @@ const Withdrawal = ({ data }) => {
               </div>
 
               <div className="mt-4 text-center">
-                {data?.balance > 0 ? (
+                {(isPromoWithdraw
+                  ? data?.promoBonus > 0
+                  : data?.activeDeposit?.some(
+                      (d) => d.stopped && !d.withdrawn && (d.amount + (d.profit || 0)) > 0
+                    )
+                ) ? (
                   showConfirmation ? (
                     <div className="rounded-2xl border border-stroke bg-surface-muted px-6 py-6 text-left text-foreground">
                       <h3 className="text-lg font-semibold text-foreground">
@@ -449,41 +439,15 @@ const Withdrawal = ({ data }) => {
                                 ).toLocaleDateString()
                               : "No date set (Available now)"}
                           </div>
-                          {depositedCoins.length >
-                            0 && (
-                            <div className="mt-2 rounded-lg bg-purple-500/10 border border-purple-500/30 px-3 py-2 text-xs text-purple-600">
-                              ℹ️ You can only withdraw
-                              using coins you have
-                              previously deposited
-                              with.
+                          {availableCoins.length === 0 && (
+                            <div className="mt-2 rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-2 text-xs text-rose-600">
+                              ⚠️ You have no wallet addresses set. Please{" "}
+                              <Link href="/profile/edit" className="underline font-bold">
+                                set a wallet address
+                              </Link>{" "}
+                              to withdraw.
                             </div>
                           )}
-                          {potentialPromoCoins.length >
-                            0 &&
-                            depositedCoins.length ===
-                              0 && (
-                              <div className="mt-2 rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-2 text-xs text-rose-600">
-                                ⚠️ You have deposited
-                                with{" "}
-                                {potentialPromoCoins
-                                  .map(
-                                    (c) => c.name,
-                                  )
-                                  .join(", ")}{" "}
-                                but you haven't set
-                                their wallet addresses
-                                in your profile yet.
-                                Please{" "}
-                                <Link
-                                  href="/profile/edit"
-                                  className="underline font-bold"
-                                >
-                                  set your wallet
-                                  addresses
-                                </Link>{" "}
-                                to withdraw.
-                              </div>
-                            )}
                         </div>
                       ) : (
                         <div className="mb-4">
@@ -615,10 +579,7 @@ const Withdrawal = ({ data }) => {
                           <option value="">
                             Select a coin
                           </option>
-                          {(isPromoWithdraw
-                            ? depositedCoins
-                            : availableCoins
-                          ).map((coin) => (
+                          {availableCoins.map((coin) => (
                             <option
                               key={coin.name}
                               value={coin.name}
@@ -642,15 +603,11 @@ const Withdrawal = ({ data }) => {
                       </button>
                     </div>
                   )
-                ) : isPromoWithdraw &&
-                  data?.promoBonus > 0 ? (
-                  <p className="inline-block rounded-xl border border-purple-500 bg-purple-500/10 px-4 py-3 text-sm font-semibold text-purple-500">
-                    USE THE FORM ABOVE TO WITHDRAW
-                    YOUR PROMO BONUS.
-                  </p>
                 ) : (
                   <p className="inline-block rounded-xl border border-red-500 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-500">
-                    YOU HAVE NO FUNDS TO WITHDRAW.
+                    {isPromoWithdraw
+                      ? "YOU HAVE NO PROMO BALANCE TO WITHDRAW."
+                      : "YOU HAVE NO COMPLETED PLANS TO WITHDRAW FROM."}
                   </p>
                 )}
               </div>

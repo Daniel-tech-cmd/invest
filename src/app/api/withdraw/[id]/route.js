@@ -208,13 +208,18 @@ export const PATCH = async (req, { params }) => {
 
       const currentProfit = user.activeDeposit[planIndex].profit || 0;
       let newProfit, newAmount;
-      if (currentProfit >= amount) {
+      if (currentProfit >= Number(amount)) {
         newProfit = currentProfit - Number(amount);
         newAmount = user.activeDeposit[planIndex].amount;
       } else {
         newProfit = 0;
         newAmount = user.activeDeposit[planIndex].amount - (Number(amount) - currentProfit);
       }
+
+      const profitWithdrawn = Math.min(currentProfit, Number(amount));
+      const principalWithdrawn = Number(amount) - profitWithdrawn;
+      const balanceDeductedAmountForPlan =
+        user.activeDeposit[planIndex].balanceDeductedAmount || 0;
 
       updateOps.$set[`activeDeposit.${planIndex}.profit`] = newProfit;
       updateOps.$set[`activeDeposit.${planIndex}.amount`] = newAmount;
@@ -223,7 +228,22 @@ export const PATCH = async (req, { params }) => {
         updateOps.$set[`activeDeposit.${planIndex}.withdrawn`] = true;
       }
 
-      updateOps.$set.balance = Math.max(0, Number(user.balance) - Number(amount));
+      // Sync user.profit: deduct the plan profit consumed in this withdrawal
+      if (profitWithdrawn > 0) {
+        updateOps.$set.profit = Math.max(0, (user.profit || 0) - profitWithdrawn);
+      }
+
+      if (balanceDeductedAmountForPlan > 0) {
+        // Reinvested plan — principal was never in balance, only deduct the profit portion
+        updateOps.$set.balance = Math.max(0, Number(user.balance) - profitWithdrawn);
+        // Reduce balanceDeductedAmount so only the remaining principal returns when plan stops
+        if (principalWithdrawn > 0) {
+          updateOps.$inc[`activeDeposit.${planIndex}.balanceDeductedAmount`] = -principalWithdrawn;
+        }
+      } else {
+        // Original deposit — full amount was in balance
+        updateOps.$set.balance = Math.max(0, Number(user.balance) - Number(amount));
+      }
     }
 
     // Atomic save — no version conflict

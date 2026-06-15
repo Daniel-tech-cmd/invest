@@ -133,7 +133,19 @@ export const GET = async (request) => {
           if (
             depositAge >= planDurationInMillis
           ) {
-            // Mark deposits older than the plan's duration as stopped
+            if (!deposit.stopped) {
+              // First time stopping — return reinvested principal to balance.
+              // New deposits track balanceDeductedAmount explicitly.
+              // Legacy reinvestment deposits (no field set) fall back to deposit.amount.
+              // Original deposits (method !== "reinvestment") return 0 — principal was always in balance.
+              let amountToReturn = deposit.balanceDeductedAmount || 0;
+              if (!amountToReturn && deposit.method === "reinvestment") {
+                amountToReturn = deposit.amount;
+              }
+              if (amountToReturn > 0) {
+                user.balance = (user.balance || 0) + amountToReturn;
+              }
+            }
             deposit.stopped = true;
           } else if (!stopped) {
             // Calculate profit only for active deposits within the plan's duration

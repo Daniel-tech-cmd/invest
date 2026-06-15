@@ -218,6 +218,10 @@ export const POST = async (req, { params }) => {
         existingDeposit.amount + Number(amount);
       updateOps.$set[`activeDeposit.${existingDepIdx}.date`] = Date.now();
       updateOps.$set[`activeDeposit.${existingDepIdx}.stopped`] = false;
+      // Track how much came from balance so it can be returned when plan stops
+      updateOps.$inc = {
+        [`activeDeposit.${existingDepIdx}.balanceDeductedAmount`]: Number(amount),
+      };
     } else {
       // Create a new active deposit entry for this plan
       updateOps.$push.activeDeposit = {
@@ -225,6 +229,7 @@ export const POST = async (req, { params }) => {
         amount: Number(amount),
         plan: planName,
         method: "reinvestment",
+        balanceDeductedAmount: Number(amount),
       };
     }
 
