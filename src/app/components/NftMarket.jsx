@@ -1,5 +1,6 @@
 const formatUSD = (val) => {
   if (val === null || val === undefined || val === 0) return "N/A";
+  if (val >= 1_000_000_000) return `$${(val / 1_000_000_000).toFixed(2)}B`;
   if (val >= 1_000_000) return `$${(val / 1_000_000).toFixed(2)}M`;
   if (val >= 1_000) return `$${(val / 1_000).toFixed(1)}K`;
   return `$${Number(val).toFixed(2)}`;
@@ -10,29 +11,30 @@ const formatETH = (val) => {
   return `${Number(val).toFixed(3)} ETH`;
 };
 
-const VolumeChange = ({ change }) => {
-  if (change === null || change === undefined) {
+const PriceChange = ({ pct }) => {
+  if (pct === null || pct === undefined) {
     return <span className="text-gray-400 text-xs">—</span>;
   }
-  const pct = (change * 100).toFixed(1);
-  const isPos = change >= 0;
+  const isPos = pct >= 0;
   return (
-    <span className={`text-xs font-semibold ${isPos ? "text-green-600" : "text-red-500"}`}>
+    <span
+      className={`text-xs font-semibold ${isPos ? "text-green-600" : "text-red-500"}`}
+    >
       {isPos ? "+" : ""}
-      {pct}%
+      {Number(pct).toFixed(2)}%
     </span>
   );
 };
 
 const NftMarket = ({ collections }) => {
-  const totalVolume = collections.reduce(
-    (sum, c) => sum + (c.volume?.allTime || 0),
+  const totalMarketCap = collections.reduce(
+    (sum, c) => sum + (c.market_cap?.usd || 0),
     0
   );
 
   const topFloor = collections.reduce((best, c) => {
-    const price = c.floorAsk?.price?.amount?.usd || 0;
-    const bestPrice = best?.floorAsk?.price?.amount?.usd || 0;
+    const price = c.floor_price?.usd || 0;
+    const bestPrice = best?.floor_price?.usd || 0;
     return price > bestPrice ? c : best;
   }, collections[0] || null);
 
@@ -44,8 +46,8 @@ const NftMarket = ({ collections }) => {
           NFT Market
         </h1>
         <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-          Browse top NFT collections by all-time trading volume. Data refreshes
-          every hour.
+          Browse top NFT collections with live floor prices and trading volume.
+          Data refreshes every hour.
         </p>
       </div>
 
@@ -59,18 +61,16 @@ const NftMarket = ({ collections }) => {
             </p>
           </div>
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-            <p className="text-gray-500 text-sm mb-1">
-              Combined All-Time Volume
-            </p>
+            <p className="text-gray-500 text-sm mb-1">Combined Market Cap</p>
             <p className="text-3xl font-bold text-green-700">
-              {formatUSD(totalVolume)}
+              {formatUSD(totalMarketCap)}
             </p>
           </div>
           <div className="bg-white rounded-lg shadow-lg p-6 text-center">
             <p className="text-gray-500 text-sm mb-1">Highest Floor Price</p>
             <p className="text-3xl font-bold text-green-700">
               {topFloor
-                ? formatETH(topFloor.floorAsk?.price?.amount?.native)
+                ? formatETH(topFloor.floor_price?.native_currency)
                 : "N/A"}
             </p>
             {topFloor && (
@@ -87,8 +87,8 @@ const NftMarket = ({ collections }) => {
               Market Data Unavailable
             </h2>
             <p className="text-gray-500">
-              We could not load NFT collection data right now. Please check back
-              later.
+              We could not load NFT collection data right now. Please check
+              back later.
             </p>
           </div>
         ) : (
@@ -104,10 +104,10 @@ const NftMarket = ({ collections }) => {
                 >
                   {/* Image */}
                   <div className="relative w-full h-44 bg-gray-100">
-                    {col.image ? (
+                    {col.image?.small ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={col.image}
+                        src={col.image.small}
                         alt={col.name || "NFT Collection"}
                         className="w-full h-full object-cover"
                         referrerPolicy="no-referrer"
@@ -132,44 +132,44 @@ const NftMarket = ({ collections }) => {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-500">Floor Price</span>
                         <span className="font-semibold text-gray-800">
-                          {formatETH(col.floorAsk?.price?.amount?.native)}
+                          {formatETH(col.floor_price?.native_currency)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-500">Floor (USD)</span>
-                        <span className="font-semibold text-gray-800">
-                          {formatUSD(col.floorAsk?.price?.amount?.usd)}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold text-gray-800">
+                            {formatUSD(col.floor_price?.usd)}
+                          </span>
+                          <PriceChange
+                            pct={col.floor_price_in_usd_24h_percentage_change}
+                          />
+                        </div>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-500">24h Volume</span>
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-semibold text-gray-800">
-                            {formatUSD(col.volume?.["1day"])}
-                          </span>
-                          <VolumeChange change={col.volumeChange?.["1day"]} />
-                        </div>
+                        <span className="font-semibold text-gray-800">
+                          {formatUSD(col.volume_24h?.usd)}
+                        </span>
                       </div>
-                      {col.tokenCount && (
+                      {col.total_supply != null && (
                         <div className="flex justify-between items-center">
                           <span className="text-gray-500">Supply</span>
                           <span className="font-semibold text-gray-800">
-                            {Number(col.tokenCount).toLocaleString()}
+                            {Number(col.total_supply).toLocaleString()}
                           </span>
                         </div>
                       )}
                     </div>
 
-                    {col.slug && (
-                      <a
-                        href={`https://opensea.io/collection/${col.slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-4 block w-full text-center bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2 rounded-lg transition duration-200"
-                      >
-                        View on OpenSea
-                      </a>
-                    )}
+                    <a
+                      href={`https://www.coingecko.com/en/nft/${col.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 block w-full text-center bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2 rounded-lg transition duration-200"
+                    >
+                      View Details
+                    </a>
                   </div>
                 </div>
               ))}
