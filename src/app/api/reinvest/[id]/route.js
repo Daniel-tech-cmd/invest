@@ -170,28 +170,30 @@ export const POST = async (req, { params }) => {
       );
     }
 
-    const availableBalance = (user.profit || 0) + (user.referralBonus || 0);
+    const availableBalance = user.balance || 0;
     if (availableBalance < Number(amount)) {
       return new Response(
         JSON.stringify({
-          error: `Insufficient balance. Available: $${availableBalance.toFixed(2)} (profit + referral bonus)`,
+          error: `Insufficient balance. Available: $${availableBalance.toFixed(2)}`,
         }),
         { status: 400 }
       );
     }
 
-    // Deduct from profit first, then referralBonus for the remainder
+    // Deduct profit first, then referralBonus, then principal (all from balance)
     const profitDeduct = Math.min(user.profit || 0, Number(amount));
-    const referralDeduct = Number(amount) - profitDeduct;
+    const remaining = Number(amount) - profitDeduct;
+    const referralDeduct = Math.min(user.referralBonus || 0, remaining);
     const newProfit = (user.profit || 0) - profitDeduct;
     const newReferralBonus = (user.referralBonus || 0) - referralDeduct;
+    const newBalance = (user.balance || 0) - Number(amount);
 
     // Find existing deposit for this plan (active or stopped)
     const existingDeposit = user.activeDeposit.find((d) => d.plan === planName);
     const existingDepIdx = existingDeposit ? user.activeDeposit.indexOf(existingDeposit) : -1;
 
     const updateOps = {
-      $set: { profit: newProfit, referralBonus: newReferralBonus },
+      $set: { profit: newProfit, referralBonus: newReferralBonus, balance: newBalance },
       $push: {
         deposit: {
           amount: Number(amount),

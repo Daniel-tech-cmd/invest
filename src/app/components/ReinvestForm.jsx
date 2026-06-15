@@ -25,7 +25,7 @@ const ReinvestForm = ({ data: dat }) => {
   const [error, setError] = useState("");
   const { reinvest, error: error2, isLoading } = useFetch();
 
-  const profitBalance = (dat?.profit || 0) + (dat?.referralBonus || 0);
+  const profitBalance = dat?.balance || 0;
   const promoBalance = dat?.promoBonus || 0;
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const ReinvestForm = ({ data: dat }) => {
         return;
       }
       if (parseFloat(amount) > profitBalance) {
-        setError(`Insufficient balance. Available: $${profitBalance.toFixed(2)}`);
+        setError(`Insufficient balance. Available: $${profitBalance.toFixed(2)} (total account balance)`);
         return;
       }
 
@@ -115,6 +115,12 @@ const ReinvestForm = ({ data: dat }) => {
           <>
             <div className="mb-4 rounded-xl border border-stroke bg-surface-muted px-4 py-3 text-sm text-foreground">
               <div className="flex justify-between">
+                <span className="text-muted">Principal</span>
+                <span className="font-semibold">
+                  ${Math.max(0, (dat?.balance || 0) - (dat?.profit || 0) - (dat?.referralBonus || 0)).toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between mt-1">
                 <span className="text-muted">Profit</span>
                 <span className="font-semibold">${(dat?.profit || 0).toFixed(2)}</span>
               </div>
