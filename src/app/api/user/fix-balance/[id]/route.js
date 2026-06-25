@@ -21,7 +21,9 @@ export const POST = async (req, { params }) => {
 
     for (let i = 0; i < user.activeDeposit.length; i++) {
       const deposit = user.activeDeposit[i];
-      if (!deposit.stopped || deposit.balanceDeductedAmount > 0) continue;
+      if (!deposit.stopped) continue;
+      if (deposit.balanceFixed) continue;
+      if (deposit.balanceDeductedAmount > 0) continue;
 
       const reinvestedAmount = (user.deposit || [])
         .filter(
@@ -32,7 +34,7 @@ export const POST = async (req, { params }) => {
         .reduce((sum, d) => sum + (d.amount || 0), 0);
 
       if (reinvestedAmount > 0) {
-        deposit.balanceDeductedAmount = reinvestedAmount;
+        deposit.balanceFixed = true;
         totalToReturn += reinvestedAmount;
       }
     }

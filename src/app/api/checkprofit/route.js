@@ -150,6 +150,7 @@ export const GET = async (request) => {
               if (amountToReturn > 0) {
                 user.balance = (user.balance || 0) + amountToReturn;
               }
+              deposit.balanceDeductedAmount = 0;
             }
             deposit.stopped = true;
           } else if (!stopped) {

@@ -393,7 +393,9 @@ const Edit = ({ data }) => {
     if (!res?.activeDeposit || !res?.deposit) return 0;
     let total = 0;
     for (const dep of res.activeDeposit) {
-      if (!dep.stopped || dep.balanceDeductedAmount > 0) continue;
+      if (!dep.stopped) continue;
+      if (dep.balanceFixed) continue;
+      if (dep.balanceDeductedAmount > 0) continue;
       const reinvested = (res.deposit || [])
         .filter(
           (d) =>

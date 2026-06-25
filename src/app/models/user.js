@@ -271,6 +271,10 @@ const UserSchema = new Schema(
           type: Number,
           default: 0,
         },
+        balanceFixed: {
+          type: Boolean,
+          default: false,
+        },
       },
     ],
     referals: [
