@@ -409,7 +409,7 @@ const Edit = ({ data }) => {
   };
 
   const handleFixBalance = async () => {
-    if (!res?._id || !user?._id) return;
+    if (!res?._id || !data?._id) return;
     try {
       setIsFixingBalance(true);
       const response = await fetch(`/api/user/fix-balance/${data._id}`, {
