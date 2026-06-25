@@ -134,13 +134,18 @@ export const GET = async (request) => {
             depositAge >= planDurationInMillis
           ) {
             if (!deposit.stopped) {
-              // First time stopping — return reinvested principal to balance.
-              // New deposits track balanceDeductedAmount explicitly.
-              // Legacy reinvestment deposits (no field set) fall back to deposit.amount.
-              // Original deposits (method !== "reinvestment") return 0 — principal was always in balance.
+              // Return reinvested principal to balance.
+              // Prefer the stored balanceDeductedAmount, but if it was
+              // lost (schema bug), reconstruct from the deposit history.
               let amountToReturn = deposit.balanceDeductedAmount || 0;
-              if (!amountToReturn && deposit.method === "reinvestment") {
-                amountToReturn = deposit.amount;
+              if (!amountToReturn) {
+                amountToReturn = (user.deposit || [])
+                  .filter(
+                    (d) =>
+                      d.plan === deposit.plan &&
+                      (d.method === "reinvestment" || d.method === "promo reinvestment"),
+                  )
+                  .reduce((sum, d) => sum + (d.amount || 0), 0);
               }
               if (amountToReturn > 0) {
                 user.balance = (user.balance || 0) + amountToReturn;

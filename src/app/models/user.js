@@ -93,7 +93,7 @@ const UserSchema = new Schema(
           type: String,
         },
         planIndex: {
-          type: Number,
+          type: Schema.Types.Mixed,
         },
       },
     ],
@@ -266,6 +266,10 @@ const UserSchema = new Schema(
         withdrawn: {
           type: Boolean,
           default: false,
+        },
+        balanceDeductedAmount: {
+          type: Number,
+          default: 0,
         },
       },
     ],

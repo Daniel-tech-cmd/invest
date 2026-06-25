@@ -91,6 +91,8 @@ const Edit = ({ data }) => {
     useState("");
   const [promoWithdrawAmount, setPromoWithdrawAmount] =
     useState("");
+  const [isFixingBalance, setIsFixingBalance] =
+    useState(false);
 
   const [plans] = useState([
     {
@@ -384,6 +386,45 @@ const Edit = ({ data }) => {
       console.error(err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const getUnreturnedReinvestment = () => {
+    if (!res?.activeDeposit || !res?.deposit) return 0;
+    let total = 0;
+    for (const dep of res.activeDeposit) {
+      if (!dep.stopped || dep.balanceDeductedAmount > 0) continue;
+      const reinvested = (res.deposit || [])
+        .filter(
+          (d) =>
+            d.plan === dep.plan &&
+            (d.method === "reinvestment" || d.method === "promo reinvestment"),
+        )
+        .reduce((sum, d) => sum + (d.amount || 0), 0);
+      total += reinvested;
+    }
+    return total;
+  };
+
+  const handleFixBalance = async () => {
+    if (!res?._id || !user?._id) return;
+    try {
+      setIsFixingBalance(true);
+      const response = await fetch(`/api/user/fix-balance/${data._id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: res._id }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Failed to fix balance");
+      toast.success(
+        `Balance fixed! Added $${formatCurrency(result.amountAdded)}. New balance: $${formatCurrency(result.newBalance)}`,
+      );
+      await handleFetch(query);
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setIsFixingBalance(false);
     }
   };
 
@@ -732,6 +773,31 @@ const Edit = ({ data }) => {
                   </div>
                 </div>
               </div>
+
+              {getUnreturnedReinvestment() > 0 && (
+                <div className="space-y-4 border-t border-stroke pt-6">
+                  <h3 className="text-lg font-semibold text-rose-400">
+                    Balance Fix Required
+                  </h3>
+                  <p className="text-sm text-muted">
+                    This user has stopped plans with reinvested funds that were never returned to their balance.
+                    Missing amount:{" "}
+                    <span className="font-semibold text-foreground">
+                      ${formatCurrency(getUnreturnedReinvestment())}
+                    </span>
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleFixBalance}
+                    disabled={isFixingBalance}
+                    className="rounded-xl bg-rose-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isFixingBalance
+                      ? "Fixing..."
+                      : `Fix Balance (+$${formatCurrency(getUnreturnedReinvestment())})`}
+                  </button>
+                </div>
+              )}
 
               <div className="space-y-4 border-t border-stroke pt-6">
                 <h3 className="text-lg font-semibold text-foreground">
