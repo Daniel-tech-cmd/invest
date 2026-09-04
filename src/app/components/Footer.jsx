@@ -40,8 +40,9 @@ export default function Footer() {
         </div>
         <div className="flex flex-col items-start gap-5 border-t pt-7 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "var(--line)" }}>
           <p className="m-0 max-w-[60ch] text-[0.76rem] text-ink-faint">
-            GoldGroveco is a simulated returns platform built for demonstration purposes. Investing
-            involves risk, and past performance does not guarantee future results.
+            Copyright © 2018 - 2026 Goldgroveco-Investors. All Rights Reserved
+
+
           </p>
           <p className="m-0 text-[0.76rem] text-ink-faint">&copy; 2026 GoldGroveco</p>
         </div>
