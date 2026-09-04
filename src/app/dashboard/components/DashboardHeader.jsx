@@ -17,6 +17,7 @@ const TITLES = {
   "/admin/edit": "Edit User",
   "/admin/wallets": "Wallets",
   "/admin/add-wallet": "Add Wallet",
+  "/admin/broadcast": "Broadcast Email",
 };
 
 function resolveTitle(pathname) {

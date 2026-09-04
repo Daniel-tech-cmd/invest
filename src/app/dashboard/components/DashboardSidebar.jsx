@@ -121,6 +121,16 @@ const ADMIN_ITEMS = [
       </svg>
     ),
   },
+  {
+    label: "Broadcast",
+    href: "/admin/broadcast",
+    icon: (
+      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 4l16 8-16 8V4z" />
+        <path d="M4 12h9" />
+      </svg>
+    ),
+  },
 ];
 
 const ACCOUNT_ITEMS = [
