@@ -37,6 +37,21 @@ export const metadata = {
     ],
     apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
+  // iOS has no beforeinstallprompt / install API at all — these tags are
+  // what make the result of a *manual* Share > Add to Home Screen actually
+  // launch standalone (its own window, no Safari chrome) instead of just
+  // opening back up in the browser.
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "GoldGroveco",
+  },
+  // Next.js's appleWebApp.capable only emits the newer standards-track
+  // "mobile-web-app-capable" tag — older iOS Safari versions only recognize
+  // the legacy "apple-" prefixed one, so it's added explicitly too.
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+  },
 };
 
 export const viewport = {
