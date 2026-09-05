@@ -1,6 +1,7 @@
 import webpush from "web-push";
 import { connectToDB } from "./db";
 import User from "../models/User";
+import Notification from "../models/Notification";
 
 let configured = false;
 function ensureConfigured() {
@@ -26,13 +27,23 @@ function ensureConfigured() {
 // which isn't a failure so much as "not applicable") can report accurately.
 // Every existing fire-and-forget caller just ignores the return value.
 export default async function sendPush(userId, { title, body, url }) {
-  ensureConfigured();
   await connectToDB();
+  const resolvedUrl = url || "/dashboard";
+
+  // The in-app Notification record is created unconditionally, before the
+  // actual push attempt — it must exist (and be visible on the Notifications
+  // page) regardless of whether the recipient has ever enabled push, or
+  // whether push itself is even configured on this deployment.
+  await Notification.create({ userId, title, body, url: resolvedUrl }).catch((err) =>
+    console.error("Notification record failed:", err.message),
+  );
+
+  ensureConfigured();
 
   const user = await User.findById(userId).select("pushSubscriptions");
   if (!user || !user.pushSubscriptions?.length) return { subscriptions: 0, sent: 0 };
 
-  const payload = JSON.stringify({ title, body, url: url || "/dashboard" });
+  const payload = JSON.stringify({ title, body, url: resolvedUrl });
   const deadEndpoints = [];
   let sent = 0;
 

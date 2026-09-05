@@ -73,7 +73,10 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const url = event.notification.data?.url || "/dashboard";
+  // Always open the Notifications page rather than the event's own deep
+  // link — the whole point is that a dismissed/expired OS banner is never
+  // the last chance to see the full message; it stays readable in-app.
+  const url = "/dashboard/notifications";
 
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientsList) => {

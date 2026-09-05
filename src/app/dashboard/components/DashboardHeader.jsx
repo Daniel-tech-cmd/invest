@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import useThemeToggle from "../../hooks/useThemeToggle";
+import NotificationBell from "./NotificationBell";
 
 const TITLES = {
   "/dashboard": "Account Overview",
@@ -18,6 +19,7 @@ const TITLES = {
   "/admin/wallets": "Wallets",
   "/admin/add-wallet": "Add Wallet",
   "/admin/broadcast": "Broadcast Email",
+  "/dashboard/notifications": "Notifications",
 };
 
 function resolveTitle(pathname) {
@@ -27,7 +29,7 @@ function resolveTitle(pathname) {
   return "Account Dashboard";
 }
 
-export default function DashboardHeader({ onOpenMobileSidebar, user }) {
+export default function DashboardHeader({ onOpenMobileSidebar, user, initialUnreadCount = 0 }) {
   const { isDark, toggleTheme } = useThemeToggle();
   const pathname = usePathname();
   const isAdmin = user.role === "admin" || user.role === "master admin";
@@ -82,6 +84,8 @@ export default function DashboardHeader({ onOpenMobileSidebar, user }) {
           )}
           {isDark ? "Light" : "Dark"}
         </button>
+
+        <NotificationBell initialUnreadCount={initialUnreadCount} />
 
         <div className="hidden h-5 w-px lg:block" style={{ background: "var(--line-strong)" }} />
 

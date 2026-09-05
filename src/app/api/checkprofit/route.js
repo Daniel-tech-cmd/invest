@@ -2,11 +2,15 @@ import { connectToDB } from "../../../lib/db";
 import User from "../../../models/User";
 import { resolvePlan } from "../../lib/plans";
 import { getCustomPlansForUser } from "../../../lib/customPlansData";
+import sendEmail from "../../../lib/sendEmail";
+import sendPush from "../../../lib/sendPush";
+import { renderNotificationEmail } from "../../../lib/emailTemplates";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 const HOUR_MS = 60 * 60 * 1000;
+const fmt = (n) => `$${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 // The old app's version of this cron had zero auth and an unused node-cron
 // import — nothing actually scheduled it, and anyone who found the URL could
@@ -38,6 +42,7 @@ export async function GET(req) {
   for (const user of users) {
     let anyChange = false;
     const earnHistoryEntries = [];
+    const maturedNotifications = [];
     let customPlansForUser = null; // fetched lazily, at most once per user
 
     for (const deposit of user.activeDeposit) {
@@ -90,6 +95,12 @@ export async function GET(req) {
         deposit.stopped = true;
         depositsMatured++;
         anyChange = true;
+
+        maturedNotifications.push({
+          plan: deposit.plan,
+          amount: deposit.amount,
+          credited: accruedProfit + reinvestedPrincipal,
+        });
       }
     }
 
@@ -101,6 +112,33 @@ export async function GET(req) {
       try {
         await user.save();
         usersUpdated++;
+
+        for (const matured of maturedNotifications) {
+          sendEmail(
+            user.email,
+            "Investment Plan Matured",
+            `Hello ${user.username}, your ${matured.plan} deposit of ${fmt(matured.amount)} has matured. ${fmt(matured.credited)} has been credited to your balance.`,
+            renderNotificationEmail({
+              heading: "Investment Plan Matured",
+              greeting: user.username,
+              message: "One of your investment plans has completed its term and the payout is now available in your balance.",
+              badgeText: "Matured",
+              rows: [
+                ["Plan", matured.plan],
+                ["Original amount", fmt(matured.amount)],
+                ["Credited to balance", fmt(matured.credited), true],
+              ],
+              ctaText: "View Dashboard",
+              ctaUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`,
+            }),
+          ).catch((err) => console.error("Plan maturity email failed:", err.message));
+
+          sendPush(user._id, {
+            title: "Plan matured",
+            body: `Your ${matured.plan} deposit matured — ${fmt(matured.credited)} is now in your balance.`,
+            url: "/dashboard",
+          }).catch((err) => console.error("Plan maturity push failed:", err.message));
+        }
       } catch (err) {
         // A concurrent admin action (approve/withdraw/etc.) on this exact
         // user between our read and save loses the optimistic-concurrency
