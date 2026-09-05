@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const fmt = (n) => `$${(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
@@ -21,14 +22,37 @@ const KIND_ICON = {
 };
 
 export default function PendingRequestsPreview({ notifications }) {
+  const router = useRouter();
   const [resolved, setResolved] = useState({});
+  const [pending, setPending] = useState({});
+  const [errors, setErrors] = useState({});
 
-  const act = (id, outcome) => (e) => {
+  const act = (n, outcome) => async (e) => {
     e.preventDefault();
-    // Deposit/withdrawal approve/decline endpoints aren't wired up yet — the
-    // external pages and dashboard UI are being built first, backend logic
-    // comes after.
-    setResolved((r) => ({ ...r, [id]: outcome }));
+    setErrors((err) => ({ ...err, [n.id]: "" }));
+    setPending((p) => ({ ...p, [n.id]: true }));
+
+    const kind = n.type === "deposit" ? "deposits" : "withdrawals";
+    const action = outcome === "approved" ? "approve" : "decline";
+
+    try {
+      const res = await fetch(`/api/admin/${kind}/${n.id}/${action}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: n.userId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrors((err) => ({ ...err, [n.id]: data.error || "Something went wrong." }));
+        return;
+      }
+      setResolved((r) => ({ ...r, [n.id]: outcome }));
+      router.refresh();
+    } catch {
+      setErrors((err) => ({ ...err, [n.id]: "Something went wrong. Please try again." }));
+    } finally {
+      setPending((p) => ({ ...p, [n.id]: false }));
+    }
   };
 
   return (
@@ -55,59 +79,66 @@ export default function PendingRequestsPreview({ notifications }) {
         <div className="flex flex-col gap-2">
           {notifications.map((n) => {
             const outcome = resolved[n.id];
+            const isPending = pending[n.id];
+            const error = errors[n.id];
             return (
               <div
                 key={n.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3"
+                className="flex flex-col gap-2 rounded-xl border px-4 py-3"
                 style={{ background: "var(--surface-raised-2)", borderColor: "var(--line)" }}
               >
-                <div className="flex min-w-0 items-center gap-3">
-                  <div
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-gold-ink"
-                    style={{ background: "rgba(231,185,75,0.1)", borderColor: "rgba(231,185,75,0.25)" }}
-                  >
-                    {KIND_ICON[n.type]}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-[12.5px] font-medium text-ink">
-                      {n.username} &middot; {n.type === "deposit" ? "Deposit" : "Withdrawal"}
-                    </p>
-                    <p className="mono truncate text-[10px] text-ink-faint">
-                      {n.method} {n.type === "deposit" ? `· ${n.plan}` : `· ${n.wallet}`} &middot; {fmtDate(n.date)}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex shrink-0 items-center gap-3">
-                  <span className="mono text-[13px] font-semibold text-ink">{fmt(n.amount)}</span>
-                  {outcome ? (
-                    <span
-                      className="rounded-full border px-2.5 py-1 text-[10.5px] font-medium capitalize"
-                      style={
-                        outcome === "approved"
-                          ? { background: "rgba(34,192,138,0.1)", borderColor: "rgba(34,192,138,0.3)", color: "var(--grove-ink)" }
-                          : { background: "rgba(220,80,80,0.08)", borderColor: "rgba(220,80,80,0.25)", color: "var(--down)" }
-                      }
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-gold-ink"
+                      style={{ background: "rgba(231,185,75,0.1)", borderColor: "rgba(231,185,75,0.25)" }}
                     >
-                      {outcome}
-                    </span>
-                  ) : (
-                    <div className="flex gap-1.5">
-                      <button
-                        onClick={act(n.id, "declined")}
-                        className="btn btn-ghost btn-sm !py-1.5 !px-3 !text-[10.5px]"
-                      >
-                        Decline
-                      </button>
-                      <button
-                        onClick={act(n.id, "approved")}
-                        className="btn btn-primary btn-sm !py-1.5 !px-3 !text-[10.5px]"
-                      >
-                        Approve
-                      </button>
+                      {KIND_ICON[n.type]}
                     </div>
-                  )}
+                    <div className="min-w-0">
+                      <p className="truncate text-[12.5px] font-medium text-ink">
+                        {n.username} &middot; {n.type === "deposit" ? "Deposit" : "Withdrawal"}
+                      </p>
+                      <p className="mono truncate text-[10px] text-ink-faint">
+                        {n.method} {n.type === "deposit" ? `· ${n.plan}` : `· ${n.wallet}`} &middot; {fmtDate(n.date)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-3">
+                    <span className="mono text-[13px] font-semibold text-ink">{fmt(n.amount)}</span>
+                    {outcome ? (
+                      <span
+                        className="rounded-full border px-2.5 py-1 text-[10.5px] font-medium capitalize"
+                        style={
+                          outcome === "approved"
+                            ? { background: "rgba(34,192,138,0.1)", borderColor: "rgba(34,192,138,0.3)", color: "var(--grove-ink)" }
+                            : { background: "rgba(220,80,80,0.08)", borderColor: "rgba(220,80,80,0.25)", color: "var(--down)" }
+                        }
+                      >
+                        {outcome}
+                      </span>
+                    ) : (
+                      <div className="flex gap-1.5">
+                        <button
+                          onClick={act(n, "declined")}
+                          disabled={isPending}
+                          className="btn btn-ghost btn-sm !py-1.5 !px-3 !text-[10.5px]"
+                        >
+                          {isPending ? "…" : "Decline"}
+                        </button>
+                        <button
+                          onClick={act(n, "approved")}
+                          disabled={isPending}
+                          className="btn btn-primary btn-sm !py-1.5 !px-3 !text-[10.5px]"
+                        >
+                          {isPending ? "…" : "Approve"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
+                {error && <p className="text-[10.5px] font-medium text-down">{error}</p>}
               </div>
             );
           })}

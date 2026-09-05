@@ -63,6 +63,17 @@ const earnHistorySchema = new Schema({
   date: { type: Date, default: Date.now },
 });
 
+// Promo and referral bonus credits are plain $inc operations with no
+// corresponding entry anywhere else — without this, the Transactions page
+// (built only from deposit/withdraw/earnHistory) has no way to show that
+// either one ever happened.
+const bonusHistorySchema = new Schema({
+  type: { type: String, enum: ["promo", "referral"], required: true },
+  amount: { type: Number, required: true },
+  note: { type: String },
+  date: { type: Date, default: Date.now },
+});
+
 // One entry per browser/device the user has enabled push notifications on —
 // a user can have several (phone + laptop, etc.), each gets its own message.
 const pushSubscriptionSchema = new Schema({
@@ -131,6 +142,7 @@ const UserSchema = new Schema(
     deposit: [depositSchema],
     withdraw: [withdrawSchema],
     earnHistory: [earnHistorySchema],
+    bonusHistory: [bonusHistorySchema],
     pushSubscriptions: [pushSubscriptionSchema],
   },
   { timestamps: true },

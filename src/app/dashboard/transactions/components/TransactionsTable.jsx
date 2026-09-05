@@ -7,6 +7,7 @@ const TABS = [
   { id: "deposit", label: "Deposits" },
   { id: "withdraw", label: "Withdrawals" },
   { id: "earning", label: "Earnings" },
+  { id: "bonus", label: "Bonuses" },
 ];
 
 const fmt = (n) => `$${(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -45,6 +46,11 @@ const KIND_ICON = {
       <path d="M17 6h6v6" />
     </svg>
   ),
+  bonus: (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 12v9H4v-9M2 7h20v5H2V7zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C9 2 12 7 12 7z" />
+    </svg>
+  ),
 };
 
 export default function TransactionsTable({ user }) {
@@ -81,8 +87,18 @@ export default function TransactionsTable({ user }) {
       title: `Profit credit · ${e.plan}`,
       subtitle: `On ${fmt(e.depositAmount)} deposit · #${shortId(e.id)}`,
     }));
+    const bonuses = (user.bonusHistory || []).map((b) => ({
+      kind: "bonus",
+      key: `bonus-${b.id}`,
+      amount: b.amount,
+      sign: "+",
+      status: "approved",
+      date: b.date,
+      title: b.type === "promo" ? "Promo bonus credit" : "Referral bonus credit",
+      subtitle: `${b.note || ""} · #${shortId(b.id)}`,
+    }));
 
-    return [...deposits, ...withdrawals, ...earnings].sort((a, b) => new Date(b.date) - new Date(a.date));
+    return [...deposits, ...withdrawals, ...earnings, ...bonuses].sort((a, b) => new Date(b.date) - new Date(a.date));
   }, [user]);
 
   const filtered = tab === "all" ? rows : rows.filter((r) => r.kind === tab);

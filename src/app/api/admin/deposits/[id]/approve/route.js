@@ -46,7 +46,10 @@ export async function POST(req, { params }) {
         // not declared in the schema, even though it's still in the raw
         // stored document, so .get() is needed to reach it.
         const refIdx = referrer.referals.findIndex((r) => (r.username || r.get("name")) === user.username);
-        const referrerUpdate = { $inc: { referralBonus, balance: referralBonus, activereferrals: 1 } };
+        const referrerUpdate = {
+          $inc: { referralBonus, balance: referralBonus, activereferrals: 1 },
+          $push: { bonusHistory: { type: "referral", amount: referralBonus, note: `Referral bonus from ${user.username}'s first deposit` } },
+        };
         if (refIdx !== -1) referrerUpdate.$set = { [`referals.${refIdx}.verified`]: true };
         await User.findByIdAndUpdate(referrer._id, referrerUpdate);
 

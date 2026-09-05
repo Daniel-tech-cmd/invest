@@ -154,7 +154,10 @@ export async function POST(req) {
       const referringUser = await User.findOne({ username: user.referredby });
       if (referringUser) {
         const referralBonus = numericAmount * 0.1;
-        await User.findByIdAndUpdate(referringUser._id, { $inc: { referralBonus, balance: referralBonus } });
+        await User.findByIdAndUpdate(referringUser._id, {
+          $inc: { referralBonus, balance: referralBonus },
+          $push: { bonusHistory: { type: "referral", amount: referralBonus, note: `Referral bonus from ${user.username}'s reinvestment` } },
+        });
         sendEmail(
           referringUser.email,
           "Referral Bonus Received",

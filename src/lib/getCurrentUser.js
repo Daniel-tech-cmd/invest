@@ -41,6 +41,7 @@ function normalizeUser(doc, earnHistory) {
     deposit: (doc.deposit || []).map(withId),
     withdraw: (doc.withdraw || []).map(withId),
     earnHistory: earnHistory.map(withId),
+    bonusHistory: (doc.bonusHistory || []).map(withId),
     referals,
     activereferrals: referals.filter((r) => r.verified).length,
   };

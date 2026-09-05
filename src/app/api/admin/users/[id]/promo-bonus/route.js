@@ -26,7 +26,14 @@ export async function POST(req, { params }) {
     }
 
     await connectToDB();
-    const updated = await User.findByIdAndUpdate(id, { $inc: { promoBonus: numericAmount } }, { new: true, runValidators: true });
+    const updated = await User.findByIdAndUpdate(
+      id,
+      {
+        $inc: { promoBonus: numericAmount },
+        $push: { bonusHistory: { type: "promo", amount: numericAmount, note: "Promo bonus from admin" } },
+      },
+      { new: true, runValidators: true },
+    );
     if (!updated) {
       return Response.json({ error: "User not found." }, { status: 404 });
     }
