@@ -12,6 +12,15 @@ export const maxDuration = 60;
 const HOUR_MS = 60 * 60 * 1000;
 const fmt = (n) => `$${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+async function generateAccountId() {
+  let candidate;
+  do {
+    candidate = "GGC-" + Math.floor(100000 + Math.random() * 900000);
+    // eslint-disable-next-line no-await-in-loop
+  } while (await User.findOne({ accountId: candidate }));
+  return candidate;
+}
+
 // The old app's version of this cron had zero auth and an unused node-cron
 // import — nothing actually scheduled it, and anyone who found the URL could
 // spam it to inflate every user's balance. A real external scheduler (e.g.
@@ -44,6 +53,40 @@ export async function GET(req) {
     const earnHistoryEntries = [];
     const maturedNotifications = [];
     let customPlansForUser = null; // fetched lazily, at most once per user
+
+    // One-time backfill for accounts migrated from the old app's real
+    // database, which never had these fields (accountId didn't exist at
+    // all; deposit.walletAddress and referals.username are newer required
+    // fields). Without this, the full-document validation on user.save()
+    // below throws for every single legacy user, permanently blocking
+    // their profit accrual — findOneAndUpdate-based routes elsewhere are
+    // unaffected since those only validate the fields they touch. Runs at
+    // most once per user; once set, these persist and this is a no-op.
+    if (!user.accountId) {
+      user.accountId = await generateAccountId();
+      anyChange = true;
+    }
+    for (const dep of user.deposit) {
+      if (!dep.walletAddress) {
+        // Old deposit records never captured a wallet address at all —
+        // there's no real historical value to recover. This is a closed,
+        // already-approved/declined record; the placeholder only ever
+        // surfaces in the admin receipt cross-check display, never in any
+        // money-moving path.
+        dep.walletAddress = "legacy-deposit";
+        anyChange = true;
+      }
+    }
+    for (const ref of user.referals) {
+      if (!ref.username) {
+        // Old referral entries used name/id instead of username. Mongoose
+        // strips undeclared fields from normal property access on a
+        // schema-cast subdocument, so the old `name` value has to be read
+        // via .get(), which reaches into the raw stored document.
+        ref.username = ref.get("name") || "Referral";
+        anyChange = true;
+      }
+    }
 
     for (const deposit of user.activeDeposit) {
       if (deposit.stopped) continue;
