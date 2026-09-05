@@ -3,6 +3,9 @@ import bcrypt from "bcryptjs";
 import { connectToDB } from "../../../lib/db";
 import User from "../../../models/User";
 import PasswordResetToken from "../../../models/PasswordResetToken";
+import sendEmail from "../../../lib/sendEmail";
+import sendPush from "../../../lib/sendPush";
+import { renderNotificationEmail } from "../../../lib/emailTemplates";
 
 export async function POST(req) {
   try {
@@ -36,6 +39,26 @@ export async function POST(req) {
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.findByIdAndUpdate(userId, { password: hashedPassword });
     await PasswordResetToken.deleteOne({ _id: resetToken._id });
+
+    sendEmail(
+      user.email,
+      "Password Changed",
+      `Hello ${user.username}, your password was just changed. If this wasn't you, please contact support immediately.`,
+      renderNotificationEmail({
+        heading: "Password Changed",
+        greeting: user.username,
+        message: "Your account password was just changed. If you didn't make this change, please contact support immediately.",
+        badgeText: "Security Alert",
+        badgeColor: "#991b1b",
+        badgeBg: "#fee2e2",
+      }),
+    ).catch((err) => console.error("Password change email failed:", err.message));
+
+    sendPush(user._id, {
+      title: "Password changed",
+      body: "Your account password was just changed. Contact support if this wasn't you.",
+      url: "/dashboard/profile",
+    }).catch((err) => console.error("Password change push failed:", err.message));
 
     return Response.json({ message: "Password has been reset successfully" });
   } catch (err) {

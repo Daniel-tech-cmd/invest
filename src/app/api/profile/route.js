@@ -1,6 +1,9 @@
 import { auth } from "../../../auth";
 import { connectToDB } from "../../../lib/db";
 import User from "../../../models/User";
+import sendEmail from "../../../lib/sendEmail";
+import sendPush from "../../../lib/sendPush";
+import { renderNotificationEmail } from "../../../lib/emailTemplates";
 
 // Strict whitelist — the old app's exact bug was passing the whole raw
 // request body straight into findByIdAndUpdate, which let role/balance/
@@ -23,6 +26,22 @@ const EDITABLE_FIELDS = [
   "usdtNetwork",
 ];
 
+const FIELD_LABELS = {
+  fullName: "Full name",
+  username: "Username",
+  email: "Email address",
+  bitcoinAccountId: "Bitcoin wallet address",
+  bitcoinNetwork: "Bitcoin network",
+  ethereumAccountId: "Ethereum wallet address",
+  ethereumNetwork: "Ethereum network",
+  litecoinAccountId: "Litecoin wallet address",
+  litecoinNetwork: "Litecoin network",
+  dogeAccountId: "Dogecoin wallet address",
+  dogeNetwork: "Dogecoin network",
+  usdtAccountId: "USDT wallet address",
+  usdtNetwork: "USDT network",
+};
+
 export async function PATCH(req) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -38,6 +57,11 @@ export async function PATCH(req) {
     }
 
     await connectToDB();
+
+    const before = await User.findById(session.user.id);
+    if (!before) {
+      return Response.json({ error: "User not found." }, { status: 404 });
+    }
 
     if (update.username !== undefined) {
       const username = String(update.username).trim();
@@ -60,9 +84,38 @@ export async function PATCH(req) {
       update.email = email;
     }
 
+    // Only fields whose value actually changed — ProfileForm resubmits every
+    // whitelisted field on every save, not just the ones the user touched.
+    const changedFieldLabels = EDITABLE_FIELDS.filter(
+      (field) => update[field] !== undefined && update[field] !== before[field],
+    ).map((field) => FIELD_LABELS[field] || field);
+
     const updated = await User.findByIdAndUpdate(session.user.id, update, { new: true, runValidators: true });
     if (!updated) {
       return Response.json({ error: "User not found." }, { status: 404 });
+    }
+
+    if (changedFieldLabels.length > 0) {
+      sendEmail(
+        updated.email,
+        "Profile Updated",
+        `Hello ${updated.username}, the following were updated on your account: ${changedFieldLabels.join(", ")}. If this wasn't you, please contact support immediately.`,
+        renderNotificationEmail({
+          heading: "Profile Updated",
+          greeting: updated.username,
+          message: "The following details on your account were just changed. If this wasn't you, please contact support immediately.",
+          badgeText: "Account Updated",
+          rows: changedFieldLabels.map((label) => [label, "Updated"]),
+          ctaText: "View Profile",
+          ctaUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/profile`,
+        }),
+      ).catch((err) => console.error("Profile update email failed:", err.message));
+
+      sendPush(session.user.id, {
+        title: "Profile updated",
+        body: `Changed: ${changedFieldLabels.join(", ")}.`,
+        url: "/dashboard/profile",
+      }).catch((err) => console.error("Profile update push failed:", err.message));
     }
 
     return Response.json({
