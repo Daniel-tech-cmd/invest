@@ -41,7 +41,10 @@ export async function POST(req) {
 
     await connectToDB();
 
-    const wallet = await Wallet.findOne({ assetId: method });
+    // Matches either our own `assetId` field or the old app's real wallet
+    // documents' `name` field (same shared production DB, different shape —
+    // see getWallets.js's toPlain() for the read side of this).
+    const wallet = await Wallet.findOne({ $or: [{ assetId: method }, { name: method }] });
     if (!wallet || wallet.address !== walletAddress) {
       return Response.json({ error: "Invalid payment method." }, { status: 400 });
     }

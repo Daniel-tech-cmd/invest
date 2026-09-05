@@ -2,7 +2,7 @@
 // inline HTML/CSS into every route that sent an email. This renders the same
 // visual language (Rubik font, green GoldGroveco header, transaction-row
 // card) from a single place instead.
-export function renderNotificationEmail({ heading, greeting, message, badgeText, badgeColor = "#065f46", badgeBg = "#d1fae5", rows = [], noteText, ctaText, ctaUrl }) {
+export function renderNotificationEmail({ heading, greeting, message, badgeText, badgeColor = "#0d6b4f", badgeBg = "#d9f2e8", rows = [], noteText, ctaText, ctaUrl }) {
   const rowsHtml = rows
     .map(
       ([label, value, highlight]) => `
@@ -25,21 +25,21 @@ export function renderNotificationEmail({ heading, greeting, message, badgeText,
       body { font-family: 'Rubik', Arial, sans-serif; background-color: #f3f4f6; line-height: 1.6; }
       .email-wrapper { width: 100%; background-color: #f3f4f6; padding: 40px 20px; }
       .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; }
-      .header { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 40px 30px; text-align: center; }
+      .header { background: linear-gradient(135deg, #e7b94b 0%, #1fae7e 100%); padding: 40px 30px; text-align: center; }
       .logo { font-size: 28px; font-weight: 800; color: #ffffff; }
       .content { padding: 40px 30px; }
       .greeting { font-size: 20px; font-weight: 600; color: #111827; margin-bottom: 20px; }
       .message { font-size: 16px; color: #4b5563; margin-bottom: 25px; }
       .badge { display: inline-flex; align-items: center; background-color: ${badgeBg}; color: ${badgeColor}; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-bottom: 25px; }
-      .transaction-card { background: #f9fafb; border-left: 4px solid #22c55e; border-radius: 8px; padding: 25px; margin: 25px 0; }
+      .transaction-card { background: #f9fafb; border-left: 4px solid #1fae7e; border-radius: 8px; padding: 25px; margin: 25px 0; }
       .transaction-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
       .transaction-row:last-child { border-bottom: none; }
       .transaction-label { font-size: 14px; color: #6b7280; }
       .transaction-value { font-size: 14px; color: #111827; font-weight: 600; text-align: right; }
-      .amount-highlight { font-size: 20px; color: #22c55e; }
-      .note-box { background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 15px 20px; border-radius: 6px; margin: 20px 0; font-size: 14px; color: #1e40af; }
-      .cta-button { display: block; width: fit-content; margin: 10px 0 25px; padding: 14px 28px; color: #ffffff !important; text-decoration: none; background-color: #22c55e; border-radius: 8px; font-weight: 600; font-size: 15px; }
-      .cta-link { word-break: break-all; color: #22c55e; font-size: 12px; margin-bottom: 20px; }
+      .amount-highlight { font-size: 20px; color: #1fae7e; }
+      .note-box { background-color: #fdf6e3; border-left: 4px solid #e7b94b; padding: 15px 20px; border-radius: 6px; margin: 20px 0; font-size: 14px; color: #8a5a12; }
+      .cta-button { display: block; width: fit-content; margin: 10px 0 25px; padding: 14px 28px; color: #ffffff !important; text-decoration: none; background: linear-gradient(135deg, #e7b94b 0%, #1fae7e 100%); border-radius: 8px; font-weight: 600; font-size: 15px; }
+      .cta-link { word-break: break-all; color: #1fae7e; font-size: 12px; margin-bottom: 20px; }
       .footer { background-color: #111827; padding: 30px; text-align: center; }
       .footer-content { color: #9ca3af; font-size: 14px; }
       .copyright { color: #6b7280; font-size: 12px; margin-top: 15px; }
