@@ -40,7 +40,12 @@ export async function POST(req, { params }) {
       const referrer = await User.findOne({ username: user.referredby });
       if (referrer) {
         const referralBonus = amount * 0.1;
-        const refIdx = referrer.referals.findIndex((r) => r.username === user.username);
+        // Falls back to the old app's real field name (`name` instead of
+        // `username`) for a referral entry created before this account was
+        // migrated — direct property access returns undefined for a field
+        // not declared in the schema, even though it's still in the raw
+        // stored document, so .get() is needed to reach it.
+        const refIdx = referrer.referals.findIndex((r) => (r.username || r.get("name")) === user.username);
         const referrerUpdate = { $inc: { referralBonus, balance: referralBonus, activereferrals: 1 } };
         if (refIdx !== -1) referrerUpdate.$set = { [`referals.${refIdx}.verified`]: true };
         await User.findByIdAndUpdate(referrer._id, referrerUpdate);

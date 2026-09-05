@@ -23,7 +23,12 @@ function normalizeUser(doc, earnHistory) {
     return { ...withId(d), profitToday };
   });
 
-  const referals = (doc.referals || []).map((r) => ({ name: r.username, id: r._id, verified: r.verified }));
+  // Falls back to the old app's real field name (`name` instead of
+  // `username`) for referral entries created before this account was
+  // migrated onto the new schema — same tolerant-read pattern as
+  // getWallets.js's toPlain(). `.lean()` returns the raw document regardless
+  // of what's declared in our schema, so the old field is still readable.
+  const referals = (doc.referals || []).map((r) => ({ name: r.username || r.name, id: r._id, verified: r.verified }));
 
   return {
     ...doc,

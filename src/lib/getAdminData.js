@@ -68,8 +68,13 @@ export const getPendingRequests = cache(async function getPendingRequests() {
           method: d.method,
           plan: d.plan,
           date: d.createdAt,
-          hasReceipt: !!d.receipt?.url,
-          receiptUrl: d.receipt?.url || null,
+          // Falls back to the old app's real field name (`reciept`, typo'd,
+          // with a snake_case `public_id`) for deposits submitted before
+          // this account was migrated — same tolerant-read pattern as
+          // getWallets.js's toPlain(). `.lean()` returns the raw document
+          // regardless of what's declared in our schema.
+          hasReceipt: !!(d.receipt?.url || d.reciept?.url),
+          receiptUrl: d.receipt?.url || d.reciept?.url || null,
         });
       }
     }
