@@ -33,6 +33,11 @@ export default function PushNotificationsToggle() {
     setError("");
     setBusy(true);
     try {
+      if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+        setError("Push isn't configured on this deployment (missing VAPID key in the build). Ask an admin to rebuild the site.");
+        return;
+      }
+
       const permissionResult = await Notification.requestPermission();
       setPermission(permissionResult);
       if (permissionResult !== "granted") {
@@ -57,8 +62,8 @@ export default function PushNotificationsToggle() {
         return;
       }
       setSubscribed(true);
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (err) {
+      setError(err?.message ? `Something went wrong: ${err.message}` : "Something went wrong. Please try again.");
     } finally {
       setBusy(false);
     }
